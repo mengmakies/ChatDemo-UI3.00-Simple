@@ -1,0 +1,28 @@
+//
+//  Prefix header
+//
+//  The contents of this file are implicitly included at the beginning of every source file.
+//
+
+#import <Availability.h>
+
+#ifndef __IPHONE_3_0
+#warning "This project uses features only available in iOS SDK 3.0 and later."
+#endif
+
+#define REDPACKET_AVALABLE //注释，即可禁用红包功能
+
+#ifdef __OBJC__
+    #import <UIKit/UIKit.h>
+    #import <Foundation/Foundation.h>
+
+    #import "EMAlertView.h"
+    #import "TTGlobalUICommon.h"
+
+    #import "EMSDKFull.h"
+    #import "EaseUI.h"
+    #import "ChatUIDefine.h"
+
+#define DEMO_CALL 1
+
+#endif

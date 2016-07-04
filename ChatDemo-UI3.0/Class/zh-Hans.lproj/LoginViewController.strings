@@ -1,0 +1,14 @@
+
+/* Class = "IBUITextField"; placeholder = "个人账号/手机"; ObjectID = "AP7-GL-7yZ"; */
+"AP7-GL-7yZ.placeholder" = "个人账号/手机";
+
+/* Class = "IBUIButton"; normalTitle = "注册"; ObjectID = "HP1-ku-0fl"; */
+"HP1-ku-0fl.normalTitle" = "注册";
+
+/* Class = "IBUITextField"; placeholder = "密码"; ObjectID = "PWC-Hd-cWJ"; */
+"PWC-Hd-cWJ.placeholder" = "密码";
+
+/* Class = "IBUIButton"; normalTitle = "登录"; ObjectID = "g7n-mh-wjo"; */
+"g7n-mh-wjo.normalTitle" = "登录";
+
+"fNP-mV-Qsn.Text" = "使用IP";
