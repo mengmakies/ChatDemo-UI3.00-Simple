@@ -51,4 +51,5 @@ http://community.easemob.com/article/825307855
 
 >- 如有任何问题，请咨询【环信IM互帮互助群】，群号：340452063
 >- 或者加本人QQ：364223587
->- 源码详细说明介绍请看【简书】地址：http://www.jianshu.com/p/c0c30707bf0c  欢迎拍砖！！！
+>- 源码详细说明介绍请看http://community.easemob.com/article/825307886
+>-【简书】地址：http://www.jianshu.com/p/c0c30707bf0c  欢迎拍砖！！！
