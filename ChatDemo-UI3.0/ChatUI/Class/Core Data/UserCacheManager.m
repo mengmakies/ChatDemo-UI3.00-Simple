@@ -8,9 +8,9 @@
 
 #import "UserCacheManager.h"
 #import "FMDB.h"
-#import "MKNetworkKit.h"
 
 #define DBNAME @"user_cache_data.db"
+static FMDatabaseQueue *_queue;
 
 @implementation UserCacheInfo
 
@@ -18,38 +18,89 @@
 
 @implementation UserCacheManager
 
-+(void)createTable:(FMDatabase *)db
-{
-    if ([db open]) {
-        if (![db tableExists :@"userinfo"]) {
-            if ([db executeUpdate:@"create table userinfo (userid text, username text, userimage text)"]) {
-                NSLog(@"create table success");
-            }else{
-                NSLog(@"fail to create table");
-            }
-        }else {
-             NSLog(@"table is already exist");
+// 在appdelegate中调用初始化
++(void)initShare{
+    NSString *fileName = [[NSSearchPathForDirectoriesInDomains(NSDocumentDirectory, NSUserDomainMask, YES)lastObject] stringByAppendingPathComponent:DBNAME];
+    
+    _queue = [FMDatabaseQueue databaseQueueWithPath:fileName];
+    [_queue inDatabase:^(FMDatabase *db) {
+        [db executeUpdate:@"create table if not exists userinfo (userid text, username text, userimage text)"];
+    }];
+}
+
+/**
+ *  执行一个更新语句
+ *
+ *  @param sql 更新语句的sql
+ *
+ *  @return 更新语句的执行结果
+ */
++(BOOL)executeUpdate:(NSString *)sql{
+    
+    __block BOOL updateRes = NO;
+    
+    [_queue inDatabase:^(FMDatabase *db) {
+        
+        updateRes = [db executeUpdate:sql];
+    }];
+    
+    return updateRes;
+}
+
+
+/**
+ *  执行一个查询语句
+ *
+ *  @param sql              查询语句sql
+ *  @param queryResBlock    查询语句的执行结果
+ */
++(void)executeQuery:(NSString *)sql queryResBlock:(void(^)(FMResultSet *set))queryResBlock{
+    
+    [_queue inDatabase:^(FMDatabase *db) {
+        
+        FMResultSet *set = [db executeQuery:sql];
+        
+        if(queryResBlock != nil) queryResBlock(set);
+        
+    }];
+}
+
+/**
+ *  用户是否存在
+ *
+ *  @param userId 用户环信ID
+ *
+ *  @return 是否存在
+ */
++(BOOL)isExistUser:(NSString *)userId{
+    
+    NSString *alias=@"count";
+    
+    NSString *sql = [NSString stringWithFormat:@"SELECT COUNT(*) AS %@ FROM userinfo where userid = '%@'", alias, userId];
+    
+    __block NSUInteger count=0;
+    
+    [self executeQuery:sql queryResBlock:^(FMResultSet *set) {
+        
+        while ([set next]) {
+            
+            count = [[set stringForColumn:alias] integerValue];
         }
-    }else{
-        NSLog(@"fail to open");
-    }
+    }];
+    
+    return count > 0;
 }
 
-+ (void)clearTableData:(FMDatabase *)db
-{
-    if ([db executeUpdate:@"DELETE FROM userinfo"]) {
-        NSLog(@"clear successed");
-    }else{
-        NSLog(@"fail to clear");
-    }
-}
-
-+(FMDatabase*)getDB{
-    NSString *docsPath = NSSearchPathForDirectoriesInDomains(NSDocumentDirectory, NSUserDomainMask, YES)[0];
-    NSString *dbPath   = [docsPath stringByAppendingPathComponent:DBNAME];
-    FMDatabase *db     = [FMDatabase databaseWithPath:dbPath];
-    [self createTable:db];
-    return db;
+/**
+ *  清空表（但不清除表结构）
+ *
+ *  @return 操作结果
+ */
++(BOOL)clearTableData{
+    
+    BOOL res = [self executeUpdate:@"DELETE FROM userinfo"];
+    [self executeUpdate:@"DELETE FROM sqlite_sequence WHERE name='userinfo';"];
+    return res;
 }
 
 /*
@@ -65,44 +116,58 @@
     [extDic setValue:userId forKey:kChatUserId];
     [extDic setValue:imgUrl forKey:kChatUserPic];
     [extDic setValue:nickName forKey:kChatUserNick];
-    [UserCacheManager saveDict:extDic];
+    [UserCacheManager saveInfo:extDic];
 }
 
-+(void)saveDict:(NSDictionary *)userinfo{
-    FMDatabase *db     = [self getDB];
-    
++(void)saveInfo:(NSDictionary *)userinfo{
     NSString *userid = [userinfo objectForKey:kChatUserId];
-    if ([db executeUpdate:@"DELETE FROM userinfo where userid = ?", userid]) {
-        DLog(@"删除成功");
-    }else{
-        DLog(@"删除失败");
-    }
     NSString *username = [userinfo objectForKey:kChatUserNick];
     NSString *userimage = [userinfo objectForKey:kChatUserPic];
-    if ([db executeUpdate:@"INSERT INTO userinfo (userid, username, userimage) VALUES (?, ?, ?)", userid,username,userimage]) {
-        DLog(@"插入成功");
+    NSString *sql = @"";
+    
+    BOOL isExistUser = [self isExistUser:userid];
+    if (isExistUser) {
+        sql = [NSString stringWithFormat:@"update userinfo set username='%@', userimage='%@' where userid='%@'", username,userimage,userid];
     }else{
-        DLog(@"插入失败");
+        sql = [NSString stringWithFormat:@"INSERT INTO userinfo (userid, username, userimage) VALUES ('%@', '%@', '%@')", userid,username,userimage];
     }
     
-    FMResultSet *rs = [db executeQuery:@"SELECT userid, username, userimage FROM userinfo where userid = ?",userid];
-    if ([rs next]) {
-        NSString *userid = [rs stringForColumn:@"userid"];
-        NSString *username = [rs stringForColumn:@"username"];
-        NSString *userimage = [rs stringForColumn:@"userimage"];
-        DLog(@"查询一个 %@ %@ %@",userid,username,userimage);
-    }
+    [self executeUpdate:sql];
     
-    rs = [db executeQuery:@"SELECT userid, username, userimage FROM userinfo"];
-    while ([rs next]) {
-        NSString *userid = [rs stringForColumn:@"userid"];
-        NSString *username = [rs stringForColumn:@"username"];
-        NSString *userimage = [rs stringForColumn:@"userimage"];
-        DLog(@"查询所有 %@ %@ %@",userid,username,userimage);
-    }
+#if DEBUG
+    [self queryAll];
+#endif
     
-    [rs close];
-    [db close];
+}
+
++(void)queryAll{
+    // 列出所有用户信息
+    NSString *sql = @"SELECT userid, username, userimage FROM userinfo";
+    [self executeQuery:sql queryResBlock:^(FMResultSet *rs) {
+        int i=0;
+        while ([rs next]) {
+            NSLog(@"%d：-------",i);
+            NSLog(@"id：%@",[rs stringForColumn:@"userid"]);
+            NSLog(@"name：%@",[rs stringForColumn:@"username"]);
+            NSLog(@"image：%@",[rs stringForColumn:@"userimage"]);
+            NSLog(@"%d：---end--",i);
+            i++;
+        }
+        [rs close];
+    }];
+}
+
+// 更新当前用户的昵称
++(void)updateCurrNick:(NSString*)nickName{
+    UserCacheInfo *user = [self getCurrUser];
+    if (!user)  return;
+    
+    NSString *sql = [NSString stringWithFormat:@"update userinfo set username='%@' where userid='%@'",nickName, user.Id];
+    if ([self executeUpdate:sql]) {
+        NSLog(@"更新成功");
+    }else{
+        NSLog(@"更新失败");
+    }
 }
 
 /*
@@ -110,24 +175,23 @@
  *userId 用户的环信ID
  */
 +(UserCacheInfo*)getById:(NSString *)userid{
-    FMDatabase *db     = [self getDB];
-    if ([db open]) {
-        FMResultSet *rs = [db executeQuery:@"SELECT userid, username, userimage FROM userinfo where userid = ?",userid];
+    
+    __block UserCacheInfo *userInfo = nil;
+    
+    NSString *sql = [NSString stringWithFormat:@"SELECT userid, username, userimage FROM userinfo where userid = '%@'",userid];
+    [self executeQuery:sql queryResBlock:^(FMResultSet *rs) {
         if ([rs next]) {
             
-            UserCacheInfo *userInfo = [[UserCacheInfo alloc] init];
+            userInfo = [[UserCacheInfo alloc] init];
             
             userInfo.Id = [rs stringForColumn:@"userid"];
             userInfo.NickName = [rs stringForColumn:@"username"];
             userInfo.AvatarUrl = [rs stringForColumn:@"userimage"];
-            DLog(@"查询一个 %@",userInfo);
-            return userInfo;
-        }else{
-            return nil;
         }
-    }else{
-        return nil;
-    }
+        [rs close];
+    }];
+    
+    return userInfo;
 }
 
 /*
@@ -147,6 +211,5 @@
 +(UserCacheInfo*)getCurrUser{
     return [UserCacheManager getById:kCURRENT_USERNAME];
 }
-
 
 @end

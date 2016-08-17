@@ -220,7 +220,11 @@ static ChatUIHelper *helper = nil;
     BOOL isRefreshCons = YES;
     for(EMMessage *message in aMessages){
         
-        [UserCacheManager saveDict:message.ext];
+        [UserCacheManager saveInfo:message.ext];
+        
+        NSString *userid = [message.ext objectForKey:kChatUserId];
+        UserCacheInfo *test = [UserCacheManager getById:userid];
+        NSLog(@"%@", test.NickName);
         
         BOOL needShowNotification = (message.chatType != EMChatTypeChat) ? [self _needShowNotification:message.conversationId] : YES;
         

@@ -17,6 +17,8 @@
 
 @interface UserCacheManager : NSObject
 
++(void)initShare;
+
 /*
  *保存用户信息（如果已存在，则更新）
  *userId: 用户环信ID
@@ -30,7 +32,10 @@
 /*
  *保存用户信息
  */
-+(void)saveDict:(NSDictionary *)userinfo;
++(void)saveInfo:(NSDictionary *)userinfo;
+
+// 更新当前用户的昵称
++(void)updateCurrNick:(NSString*)nickName;
 
 /*
  *根据环信ID获取用户信息

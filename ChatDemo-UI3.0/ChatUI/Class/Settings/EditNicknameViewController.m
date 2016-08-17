@@ -117,6 +117,7 @@
         //设置推送设置
         [[EMClient sharedClient] setApnsNickname:_nickTextField.text];
         // del by martin 20160606
+        [UserCacheManager updateCurrNick:_nickTextField.text];
 //        [[UserProfileManager sharedInstance] updateUserProfileInBackground:@{kPARSE_HXUSER_NICKNAME:_nickTextField.text} completion:^(BOOL success, NSError *error){}];
         [self.navigationController popViewControllerAnimated:YES];
     } else {

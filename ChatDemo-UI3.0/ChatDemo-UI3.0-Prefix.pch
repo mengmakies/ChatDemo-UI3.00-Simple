@@ -22,6 +22,7 @@
     #import "EMSDKFull.h"
     #import "EaseUI.h"
     #import "ChatUIDefine.h"
+    #import "UserCacheManager.h"
 
 #define DEMO_CALL 1
 
