@@ -62,8 +62,7 @@
     if (!_usernameLabel) {
         _usernameLabel = [[UILabel alloc] init];
         _usernameLabel.frame = CGRectMake(CGRectGetMaxX(_headImageView.frame) + 10.f, 10, 200, 20);
-        UserCacheInfo *user = [UserCacheManager getCurrUser];
-        _usernameLabel.text = user.NickName;
+        _usernameLabel.text = [UserCacheManager getCurrNickName];
         _usernameLabel.textColor = [UIColor lightGrayColor];
     }
     return _usernameLabel;
@@ -110,12 +109,7 @@
         cell.detailTextLabel.text = self.usernameLabel.text;
     } else if (indexPath.row == 2) {
         cell.textLabel.text = NSLocalizedString(@"setting.profileNickname", @"Nickname");
-        UserCacheInfo *user = [UserCacheManager getCurrUser];
-        if (user && user.NickName.length>0) {
-            cell.detailTextLabel.text = user.NickName;
-        } else {
-            cell.detailTextLabel.text = [[EMClient sharedClient] currentUsername];
-        }
+        cell.detailTextLabel.text = [UserCacheManager getCurrNickName];
         cell.accessoryType = UITableViewCellAccessoryDisclosureIndicator;
     }
     return cell;

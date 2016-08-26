@@ -9,13 +9,6 @@
 #ifndef ChatUIDefine_h
 #define ChatUIDefine_h
 
-// 环信聊天用的昵称和头像（发送聊天消息时，要附带这3个属性）
-#define kChatUserId @"ChatUserId"// 环信账号
-#define kChatUserNick @"ChatUserNick"
-#define kChatUserPic @"ChatUserPic"
-
-#define kCURRENT_USERNAME [[EMClient sharedClient] currentUsername]
-
 // 消息通知
 #define kSetupUntreatedApplyCount @"setupUntreatedApplyCount"// 未处理的好友申请
 #define kSetupUnreadMessageCount @"setupUnreadMessageCount"// 未读聊天消息数

@@ -101,9 +101,9 @@
         cell.detailTextLabel.text = self.usernameLabel.text;
     } else if (indexPath.row == 2) {
         cell.textLabel.text = NSLocalizedString(@"setting.profileNickname", @"Nickname");
-        UserCacheInfo * userInfo = [UserCacheManager getById:_username];
-        if (userInfo && userInfo.NickName.length>0) {
-            cell.detailTextLabel.text = userInfo.NickName;
+        NSString *nickName = [UserCacheManager getNickById:_username];
+        if (nickName && nickName.length>0) {
+            cell.detailTextLabel.text = nickName;
         } else {
             cell.detailTextLabel.text = _username;
         }

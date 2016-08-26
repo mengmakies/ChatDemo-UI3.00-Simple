@@ -8,6 +8,13 @@
 
 #import <Foundation/Foundation.h>
 
+// 环信聊天用的昵称和头像（发送聊天消息时，要附带这3个属性）
+#define kChatUserId @"ChatUserId"// 环信账号
+#define kChatUserNick @"ChatUserNick"
+#define kChatUserPic @"ChatUserPic"
+
+#define kCurrEaseUserId [[EMClient sharedClient] currentUsername]// 当前用户的环信ID
+
 @interface UserCacheInfo : NSObject
 @property(nonatomic,copy)NSString* Id;
 @property(nonatomic,copy)NSString* NickName;
@@ -53,6 +60,11 @@
  * 获取当前环信用户信息
  */
 +(UserCacheInfo*)getCurrUser;
+
+/*
+ * 获取当前环信用户的昵称
+ */
++(NSString*)getCurrNickName;
 
 @end
 

@@ -209,7 +209,14 @@ static FMDatabaseQueue *_queue;
  * 获取当前环信用户信息
  */
 +(UserCacheInfo*)getCurrUser{
-    return [UserCacheManager getById:kCURRENT_USERNAME];
+    return [UserCacheManager getById:kCurrEaseUserId];
+}
+
+/*
+ * 获取当前环信用户的昵称
+ */
++(NSString*)getCurrNickName{
+    return [UserCacheManager getNickById:kCurrEaseUserId];
 }
 
 @end
