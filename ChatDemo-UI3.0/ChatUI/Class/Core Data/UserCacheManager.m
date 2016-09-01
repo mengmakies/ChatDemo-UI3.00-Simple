@@ -37,6 +37,10 @@ static FMDatabaseQueue *_queue;
  */
 +(BOOL)executeUpdate:(NSString *)sql{
     
+    if (_queue == nil) {
+      [self initShare];
+    }
+    
     __block BOOL updateRes = NO;
     
     [_queue inDatabase:^(FMDatabase *db) {
@@ -55,6 +59,10 @@ static FMDatabaseQueue *_queue;
  *  @param queryResBlock    查询语句的执行结果
  */
 +(void)executeQuery:(NSString *)sql queryResBlock:(void(^)(FMResultSet *set))queryResBlock{
+    
+    if (_queue == nil) {
+      [self initShare];
+    }
     
     [_queue inDatabase:^(FMDatabase *db) {
         
