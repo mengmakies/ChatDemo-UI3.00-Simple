@@ -36,9 +36,6 @@
      */
     [[RedPacketUserConfig sharedConfig] configWithAppKey:EaseMobAppKey];
 #endif
-    
-    // 初始化聊天用户缓存管理
-    [UserCacheManager initShare];
 
     _connectionState = EMConnectionConnected;
     

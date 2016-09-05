@@ -18,8 +18,7 @@ static FMDatabaseQueue *_queue;
 
 @implementation UserCacheManager
 
-// 在appdelegate中调用初始化
-+(void)initShare{
++(void)initialize{
     NSString *fileName = [[NSSearchPathForDirectoriesInDomains(NSDocumentDirectory, NSUserDomainMask, YES)lastObject] stringByAppendingPathComponent:DBNAME];
     
     _queue = [FMDatabaseQueue databaseQueueWithPath:fileName];

@@ -24,8 +24,6 @@
 
 @interface UserCacheManager : NSObject
 
-+(void)initShare;
-
 /*
  *保存用户信息（如果已存在，则更新）
  *userId: 用户环信ID
