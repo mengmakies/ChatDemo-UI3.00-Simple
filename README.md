@@ -1,4 +1,7 @@
 
+###希望支持简版Demo的童鞋能够到Github给我们一个star^_^
+https://github.com/mengmakies/ChatDemo-UI3.00-Simple
+
 <img src="http://git.oschina.net/uploads/images/2016/0616/114942_10bc5823_134340.png" width = "35%" height = "auto" alt="图片名称" align=center />  &nbsp;
 <img src="http://git.oschina.net/uploads/images/2016/0616/114958_5cc8fd12_134340.png" width = "35%" height = "auto" alt="图片名称" align=center />
 ###说明
