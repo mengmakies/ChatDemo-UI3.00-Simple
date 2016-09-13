@@ -26,7 +26,6 @@
  
 **注意：** 由于Git不支持上传大于100MB的文件，所以项目源码中不包含 **libHyphenateFullSDK.a** 文件，需要自行去官网下载http://www.easemob.com/download/im  ，然后拷贝到目录【/ChatDemo-UI3.0-Sample/ChatDemo-UI3.0/ChatSDK/HyphenateFullSDK/lib】才能正常运行。
 
->完整源码可到360网盘下载：https://yunpan.cn/cRUrKNyrc2PLA （提取码：3b54）
 >
 >单独的 **libHyphenateFullSDK.a** 下载地址https://yunpan.cn/cRqx72ByhXRQG （提取码：b553）
 
