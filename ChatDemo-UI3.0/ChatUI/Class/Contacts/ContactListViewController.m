@@ -479,11 +479,6 @@
             model.nickname = userNick;
             
             NSString *firstLetter = [EaseChineseToPinyin pinyinFromChineseString:userNick];
-            if(!firstLetter && userNick) {
-                firstLetter = userNick;
-            }
-            
-            if(!firstLetter) continue;
             
             NSInteger section = [indexCollation sectionForObject:[firstLetter substringToIndex:1] collationStringSelector:@selector(uppercaseString)];
             

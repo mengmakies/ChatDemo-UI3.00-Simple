@@ -199,7 +199,7 @@ static FMDatabaseQueue *_queue;
  */
 +(NSString*)getNickById:(NSString*)userId{
     UserCacheInfo *user = [UserCacheManager getById:userId];
-    if(user == nil || [user  isEqual: @""]) return @"";
+    if(user == nil || [user  isEqual: @""]) return userId;// 没有昵称就返回用户ID
     
     return user.NickName;
 }
