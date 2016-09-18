@@ -474,10 +474,15 @@
     for (NSString *buddy in contactsSource) {
         EaseUserModel *model = [[EaseUserModel alloc] initWithBuddy:buddy];
         if (model) {
+            NSString *userNick = [UserCacheManager getNickById:buddy];
             model.avatarImage = [UIImage imageNamed:@"EaseUIResource.bundle/user"];
-            model.nickname = [UserCacheManager getNickById:buddy];
+            model.nickname = userNick;
             
-            NSString *firstLetter = [EaseChineseToPinyin pinyinFromChineseString:[UserCacheManager getNickById:buddy]];
+            NSString *firstLetter = [EaseChineseToPinyin pinyinFromChineseString:userNick];
+            if(!firstLetter && userNick) {
+                firstLetter = userNick;
+            }
+            
             if(!firstLetter) continue;
             
             NSInteger section = [indexCollation sectionForObject:[firstLetter substringToIndex:1] collationStringSelector:@selector(uppercaseString)];
