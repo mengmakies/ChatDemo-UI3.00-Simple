@@ -27,7 +27,7 @@ https://github.com/mengmakies/ChatDemo-UI3.00-Simple
 ![输入图片说明](http://avatar.csdn.net/A/2/1/1_mengmakies.jpg "在这里输入图片标题")
 如有任何问题，请联系QQ： **364223587** 
  
->**注意：** 由于Git不支持上传大于100MB的文件，所以项目源码中不包含 **libHyphenateFullSDK.a** 文件，下载地址https://yunpan.cn/cRqx72ByhXRQG （提取码：b553） ，然后拷贝到目录【/ChatDemo-UI3.0-Sample/ChatDemo-UI3.0/ChatSDK/HyphenateFullSDK/lib】才能正常运行。
+>**注意：** 由于Git不支持上传大于100MB的文件，所以项目源码中不包含 **libHyphenateFullSDK.a** 文件，下载地址https://pan.baidu.com/s/1c1CrKWC ，然后拷贝到目录【/ChatDemo-UI3.0-Sample/ChatDemo-UI3.0/ChatSDK/HyphenateFullSDK/lib】才能正常运行。
 
 ----
 经过对ChatUIDemo-UI3.0中的源码进行分析可知，用户初次集成EaseUI时，会遇到如下几个常见问题：
