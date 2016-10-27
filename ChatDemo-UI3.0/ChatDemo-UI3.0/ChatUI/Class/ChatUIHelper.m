@@ -39,7 +39,6 @@ static NSString *kGroupName = @"GroupName";
 {
     NSTimer *_callTimer;
 }
-@property (strong, nonatomic) NSDate *lastPlaySoundDate;
 @end
 
 #endif

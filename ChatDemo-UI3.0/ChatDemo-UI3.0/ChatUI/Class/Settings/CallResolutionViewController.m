@@ -100,7 +100,9 @@
         EMCallVideoResolution resolution = (EMCallVideoResolution)indexPath.row;
         EMCallOptions *options = [[EMClient sharedClient].callManager getCallOptions];
         options.videoResolution = resolution;
+#if DEMO_CALL == 1
         [ChatUIHelper updateCallOptions];
+#endif
     }
     
     self.selectedIndexPath = indexPath;

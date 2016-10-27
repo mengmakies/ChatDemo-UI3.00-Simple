@@ -34,6 +34,8 @@
 
 #endif
 
+@property (strong, nonatomic) NSDate *lastPlaySoundDate;
+
 @property (nonatomic, weak) ContactListViewController *contactViewVC;
 
 @property (nonatomic, weak) ConversationListController *conversationListVC;
@@ -42,13 +44,13 @@
 
 @property (nonatomic, weak) ChatViewController *chatVC;
 
+@property (nonatomic, assign)EMConnectionState connectionState;
+
 #if DEMO_CALL == 1
 
 @property (strong, nonatomic) NSObject *callLock;
 @property (strong, nonatomic) EMCallSession *callSession;
 @property (strong, nonatomic) CallViewController *callController;
-
-@property (nonatomic, assign)EMConnectionState connectionState;
 
 #endif
 

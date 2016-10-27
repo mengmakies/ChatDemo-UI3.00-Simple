@@ -277,8 +277,10 @@
         
         [alert show];
     } else if (indexPath.row == 11) {
+#if DEMO_CALL == 1
         CallResolutionViewController *resoulutionController = [[CallResolutionViewController alloc] init];
         [self.navigationController pushViewController:resoulutionController animated:YES];
+#endif
     }
 }
 
@@ -362,7 +364,9 @@
 {
     EMCallOptions *options = [[EMClient sharedClient].callManager getCallOptions];
     options.isSendPushIfOffline = control.on;
+#if DEMO_CALL == 1
     [ChatUIHelper updateCallOptions];
+#endif
 }
 
 - (void)refreshConfig

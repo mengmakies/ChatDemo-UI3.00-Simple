@@ -10,7 +10,22 @@
 #warning "This project uses features only available in iOS SDK 3.0 and later."
 #endif
 
+/*----------不看这个提醒，后悔一万年----------------------------*/
+
+// 提醒：由于Git不支持上传大于100MB的文件，所以项目源码中不包含 libHyphenateFullSDK.a 文件
+// 下载地址请看github文档：https://github.com/mengmakies/ChatDemo-UI3.00-Simple/blob/master/README.md
+
+/*----------不看这行代码后悔一万年-----------end-----------------*/
+
+
+// 如果不需要红包功能，直接把这个REDPACKET_AVALABLE宏注释掉，然后：
+// 1.删掉红包相关代码：注释掉后，建议在xcode中搜索“REDPACKET_AVALABLE”，然后删掉相关代码；
 #define REDPACKET_AVALABLE
+
+// 如果不需要语音通话功能，直接把这个宏注释掉或者改成0，然后：
+// 1.删掉音视频相关代码：注释掉后，建议在xcode中搜索“DEMO_CALL”，然后删掉相关代码；
+// 2.隐藏音视频通话按钮：EaseChatBarMoreView.m  第115-131行代码注释掉。
+#define DEMO_CALL 1 // 1：启用音视频通话；0：禁用音视频通话
 
 #ifdef __OBJC__
     #import <UIKit/UIKit.h>
@@ -23,7 +38,5 @@
     #import "EaseUI.h"
     #import "ChatUIDefine.h"
     #import "UserCacheManager.h"
-
-#define DEMO_CALL 1
 
 #endif
