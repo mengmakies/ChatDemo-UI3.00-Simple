@@ -299,7 +299,7 @@
         }
         
         if (lastMessage.direction == EMMessageDirectionReceive) {
-            NSString *from = [UserCacheManager getNickById:from];
+            NSString *from = [UserCacheManager getNickById:lastMessage.from];
             latestMessageTitle = [NSString stringWithFormat:@"%@: %@", from, latestMessageTitle];
         }
         
