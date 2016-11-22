@@ -451,7 +451,7 @@
             model.avatarImage = [UIImage imageNamed:@"chatListCellHead"];
             model.nickname = [UserCacheManager getNickById:buddy];
             
-            NSString *firstLetter = [EaseChineseToPinyin pinyinFromChineseString:[UserCacheManager getNickById:buddy]];
+            NSString *firstLetter = [EaseChineseToPinyin pinyinFromChineseString:model.nickname];
             NSInteger section = [indexCollation sectionForObject:[firstLetter substringToIndex:1] collationStringSelector:@selector(uppercaseString)];
             
             NSMutableArray *array = [sortedArray objectAtIndex:section];

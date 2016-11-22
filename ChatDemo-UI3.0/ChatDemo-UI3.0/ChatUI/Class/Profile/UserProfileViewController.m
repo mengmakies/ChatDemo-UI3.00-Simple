@@ -133,9 +133,9 @@
 
 - (void)loadUserProfile
 {
-    [self hideHud];
-    [self showHudInView:self.view hint:NSLocalizedString(@"loadData", @"Load data...")];
-    __weak typeof(self) weakself = self;
+//    [self hideHud];
+//    [self showHudInView:self.view hint:NSLocalizedString(@"loadData", @"Load data...")];
+//    __weak typeof(self) weakself = self;
 //    [[UserProfileManager sharedInstance] loadUserProfileInBackground:@[_username] saveToLoacal:YES completion:^(BOOL success, NSError *error) {
 //        [weakself hideHud];
 //        if (success) {

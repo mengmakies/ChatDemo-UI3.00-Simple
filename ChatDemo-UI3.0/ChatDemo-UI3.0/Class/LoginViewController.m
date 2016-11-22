@@ -141,10 +141,19 @@
             [weakself hideHud];
             if (!error) {
                 
-                // 保存用户信息
-                [UserCacheManager saveInfo:username// 用户环信ID
-                                    imgUrl:@"http://avatar.csdn.net/A/2/1/1_mengmakies.jpg"// 用户头像（绝对路径）
-                                  nickName:username];// 用户昵称（环信demo中，昵称和ID为同一个。但是实际项目中要用昵称）
+                // 测试：登录成功后，自动添加martin1234为好友
+                EMError *error = [[EMClient sharedClient].contactManager addContact:@"martin1234" message:@"我想加您为好友"];
+                if (!error) {
+                    NSLog(@"添加成功");
+                }
+                
+                
+                NSString *userOpenId = username;// 用户环信ID
+                NSString *nickName = [NSString stringWithFormat:@"小草%d", arc4random_uniform(100)];// 用户昵称
+                NSString *avatarUrl = @"http://avatar.csdn.net/E/8/5/2_duruiqi_fx.jpg";// 用户头像（绝对路径）
+                
+                // 登录成功后，如果后端云没有缓存用户信息，则新增一个用户
+                [UserWebManager createUser:username nickName:nickName avatarUrl:avatarUrl];
                 
                 //设置是否自动登录
                 [[EMClient sharedClient].options setIsAutoLogin:YES];
@@ -311,3 +320,4 @@
 }
 
 @end
+

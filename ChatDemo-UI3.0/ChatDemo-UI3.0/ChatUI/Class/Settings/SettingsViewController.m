@@ -147,7 +147,7 @@
 #endif
     
 #if DEMO_CALL == 1
-    return 12;
+    return 13;
 #endif
 
     return 9;
@@ -222,6 +222,9 @@
         } else if (indexPath.row == 11) {
             cell.textLabel.text = NSLocalizedString(@"setting.callResolution", nil);
             cell.accessoryType = UITableViewCellAccessoryDisclosureIndicator;
+        }else if (indexPath.row == 12) {
+            cell.textLabel.text = @"清除缓存（昵称和头像）";
+            cell.accessoryType = UITableViewCellAccessoryDisclosureIndicator;
         }
     }
     
@@ -281,6 +284,10 @@
         CallResolutionViewController *resoulutionController = [[CallResolutionViewController alloc] init];
         [self.navigationController pushViewController:resoulutionController animated:YES];
 #endif
+    }else if (indexPath.row == 12) {
+        [UserCacheManager clearTableData];
+        [UserWebManager clearCache];
+        [self showHint:@"已经清除用户本地头像和昵称~"];
     }
 }
 

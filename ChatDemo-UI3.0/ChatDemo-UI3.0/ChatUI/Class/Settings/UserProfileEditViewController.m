@@ -51,8 +51,8 @@
         _headImageView.frame = CGRectMake(20, 10, 60, 60);
         _headImageView.contentMode = UIViewContentModeScaleToFill;
     }
-    UserCacheInfo *user = [UserCacheManager currUser];
-    [_headImageView imageWithUsername:user.NickName placeholderImage:nil];
+    
+    [_headImageView imageWithUsername:kCurrEaseUserId placeholderImage:nil];
     return _headImageView;
 }
 
@@ -61,8 +61,7 @@
     if (!_usernameLabel) {
         _usernameLabel = [[UILabel alloc] init];
         _usernameLabel.frame = CGRectMake(CGRectGetMaxX(_headImageView.frame) + 10.f, 10, 200, 20);
-        UserCacheInfo *user = [UserCacheManager currUser];
-        _usernameLabel.text = user.NickName;
+        _usernameLabel.text = kCurrEaseUserId;
         _usernameLabel.textColor = [UIColor lightGrayColor];
     }
     return _usernameLabel;
@@ -109,12 +108,7 @@
         cell.detailTextLabel.text = self.usernameLabel.text;
     } else if (indexPath.row == 2) {
         cell.textLabel.text = NSLocalizedString(@"setting.profileNickname", @"Nickname");
-        UserCacheInfo *user = [UserCacheManager currUser];
-        if (user && user.NickName.length>0) {
-            cell.detailTextLabel.text = user.NickName;
-        } else {
-            cell.detailTextLabel.text = [[EMClient sharedClient] currentUsername];
-        }
+        cell.detailTextLabel.text = [UserCacheManager currNickName];
         cell.accessoryType = UITableViewCellAccessoryDisclosureIndicator;
     }
     return cell;
@@ -155,19 +149,18 @@
             [self showHint:NSLocalizedString(@"setting.saving", "saving...")];
             __weak typeof(self) weakSelf = self;
             [[EMClient sharedClient] setApnsNickname:nameTextField.text];
-//            [[UserProfileManager sharedInstance] updateUserProfileInBackground:@{kPARSE_HXUSER_NICKNAME:nameTextField.text} completion:^(BOOL success, NSError *error) {
-//                dispatch_async(dispatch_get_main_queue(), ^{
-//                    if (weakSelf) {
-//                        UserProfileEditViewController *strongSelf = weakSelf;
-//                        [strongSelf hideHud];
-//                        if (success) {
-//                            [strongSelf.tableView reloadData];
-//                        } else {
-//                            [strongSelf showHint:NSLocalizedString(@"setting.saveFailed", "save failed") yOffset:0];
-//                        }
-//                    }
-//                });
-//            }];
+            [UserWebManager updateCurrNick:nameTextField.text completed:^(BOOL isSucc) {
+                if (weakSelf) {
+                    UserProfileEditViewController *strongSelf = weakSelf;
+                    [strongSelf hideHud];
+                    if (isSucc) {
+                        [strongSelf.tableView reloadData];
+                        [strongSelf showHint:@"修改成功~"];
+                    } else {
+                        [strongSelf showHint:NSLocalizedString(@"setting.saveFailed", "save failed") yOffset:0];
+                    }
+                }
+            }];
         }
     }
 }
@@ -180,19 +173,22 @@
     [self showHudInView:self.view hint:NSLocalizedString(@"setting.uploading", @"uploading...")];
     
     __weak typeof(self) weakSelf = self;
-    UIImage *orgImage = info[UIImagePickerControllerOriginalImage];
+    UIImage *orgImage = info[UIImagePickerControllerEditedImage];// 使用裁剪后的图片
     [picker dismissViewControllerAnimated:YES completion:nil];
     if (orgImage) {
-//        [[UserProfileManager sharedInstance] uploadUserHeadImageProfileInBackground:orgImage completion:^(BOOL success, NSError *error) {
-//            [weakSelf hideHud];
-//            if (success) {
-//                UserProfileEntity *user = [[UserProfileManager sharedInstance] getCurUserProfile];
-//                [weakSelf.headImageView imageWithUsername:user.username placeholderImage:orgImage];
-//                [self showHint:NSLocalizedString(@"setting.uploadSuccess", @"uploaded successfully")];
-//            } else {
-//                [self showHint:NSLocalizedString(@"setting.uploadFail", @"uploaded failed")];
-//            }
-//        }];
+        
+        // 上传到后端云
+        [UserWebManager updateCurrAvatar:orgImage completed:^(UIImage *imageData) {
+            [weakSelf hideHud];
+            if(!imageData){
+                [self showHint:NSLocalizedString(@"setting.uploadFail", @"uploaded failed")];
+                return;
+            }
+            
+            [weakSelf.headImageView imageWithUsername:kCurrEaseUserId placeholderImage:imageData];
+            [self showHint:NSLocalizedString(@"setting.uploadSuccess", @"uploaded successfully")];
+        }];
+        
     } else {
         [self hideHud];
         [self showHint:NSLocalizedString(@"setting.uploadFail", @"uploaded failed")];

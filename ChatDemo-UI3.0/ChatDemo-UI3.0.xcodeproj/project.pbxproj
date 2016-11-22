@@ -352,6 +352,12 @@
 		9A17E2D21DC0E8EB00436947 /* group_detail@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 9A17E2C21DC0E8EB00436947 /* group_detail@2x.png */; };
 		9A17E2D31DC0E8EB00436947 /* titleBar.png in Resources */ = {isa = PBXBuildFile; fileRef = 9A17E2C31DC0E8EB00436947 /* titleBar.png */; };
 		9A17E2D41DC0E8EB00436947 /* titleBar@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 9A17E2C41DC0E8EB00436947 /* titleBar@2x.png */; };
+		9A6A29CF1DCA295500631E22 /* AVOSCloud.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 9A6A29CE1DCA295500631E22 /* AVOSCloud.framework */; };
+		9A6A29D01DCA2B4200631E22 /* libz.tbd in Frameworks */ = {isa = PBXBuildFile; fileRef = 3AB62A0E1D926341000776F0 /* libz.tbd */; };
+		9A6A29D21DCA2B5300631E22 /* libc++.tbd in Frameworks */ = {isa = PBXBuildFile; fileRef = 9A6A29D11DCA2B5300631E22 /* libc++.tbd */; };
+		9A6A29D41DCA2B5F00631E22 /* libicucore.tbd in Frameworks */ = {isa = PBXBuildFile; fileRef = 9A6A29D31DCA2B5F00631E22 /* libicucore.tbd */; };
+		9A6A29D61DCA2B6900631E22 /* libsqlite3.tbd in Frameworks */ = {isa = PBXBuildFile; fileRef = 9A6A29D51DCA2B6900631E22 /* libsqlite3.tbd */; };
+		9AD291601DC9D43300AB22B7 /* UserWebManager.m in Sources */ = {isa = PBXBuildFile; fileRef = 9AD2915F1DC9D43300AB22B7 /* UserWebManager.m */; };
 		C035E8151AEA40F400283EE9 /* CoreData.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 3C36CA691A1EDB6200CDDD48 /* CoreData.framework */; };
 		D26CE39B1C2BD37700697F48 /* Settings.bundle in Resources */ = {isa = PBXBuildFile; fileRef = D26CE39A1C2BD37700697F48 /* Settings.bundle */; };
 		D29A6BB51B7209C1002324BB /* Accounts.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = D29A6BB41B7209C1002324BB /* Accounts.framework */; };
@@ -1005,6 +1011,12 @@
 		9A17E2C21DC0E8EB00436947 /* group_detail@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "group_detail@2x.png"; sourceTree = "<group>"; };
 		9A17E2C31DC0E8EB00436947 /* titleBar.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = titleBar.png; sourceTree = "<group>"; };
 		9A17E2C41DC0E8EB00436947 /* titleBar@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "titleBar@2x.png"; sourceTree = "<group>"; };
+		9A6A29CE1DCA295500631E22 /* AVOSCloud.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; path = AVOSCloud.framework; sourceTree = "<group>"; };
+		9A6A29D11DCA2B5300631E22 /* libc++.tbd */ = {isa = PBXFileReference; lastKnownFileType = "sourcecode.text-based-dylib-definition"; name = "libc++.tbd"; path = "usr/lib/libc++.tbd"; sourceTree = SDKROOT; };
+		9A6A29D31DCA2B5F00631E22 /* libicucore.tbd */ = {isa = PBXFileReference; lastKnownFileType = "sourcecode.text-based-dylib-definition"; name = libicucore.tbd; path = usr/lib/libicucore.tbd; sourceTree = SDKROOT; };
+		9A6A29D51DCA2B6900631E22 /* libsqlite3.tbd */ = {isa = PBXFileReference; lastKnownFileType = "sourcecode.text-based-dylib-definition"; name = libsqlite3.tbd; path = usr/lib/libsqlite3.tbd; sourceTree = SDKROOT; };
+		9AD2915E1DC9D43300AB22B7 /* UserWebManager.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = UserWebManager.h; sourceTree = "<group>"; };
+		9AD2915F1DC9D43300AB22B7 /* UserWebManager.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = UserWebManager.m; sourceTree = "<group>"; };
 		D24A4A9B1BCE4B830007BB00 /* ChatDemo-UI3.0-Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = "ChatDemo-UI3.0-Info.plist"; sourceTree = "<group>"; };
 		D24A4A9C1BCE4B830007BB00 /* ChatDemo-UI3.0-Prefix.pch */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "ChatDemo-UI3.0-Prefix.pch"; sourceTree = "<group>"; };
 		D26658581C4F41B9008EEFBF /* libEaseUI.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libEaseUI.a; path = "../../../../../../Library/Developer/Xcode/DerivedData/emsdk-autwtnpqmbzsvydyihdnnhktnoni/Build/Products/Debug-iphoneos/libEaseUI.a"; sourceTree = "<group>"; };
@@ -1024,10 +1036,17 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				3C06AAFF194050A00076FF0B /* CoreLocation.framework in Frameworks */,
+				3A595FAC1D6DBBD100504DB3 /* CoreTelephony.framework in Frameworks */,
+				90F1BED51930495800121AEC /* MobileCoreServices.framework in Frameworks */,
+				3C3527451931D37900385240 /* SystemConfiguration.framework in Frameworks */,
+				9A6A29D61DCA2B6900631E22 /* libsqlite3.tbd in Frameworks */,
+				9A6A29D41DCA2B5F00631E22 /* libicucore.tbd in Frameworks */,
+				9A6A29D21DCA2B5300631E22 /* libc++.tbd in Frameworks */,
+				9A6A29D01DCA2B4200631E22 /* libz.tbd in Frameworks */,
 				9A17E2071DC0E89500436947 /* libMobClickLibrary.a in Frameworks */,
 				287096421DAC741500BCB3CD /* libHyphenateFullSDK.a in Frameworks */,
 				9A17E1821DC0E89500436947 /* libopencore-amrnb.a in Frameworks */,
-				3A595FAC1D6DBBD100504DB3 /* CoreTelephony.framework in Frameworks */,
 				3AB62A131D926375000776F0 /* libbz2.tbd in Frameworks */,
 				9A17E2121DC0E89500436947 /* libHyphenatePluginRecorder.a in Frameworks */,
 				921C6A9E1D2A841600D8257F /* CoreMotion.framework in Frameworks */,
@@ -1043,10 +1062,7 @@
 				3C1CEF7F196EA37600DBA56B /* ImageIO.framework in Frameworks */,
 				9A17E1EF1DC0E89500436947 /* AlipaySDK.a in Frameworks */,
 				3C06AB0319405D330076FF0B /* MapKit.framework in Frameworks */,
-				3C06AAFF194050A00076FF0B /* CoreLocation.framework in Frameworks */,
 				902DEC551931D934006CA75E /* libresolv.dylib in Frameworks */,
-				3C3527451931D37900385240 /* SystemConfiguration.framework in Frameworks */,
-				90F1BED51930495800121AEC /* MobileCoreServices.framework in Frameworks */,
 				90F1BED11930493200121AEC /* libiconv.dylib in Frameworks */,
 				9A17E1EE1DC0E89500436947 /* libHyphenateFullSDK.a in Frameworks */,
 				90F1BECF1930492B00121AEC /* AddressBook.framework in Frameworks */,
@@ -1055,6 +1071,7 @@
 				9A17E2111DC0E89500436947 /* libffmpeg-ios-full.a in Frameworks */,
 				9091102C192EEA70008A48AA /* UIKit.framework in Frameworks */,
 				90911028192EEA70008A48AA /* Foundation.framework in Frameworks */,
+				9A6A29CF1DCA295500631E22 /* AVOSCloud.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -1081,6 +1098,9 @@
 		90911026192EEA70008A48AA /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
+				9A6A29D51DCA2B6900631E22 /* libsqlite3.tbd */,
+				9A6A29D31DCA2B5F00631E22 /* libicucore.tbd */,
+				9A6A29D11DCA2B5300631E22 /* libc++.tbd */,
 				287096411DAC741500BCB3CD /* libHyphenateFullSDK.a */,
 				3A595FAB1D6DBBD100504DB3 /* CoreTelephony.framework */,
 				3A807A5C1D94DA23004D18CB /* libffmpeg-ios-full.a */,
@@ -1955,6 +1975,7 @@
 		9A17E0451DC0E89400436947 /* 3rdparty */ = {
 			isa = PBXGroup;
 			children = (
+				9A6A29CB1DCA282800631E22 /* AVCloud */,
 				9A17E0461DC0E89400436947 /* EMAlertView */,
 				9A17E0491DC0E89400436947 /* FMDB */,
 				9A17E0551DC0E89400436947 /* SlimeRefresh */,
@@ -2194,6 +2215,8 @@
 				9A17E0B91DC0E89400436947 /* InvitationManager.m */,
 				9A17E0BA1DC0E89400436947 /* UserCacheManager.h */,
 				9A17E0BB1DC0E89400436947 /* UserCacheManager.m */,
+				9AD2915E1DC9D43300AB22B7 /* UserWebManager.h */,
+				9AD2915F1DC9D43300AB22B7 /* UserWebManager.m */,
 			);
 			path = "Core Data";
 			sourceTree = "<group>";
@@ -2507,6 +2530,14 @@
 			path = NavigationBar;
 			sourceTree = "<group>";
 		};
+		9A6A29CB1DCA282800631E22 /* AVCloud */ = {
+			isa = PBXGroup;
+			children = (
+				9A6A29CE1DCA295500631E22 /* AVOSCloud.framework */,
+			);
+			path = AVCloud;
+			sourceTree = "<group>";
+		};
 /* End PBXGroup section */
 
 /* Begin PBXNativeTarget section */
@@ -2729,6 +2760,7 @@
 				9A17E1C41DC0E89500436947 /* NSDate+Category.m in Sources */,
 				9A17E1DF1DC0E89500436947 /* EaseBubbleView+Location.m in Sources */,
 				9A17E1921DC0E89500436947 /* MJRefreshNormalHeader.m in Sources */,
+				9AD291601DC9D43300AB22B7 /* UserWebManager.m in Sources */,
 				9A17E1DC1DC0E89500436947 /* EaseBubbleView+File.m in Sources */,
 				9A17E1E11DC0E89500436947 /* EaseBubbleView+Video.m in Sources */,
 				9A17E19B1DC0E89500436947 /* MWGridViewController.m in Sources */,
@@ -3044,6 +3076,7 @@
 					"$(inherited)",
 					"$(PROJECT_DIR)",
 					"$(PROJECT_DIR)/ChatDemo-UI3.0/3rdparty",
+					"$(PROJECT_DIR)/ChatDemo-UI3.0/ChatUI/3rdparty/AVCloud",
 				);
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				GCC_PREFIX_HEADER = "ChatDemo-UI3.0/ChatDemo-UI3.0-Prefix.pch";
@@ -3114,6 +3147,7 @@
 					"$(inherited)",
 					"$(PROJECT_DIR)",
 					"$(PROJECT_DIR)/ChatDemo-UI3.0/3rdparty",
+					"$(PROJECT_DIR)/ChatDemo-UI3.0/ChatUI/3rdparty/AVCloud",
 				);
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				GCC_PREFIX_HEADER = "ChatDemo-UI3.0/ChatDemo-UI3.0-Prefix.pch";

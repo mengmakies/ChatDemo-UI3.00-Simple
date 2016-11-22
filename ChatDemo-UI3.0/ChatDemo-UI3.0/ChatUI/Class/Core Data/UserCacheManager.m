@@ -8,6 +8,7 @@
 
 #import "UserCacheManager.h"
 #import "FMDB.h"
+#import "UserWebManager.h"
 
 #define DBNAME @"user_cache_data.db"
 static FMDatabaseQueue *_queue;
@@ -24,7 +25,7 @@ static FMDatabaseQueue *_queue;
     _queue = [FMDatabaseQueue databaseQueueWithPath:fileName];
     [_queue inDatabase:^(FMDatabase *db) {
         // userid 环信ID，username 用户昵称，userimage 用户头像完整路径
-        [db executeUpdate:@"create table if not exists userinfo (userid text, username text, userimage text)"];
+        [db executeUpdate:@"create table if not exists userinfo (userid text, username text, userimage text, expired_time text)"];
     }];
 }
 
@@ -91,6 +92,29 @@ static FMDatabaseQueue *_queue;
     return count > 0;
 }
 
+
+/**
+ 判断缓存中的用户是否过期
+
+ @param userId 用户环信id
+
+ @return 是否过期
+ */
++(BOOL)isExpired:(NSString*)userId{
+    BOOL isExpired = NO;
+    
+    UserCacheInfo *user = [self getByIdFromCache:userId];
+    if(!user) return YES;
+    
+    NSDate *currDate = [NSDate date];
+    long long currMill = (long long)([currDate timeIntervalSince1970]);
+    if (currMill > user.ExpiredDate) {
+        isExpired = YES;
+    }
+    
+    return  isExpired;
+}
+
 /**
  *  清空表（但不清除表结构）
  *
@@ -112,24 +136,19 @@ static FMDatabaseQueue *_queue;
 +(void)saveInfo:(NSString*)userId
          imgUrl:(NSString*)imgUrl
        nickName:(NSString*)nickName{
-    NSMutableDictionary *extDic = [NSMutableDictionary dictionary];
-    [extDic setValue:userId forKey:kChatUserId];
-    [extDic setValue:imgUrl forKey:kChatUserPic];
-    [extDic setValue:nickName forKey:kChatUserNick];
-    [UserCacheManager saveInfo:extDic];
-}
-
-+(void)saveInfo:(NSDictionary *)userinfo{
-    NSString *userid = [userinfo objectForKey:kChatUserId];
-    NSString *username = [userinfo objectForKey:kChatUserNick];
-    NSString *userimage = [userinfo objectForKey:kChatUserPic];
     NSString *sql = @"";
     
-    BOOL isExistUser = [self isExistUser:userid];
+    // 过期时间
+    NSDate *currDate = [NSDate date];
+    static int timeOut = 24 * 60 * 60;// 缓存一天
+    long long currMillis = ((long long)([currDate timeIntervalSince1970])) + timeOut;
+    NSString *strTime = [NSString stringWithFormat:@"%lld", currMillis];
+    
+    BOOL isExistUser = [self isExistUser:userId];
     if (isExistUser) {
-        sql = [NSString stringWithFormat:@"update userinfo set username='%@', userimage='%@' where userid='%@'", username,userimage,userid];
+        sql = [NSString stringWithFormat:@"update userinfo set username='%@', userimage='%@', expired_time='%@' where userid='%@'", nickName,imgUrl, strTime,userId];
     }else{
-        sql = [NSString stringWithFormat:@"INSERT INTO userinfo (userid, username, userimage) VALUES ('%@', '%@', '%@')", userid,username,userimage];
+        sql = [NSString stringWithFormat:@"INSERT INTO userinfo (userid, username, userimage, expired_time) VALUES ('%@', '%@', '%@', '%@')", userId,nickName,imgUrl,strTime];
     }
     
     [self executeUpdate:sql];
@@ -137,7 +156,14 @@ static FMDatabaseQueue *_queue;
 #if DEBUG
     [self queryAll];
 #endif
+}
+
++(void)saveInfo:(NSDictionary *)userinfo{
+    NSString *userid = [userinfo objectForKey:kChatUserId];
+    NSString *username = [userinfo objectForKey:kChatUserNick];
+    NSString *userimage = [userinfo objectForKey:kChatUserPic];
     
+    [self saveInfo:userid imgUrl:userimage nickName:username];
 }
 
 +(void)queryAll{
@@ -162,12 +188,15 @@ static FMDatabaseQueue *_queue;
     UserCacheInfo *user = [self currUser];
     if (!user)  return;
     
-    NSString *sql = [NSString stringWithFormat:@"update userinfo set username='%@' where userid='%@'",nickName, user.Id];
-    if ([self executeUpdate:sql]) {
-        NSLog(@"更新成功");
-    }else{
-        NSLog(@"更新失败");
-    }
+    [self saveInfo:user.Id imgUrl:user.AvatarUrl nickName:nickName];
+}
+
+// 更新当前用户的昵称
++(void)updateCurrAvatar:(NSString*)avatarUrl{
+    UserCacheInfo *user = [self currUser];
+    if (!user)  return;
+    
+    [self saveInfo:user.Id imgUrl:avatarUrl nickName:user.NickName];
 }
 
 /*
@@ -178,7 +207,35 @@ static FMDatabaseQueue *_queue;
     
     __block UserCacheInfo *userInfo = nil;
     
-    NSString *sql = [NSString stringWithFormat:@"SELECT userid, username, userimage FROM userinfo where userid = '%@'",userid];
+    // 如果本地缓存不存在或者过期，则从存储服务器获取
+    BOOL isExistUser = [self isExistUser:userid];
+    if (!isExistUser || [self isExpired:userid]) {
+        [UserWebManager getByIdAsync:userid completed:^(UserWebInfo *user) {
+            if(!user) return;
+            
+            // 缓存到本地
+            [self saveInfo:userid imgUrl:user.avatarUrl nickName:user.nickName];
+            
+            // 通知刷新会话列表
+            NOTIFY_POST(kRefreshChatList);// 如果app没有会话列表，可以删掉这行代码
+        }];
+    }
+    
+    // 从本地缓存中获取用户数据
+    userInfo = [self getByIdFromCache:userid];
+    
+    return userInfo;
+}
+
+/*
+ *根据环信ID获取用户信息
+ *userId 用户的环信ID
+ */
++(UserCacheInfo*)getByIdFromCache:(NSString *)userid{
+    
+    __block UserCacheInfo *userInfo = nil;
+    
+    NSString *sql = [NSString stringWithFormat:@"SELECT userid, username, userimage,expired_time FROM userinfo where userid = '%@'",userid];
     [self executeQuery:sql queryResBlock:^(FMResultSet *rs) {
         if ([rs next]) {
             
@@ -187,6 +244,7 @@ static FMDatabaseQueue *_queue;
             userInfo.Id = [rs stringForColumn:@"userid"];
             userInfo.NickName = [rs stringForColumn:@"username"];
             userInfo.AvatarUrl = [rs stringForColumn:@"userimage"];
+            userInfo.ExpiredDate = [[rs stringForColumn:@"expired_time"] longLongValue];
         }
         [rs close];
     }];
@@ -200,7 +258,7 @@ static FMDatabaseQueue *_queue;
  */
 +(NSString*)getNickById:(NSString*)userId{
     UserCacheInfo *user = [UserCacheManager getById:userId];
-    if(user == nil || [user  isEqual: @""]) return userId;// 没有昵称就返回用户ID
+    if(user == nil || [user  isEqual: @""]) return userId;// 没有昵称就返回用户环信ID
     
     return user.NickName;
 }

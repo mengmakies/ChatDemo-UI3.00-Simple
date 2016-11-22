@@ -19,6 +19,7 @@
 @property(nonatomic,copy)NSString* Id;
 @property(nonatomic,copy)NSString* NickName;
 @property(nonatomic,copy)NSString* AvatarUrl;
+@property(nonatomic,assign)long long ExpiredDate;
 @end
 
 
@@ -42,6 +43,9 @@
 // 更新当前用户的昵称
 +(void)updateCurrNick:(NSString*)nickName;
 
+// 更新当前用户的昵称
++(void)updateCurrAvatar:(NSString*)avatarUrl;
+
 /*
  *根据环信ID获取用户信息
  *userId 用户的环信ID
@@ -63,6 +67,13 @@
  * 获取当前环信用户的昵称
  */
 +(NSString*)currNickName;
+
+/**
+ *  清空表（但不清除表结构）
+ *
+ *  @return 操作结果
+ */
++(BOOL)clearTableData;
 
 @end
 

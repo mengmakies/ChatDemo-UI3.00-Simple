@@ -13,6 +13,7 @@
 #define kSetupUntreatedApplyCount @"setupUntreatedApplyCount"// 未处理的好友申请
 #define kSetupUnreadMessageCount @"setupUnreadMessageCount"// 未读聊天消息数
 #define kConnectionStateChanged @"ChatConnectionStateChanged"// 环信服务器连接状态改变
+#define kRefreshChatList @"RefreshChatList"// 更新会话列表
 
 // 注册通知
 #define NOTIFY_ADD(_noParamsFunc, _notifyName)  [[NSNotificationCenter defaultCenter] \

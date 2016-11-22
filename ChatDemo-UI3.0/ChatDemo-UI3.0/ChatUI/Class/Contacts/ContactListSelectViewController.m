@@ -113,10 +113,10 @@
 {
     id<IUserModel> model = nil;
     model = [[EaseUserModel alloc] initWithBuddy:buddy];
-    UserCacheInfo * userInfo = [UserCacheManager getById:model.buddy];
+    UserWebInfo * userInfo = [UserWebManager getById:model.buddy];
     if (userInfo) {
-        model.nickname= userInfo.NickName;
-        model.avatarURLPath = userInfo.AvatarUrl;
+        model.nickname= userInfo.nickName;
+        model.avatarURLPath = userInfo.avatarUrl;
     }
     return model;
 }

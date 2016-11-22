@@ -12,7 +12,6 @@
 
 #import "AppDelegate+EaseMob.h"
 #import "AppDelegate+EaseMobDebug.h"
-
 #import "EMNavigationController.h"
 #import "LoginViewController.h"
 #import "ChatUIHelper.h"
@@ -52,6 +51,11 @@ didFinishLaunchingWithOptions:(NSDictionary *)launchOptions
     {
         [[NSNotificationCenter defaultCenter] postNotificationName:KNOTIFICATION_LOGINCHANGE object:@NO];
     }
+    
+    // 注册web缓存
+    [UserWebManager config:launchOptions
+                     appId:@"utUG5ot9Y64dqJIFG9Ir2rqu-gzGzoHsz"
+                    appKey:@"IbHhNkPo4gfrFFc3epCw3eG2"];
 }
 
 - (void)easemobApplication:(UIApplication *)application

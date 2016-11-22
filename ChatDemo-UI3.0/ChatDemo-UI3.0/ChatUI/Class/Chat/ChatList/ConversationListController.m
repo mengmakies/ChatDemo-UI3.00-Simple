@@ -69,6 +69,8 @@
     [self searchController];
     
     [self removeEmptyConversationsFromDB];
+    
+    NOTIFY_ADD(refresh, kRefreshChatList);
 }
 
 - (void)viewWillAppear:(BOOL)animated
