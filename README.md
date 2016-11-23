@@ -4,8 +4,7 @@
 ###希望支持简版Demo的童鞋能够到Github给我们一个star^_^
 https://github.com/mengmakies/ChatDemo-UI3.00-Simple
 
-<img src="http://git.oschina.net/uploads/images/2016/0616/114942_10bc5823_134340.png" width = "35%" height = "auto" alt="图片名称" align=center />  &nbsp;
-<img src="http://git.oschina.net/uploads/images/2016/0616/114958_5cc8fd12_134340.png" width = "35%" height = "auto" alt="图片名称" align=center />
+<img src="http://www.imgeek.org/uploads/article/20161108/903cc20467037cedf6de9eebce7862cd.png" width = "35%" height = "auto" alt="图片名称" align=center /> 
 ###说明
 本项目是基于官方 **ChatDemo-UI3.0** 项目的简化封装，目的是为了让大家更加方便快速地集成环信IM功能。
 
@@ -34,7 +33,7 @@ https://github.com/mengmakies/ChatDemo-UI3.00-Simple
 
 ###问题1
 >引用Parse.framework、Bolts.framework时项目容易出错或出现Not found问题，其实这两个库并不是必须的，而且Facebook已经确定在2017年1月份停止提供Parse服务。  
-**解决方案**：删除Parse相关类，用 UserCacheManager替代管理用户缓存。
+**解决方案**：删除Parse相关类，用 UserCacheManager替代管理用户本地缓存，用UserWebManager管理后端云缓存。
 
 ###问题2
 >ChatDemoHelper辅助类集成了很多聊天相关界面的操作方法，开发者一般会直接复用，但是ChatDemoHelper对MainViewController的函数依赖度比较高，比如
@@ -52,7 +51,14 @@ https://github.com/mengmakies/ChatDemo-UI3.00-Simple
 IOS中如何显示开发者服务器上的昵称和头像
 http://community.easemob.com/article/825307855
 
+**【最新解决方案】**草草们的忧伤：环信IM昵称和头像（**使用后端云缓存**）
+http://www.imgeek.org/article/825308536
+
 >- 如有任何问题，请咨询【环信IM互帮互助群】，群号：340452063
 >- 或者加本人QQ：364223587
 >- 源码详细说明介绍请看http://community.easemob.com/article/825307886
 >-【简书】地址：http://www.jianshu.com/p/c0c30707bf0c  欢迎拍砖！！！
+
+###更新日志（平均每2个月同步更新环信官方SDK）
+>2016.12...  敬请期待...
+>2016.10.25  同步更新官方V3.2.0版SDK；适配IOS10；使用Leancloud后端云存储用户信息；
