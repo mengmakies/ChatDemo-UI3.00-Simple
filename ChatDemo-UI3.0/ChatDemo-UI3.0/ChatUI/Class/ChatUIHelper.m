@@ -15,6 +15,7 @@
 #import "AppDelegate.h"
 #import "ApplyViewController.h"
 #import "MBProgressHUD.h"
+#import <UserNotifications/UserNotifications.h>
 
 #ifdef REDPACKET_AVALABLE
 #import "RedpacketOpenConst.h"
@@ -30,8 +31,6 @@ static NSString *kConversationChatter = @"ConversationChatter";
 static NSString *kGroupName = @"GroupName";
 
 #if DEMO_CALL == 1
-
-#import <UserNotifications/UserNotifications.h>
 
 #import "CallViewController.h"
 

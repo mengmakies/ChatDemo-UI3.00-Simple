@@ -14,7 +14,6 @@
 
 #import "ConversationListController.h"
 #import "ContactListViewController.h"
-#import "MainViewController.h"
 #import "ChatViewController.h"
 
 #define kHaveUnreadAtMessage    @"kHaveAtMessage"
