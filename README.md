@@ -4,7 +4,8 @@
 ###希望支持简版Demo的童鞋能够到Github给我们一个star^_^
 https://github.com/mengmakies/ChatDemo-UI3.00-Simple
 
-<img src="http://www.imgeek.org/uploads/article/20161108/903cc20467037cedf6de9eebce7862cd.png" width = "35%" height = "auto" alt="图片名称" align=center /> 
+<img src="http://www.imgeek.org/uploads/article/20161108/903cc20467037cedf6de9eebce7862cd.png" width = "35%" height = "auto" alt="图片名称" align=center /> &nbsp;
+<img src="http://www.imgeek.org/uploads/article/20161123/446aca5a12588109a31dc2a04dc11a6b.jpg" width = "35%" height = "auto" alt="图片名称" align=center />
 ###说明
 本项目是基于官方 **ChatDemo-UI3.0** 项目的简化封装，目的是为了让大家更加方便快速地集成环信IM功能。
 
