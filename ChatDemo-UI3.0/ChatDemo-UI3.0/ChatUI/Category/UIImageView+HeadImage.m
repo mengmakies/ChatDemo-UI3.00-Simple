@@ -20,7 +20,7 @@
     if (placeholderImage == nil) {
         placeholderImage = [UIImage imageNamed:@"chatListCellHead"];
     }
-    UserCacheInfo *userInfo = [UserCacheManager getById:username];
+    UserCacheInfo *userInfo = [[UserCacheManager sharedManager] getById:username];
     if (userInfo) {
         [self sd_setImageWithURL:[NSURL URLWithString:userInfo.AvatarUrl] placeholderImage:placeholderImage];
     } else {
@@ -34,7 +34,7 @@
 
 - (void)setTextWithUsername:(NSString *)username
 {
-    NSString * userNick = [UserCacheManager getNickById:username];
+    NSString * userNick = [[UserCacheManager sharedManager] getNickById:username];
     [self setText:userNick];
     [self setNeedsLayout];
 }

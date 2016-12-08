@@ -30,7 +30,7 @@
         if ([[RobotManager sharedInstance] isRobotWithUsername:self.conversationId]) {
             return [[RobotManager sharedInstance] getRobotNickWithUsername:self.conversationId];
         }
-        return [UserCacheManager getNickById:self.conversationId];
+        return [[UserCacheManager sharedManager] getNickById:self.conversationId];
     } else if (self.type == EMConversationTypeGroupChat) {
         if ([self.ext objectForKey:@"subject"] || [self.ext objectForKey:@"isPublic"]) {
             return [self.ext objectForKey:@"subject"];
@@ -234,7 +234,7 @@
         if ([[RobotManager sharedInstance] isRobotWithUsername:conversation.conversationId]) {
             model.title = [[RobotManager sharedInstance] getRobotNickWithUsername:conversation.conversationId];
         } else {
-            UserCacheInfo * userInfo = [UserCacheManager getById:conversation.conversationId];
+            UserCacheInfo * userInfo = [[UserCacheManager sharedManager] getById:conversation.conversationId];
             if (userInfo) {
                 model.title = userInfo.NickName;
                 model.avatarURLPath = userInfo.AvatarUrl;
@@ -301,7 +301,7 @@
         }
         
         if (lastMessage.direction == EMMessageDirectionReceive) {
-            NSString *from = [UserCacheManager getNickById:lastMessage.from];
+            NSString *from = [[UserCacheManager sharedManager] getNickById:lastMessage.from];
             latestMessageTitle = [NSString stringWithFormat:@"%@: %@", from, latestMessageTitle];
         }
         

@@ -103,7 +103,7 @@ static RedPacketUserConfig *__sharedConfig__ = nil;
 {
     RedpacketUserInfo *userInfo = [RedpacketUserInfo new];
     
-    UserCacheInfo *entity = [UserCacheManager currUser];
+    UserCacheInfo *entity = [[UserCacheManager sharedManager] currUser];
     userInfo.userId = entity.Id;
     NSString *nickname = entity.NickName;
     userInfo.userNickname = nickname.length > 0 ? nickname : userInfo.userId;
