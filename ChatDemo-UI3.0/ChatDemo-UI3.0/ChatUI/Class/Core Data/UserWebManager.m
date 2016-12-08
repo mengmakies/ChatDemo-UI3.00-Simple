@@ -133,7 +133,7 @@
 }
 
 // 更新当前用户的昵称
--(void)updateCurrNick:(NSString*)nickName
++(void)updateCurrNick:(NSString*)nickName
             completed:(void(^)(BOOL isSucc))completed{
     AVQuery *query = [UserWebManager getQuery];
     [query whereKey:@"openId" equalTo:kCurrEaseUserId];
