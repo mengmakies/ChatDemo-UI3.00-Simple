@@ -133,9 +133,9 @@
 }
 
 // 更新当前用户的昵称
-+(void)updateCurrNick:(NSString*)nickName
+-(void)updateCurrNick:(NSString*)nickName
             completed:(void(^)(BOOL isSucc))completed{
-    AVQuery *query = [self getQuery];
+    AVQuery *query = [UserWebManager getQuery];
     [query whereKey:@"openId" equalTo:kCurrEaseUserId];
     [query getFirstObjectInBackgroundWithBlock:^(AVObject *object, NSError *error) {
         if (!error && object) {// 成功找到结果，先找磁盘再访问网络
@@ -144,7 +144,7 @@
             [user saveEventually];// 如果用户目前尚未接入网络，saveEventually会缓存设备中的数据，并在网络连接恢复后上传
             
             // 本地重新缓存用户数据
-            [UserCacheManager updateCurrNick:nickName];
+            [[UserCacheManager sharedManager] updateCurrNick:nickName];
             
             completed(YES);
         } else {
@@ -183,7 +183,7 @@
             }
             
             // 本地重新缓存用户数据
-            [UserCacheManager updateCurrAvatar:avatarUrl];
+            [[UserCacheManager sharedManager] updateCurrAvatar:avatarUrl];
             
             completed(pickImage);
         }];
