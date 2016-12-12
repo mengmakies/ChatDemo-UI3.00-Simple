@@ -178,11 +178,6 @@
 		9A17E1FA1DC0E89500436947 /* RedPacketResource.bundle in Resources */ = {isa = PBXBuildFile; fileRef = 9A17E0401DC0E89400436947 /* RedPacketResource.bundle */; };
 		9A17E1FB1DC0E89500436947 /* 环信红包3.x接入文档(iOS).md in Sources */ = {isa = PBXBuildFile; fileRef = 9A17E0431DC0E89400436947 /* 环信红包3.x接入文档(iOS).md */; };
 		9A17E1FC1DC0E89500436947 /* EMAlertView.m in Sources */ = {isa = PBXBuildFile; fileRef = 9A17E0481DC0E89400436947 /* EMAlertView.m */; };
-		9A17E1FD1DC0E89500436947 /* FMDatabase.m in Sources */ = {isa = PBXBuildFile; fileRef = 9A17E04B1DC0E89400436947 /* FMDatabase.m */; };
-		9A17E1FE1DC0E89500436947 /* FMDatabaseAdditions.m in Sources */ = {isa = PBXBuildFile; fileRef = 9A17E04D1DC0E89400436947 /* FMDatabaseAdditions.m */; };
-		9A17E1FF1DC0E89500436947 /* FMDatabasePool.m in Sources */ = {isa = PBXBuildFile; fileRef = 9A17E04F1DC0E89400436947 /* FMDatabasePool.m */; };
-		9A17E2001DC0E89500436947 /* FMDatabaseQueue.m in Sources */ = {isa = PBXBuildFile; fileRef = 9A17E0511DC0E89400436947 /* FMDatabaseQueue.m */; };
-		9A17E2011DC0E89500436947 /* FMResultSet.m in Sources */ = {isa = PBXBuildFile; fileRef = 9A17E0541DC0E89400436947 /* FMResultSet.m */; };
 		9A17E2021DC0E89500436947 /* sr_refresh.png in Resources */ = {isa = PBXBuildFile; fileRef = 9A17E0561DC0E89400436947 /* sr_refresh.png */; };
 		9A17E2031DC0E89500436947 /* sr_refresh@2X.png in Resources */ = {isa = PBXBuildFile; fileRef = 9A17E0571DC0E89400436947 /* sr_refresh@2X.png */; };
 		9A17E2041DC0E89500436947 /* SRRefreshView.m in Sources */ = {isa = PBXBuildFile; fileRef = 9A17E05A1DC0E89400436947 /* SRRefreshView.m */; };
@@ -357,6 +352,11 @@
 		9A6A29D21DCA2B5300631E22 /* libc++.tbd in Frameworks */ = {isa = PBXBuildFile; fileRef = 9A6A29D11DCA2B5300631E22 /* libc++.tbd */; };
 		9A6A29D41DCA2B5F00631E22 /* libicucore.tbd in Frameworks */ = {isa = PBXBuildFile; fileRef = 9A6A29D31DCA2B5F00631E22 /* libicucore.tbd */; };
 		9A6A29D61DCA2B6900631E22 /* libsqlite3.tbd in Frameworks */ = {isa = PBXBuildFile; fileRef = 9A6A29D51DCA2B6900631E22 /* libsqlite3.tbd */; };
+		9AC94E151DFE948400C62A16 /* FMDatabase.m in Sources */ = {isa = PBXBuildFile; fileRef = 9AC94E0B1DFE948300C62A16 /* FMDatabase.m */; };
+		9AC94E161DFE948400C62A16 /* FMDatabaseAdditions.m in Sources */ = {isa = PBXBuildFile; fileRef = 9AC94E0D1DFE948300C62A16 /* FMDatabaseAdditions.m */; };
+		9AC94E171DFE948400C62A16 /* FMDatabasePool.m in Sources */ = {isa = PBXBuildFile; fileRef = 9AC94E0F1DFE948300C62A16 /* FMDatabasePool.m */; };
+		9AC94E181DFE948400C62A16 /* FMDatabaseQueue.m in Sources */ = {isa = PBXBuildFile; fileRef = 9AC94E111DFE948400C62A16 /* FMDatabaseQueue.m */; };
+		9AC94E191DFE948400C62A16 /* FMResultSet.m in Sources */ = {isa = PBXBuildFile; fileRef = 9AC94E141DFE948400C62A16 /* FMResultSet.m */; };
 		9AD291601DC9D43300AB22B7 /* UserWebManager.m in Sources */ = {isa = PBXBuildFile; fileRef = 9AD2915F1DC9D43300AB22B7 /* UserWebManager.m */; };
 		C035E8151AEA40F400283EE9 /* CoreData.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 3C36CA691A1EDB6200CDDD48 /* CoreData.framework */; };
 		D26CE39B1C2BD37700697F48 /* Settings.bundle in Resources */ = {isa = PBXBuildFile; fileRef = D26CE39A1C2BD37700697F48 /* Settings.bundle */; };
@@ -760,17 +760,6 @@
 		9A17E0431DC0E89400436947 /* 环信红包3.x接入文档(iOS).md */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = net.daringfireball.markdown; path = "环信红包3.x接入文档(iOS).md"; sourceTree = "<group>"; };
 		9A17E0471DC0E89400436947 /* EMAlertView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = EMAlertView.h; sourceTree = "<group>"; };
 		9A17E0481DC0E89400436947 /* EMAlertView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = EMAlertView.m; sourceTree = "<group>"; };
-		9A17E04A1DC0E89400436947 /* FMDatabase.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = FMDatabase.h; sourceTree = "<group>"; };
-		9A17E04B1DC0E89400436947 /* FMDatabase.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = FMDatabase.m; sourceTree = "<group>"; };
-		9A17E04C1DC0E89400436947 /* FMDatabaseAdditions.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = FMDatabaseAdditions.h; sourceTree = "<group>"; };
-		9A17E04D1DC0E89400436947 /* FMDatabaseAdditions.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = FMDatabaseAdditions.m; sourceTree = "<group>"; };
-		9A17E04E1DC0E89400436947 /* FMDatabasePool.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = FMDatabasePool.h; sourceTree = "<group>"; };
-		9A17E04F1DC0E89400436947 /* FMDatabasePool.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = FMDatabasePool.m; sourceTree = "<group>"; };
-		9A17E0501DC0E89400436947 /* FMDatabaseQueue.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = FMDatabaseQueue.h; sourceTree = "<group>"; };
-		9A17E0511DC0E89400436947 /* FMDatabaseQueue.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = FMDatabaseQueue.m; sourceTree = "<group>"; };
-		9A17E0521DC0E89400436947 /* FMDB.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = FMDB.h; sourceTree = "<group>"; };
-		9A17E0531DC0E89400436947 /* FMResultSet.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = FMResultSet.h; sourceTree = "<group>"; };
-		9A17E0541DC0E89400436947 /* FMResultSet.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = FMResultSet.m; sourceTree = "<group>"; };
 		9A17E0561DC0E89400436947 /* sr_refresh.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = sr_refresh.png; sourceTree = "<group>"; };
 		9A17E0571DC0E89400436947 /* sr_refresh@2X.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "sr_refresh@2X.png"; sourceTree = "<group>"; };
 		9A17E0581DC0E89400436947 /* SRDefine.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SRDefine.h; sourceTree = "<group>"; };
@@ -1015,6 +1004,17 @@
 		9A6A29D11DCA2B5300631E22 /* libc++.tbd */ = {isa = PBXFileReference; lastKnownFileType = "sourcecode.text-based-dylib-definition"; name = "libc++.tbd"; path = "usr/lib/libc++.tbd"; sourceTree = SDKROOT; };
 		9A6A29D31DCA2B5F00631E22 /* libicucore.tbd */ = {isa = PBXFileReference; lastKnownFileType = "sourcecode.text-based-dylib-definition"; name = libicucore.tbd; path = usr/lib/libicucore.tbd; sourceTree = SDKROOT; };
 		9A6A29D51DCA2B6900631E22 /* libsqlite3.tbd */ = {isa = PBXFileReference; lastKnownFileType = "sourcecode.text-based-dylib-definition"; name = libsqlite3.tbd; path = usr/lib/libsqlite3.tbd; sourceTree = SDKROOT; };
+		9AC94E0A1DFE948300C62A16 /* FMDatabase.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = FMDatabase.h; sourceTree = "<group>"; };
+		9AC94E0B1DFE948300C62A16 /* FMDatabase.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = FMDatabase.m; sourceTree = "<group>"; };
+		9AC94E0C1DFE948300C62A16 /* FMDatabaseAdditions.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = FMDatabaseAdditions.h; sourceTree = "<group>"; };
+		9AC94E0D1DFE948300C62A16 /* FMDatabaseAdditions.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = FMDatabaseAdditions.m; sourceTree = "<group>"; };
+		9AC94E0E1DFE948300C62A16 /* FMDatabasePool.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = FMDatabasePool.h; sourceTree = "<group>"; };
+		9AC94E0F1DFE948300C62A16 /* FMDatabasePool.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = FMDatabasePool.m; sourceTree = "<group>"; };
+		9AC94E101DFE948300C62A16 /* FMDatabaseQueue.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = FMDatabaseQueue.h; sourceTree = "<group>"; };
+		9AC94E111DFE948400C62A16 /* FMDatabaseQueue.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = FMDatabaseQueue.m; sourceTree = "<group>"; };
+		9AC94E121DFE948400C62A16 /* FMDB.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = FMDB.h; sourceTree = "<group>"; };
+		9AC94E131DFE948400C62A16 /* FMResultSet.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = FMResultSet.h; sourceTree = "<group>"; };
+		9AC94E141DFE948400C62A16 /* FMResultSet.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = FMResultSet.m; sourceTree = "<group>"; };
 		9AD2915E1DC9D43300AB22B7 /* UserWebManager.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = UserWebManager.h; sourceTree = "<group>"; };
 		9AD2915F1DC9D43300AB22B7 /* UserWebManager.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = UserWebManager.m; sourceTree = "<group>"; };
 		D24A4A9B1BCE4B830007BB00 /* ChatDemo-UI3.0-Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = "ChatDemo-UI3.0-Info.plist"; sourceTree = "<group>"; };
@@ -1997,17 +1997,17 @@
 		9A17E0491DC0E89400436947 /* FMDB */ = {
 			isa = PBXGroup;
 			children = (
-				9A17E04A1DC0E89400436947 /* FMDatabase.h */,
-				9A17E04B1DC0E89400436947 /* FMDatabase.m */,
-				9A17E04C1DC0E89400436947 /* FMDatabaseAdditions.h */,
-				9A17E04D1DC0E89400436947 /* FMDatabaseAdditions.m */,
-				9A17E04E1DC0E89400436947 /* FMDatabasePool.h */,
-				9A17E04F1DC0E89400436947 /* FMDatabasePool.m */,
-				9A17E0501DC0E89400436947 /* FMDatabaseQueue.h */,
-				9A17E0511DC0E89400436947 /* FMDatabaseQueue.m */,
-				9A17E0521DC0E89400436947 /* FMDB.h */,
-				9A17E0531DC0E89400436947 /* FMResultSet.h */,
-				9A17E0541DC0E89400436947 /* FMResultSet.m */,
+				9AC94E0A1DFE948300C62A16 /* FMDatabase.h */,
+				9AC94E0B1DFE948300C62A16 /* FMDatabase.m */,
+				9AC94E0C1DFE948300C62A16 /* FMDatabaseAdditions.h */,
+				9AC94E0D1DFE948300C62A16 /* FMDatabaseAdditions.m */,
+				9AC94E0E1DFE948300C62A16 /* FMDatabasePool.h */,
+				9AC94E0F1DFE948300C62A16 /* FMDatabasePool.m */,
+				9AC94E101DFE948300C62A16 /* FMDatabaseQueue.h */,
+				9AC94E111DFE948400C62A16 /* FMDatabaseQueue.m */,
+				9AC94E121DFE948400C62A16 /* FMDB.h */,
+				9AC94E131DFE948400C62A16 /* FMResultSet.h */,
+				9AC94E141DFE948400C62A16 /* FMResultSet.m */,
 			);
 			path = FMDB;
 			sourceTree = "<group>";
@@ -2790,7 +2790,6 @@
 				9A17E1B81DC0E89500436947 /* PSTCollectionViewItemKey.m in Sources */,
 				9A17E2AD1DC0E89500436947 /* MainViewController.m in Sources */,
 				9A17E21F1DC0E89500436947 /* SearchChatViewController.m in Sources */,
-				9A17E1FE1DC0E89500436947 /* FMDatabaseAdditions.m in Sources */,
 				9A17E1BD1DC0E89500436947 /* PSTGridLayoutRow.m in Sources */,
 				9A17E1C31DC0E89500436947 /* EaseUserModel.m in Sources */,
 				9A17E1A21DC0E89500436947 /* EMSDImageCache.m in Sources */,
@@ -2811,6 +2810,7 @@
 				9A17E1B71DC0E89500436947 /* PSTCollectionViewFlowLayout.m in Sources */,
 				9A17E1991DC0E89500436947 /* MWCaptionView.m in Sources */,
 				9A17E1C61DC0E89500436947 /* NSString+Valid.m in Sources */,
+				9AC94E151DFE948400C62A16 /* FMDatabase.m in Sources */,
 				9A17E20F1DC0E89500436947 /* UserTableViewController.m in Sources */,
 				9A17E17A1DC0E89500436947 /* EMCDDeviceManager+Media.m in Sources */,
 				9A17E1981DC0E89500436947 /* UIView+MJExtension.m in Sources */,
@@ -2819,7 +2819,6 @@
 				9A17E1891DC0E89500436947 /* MJRefreshFooter.m in Sources */,
 				9A17E17D1DC0E89500436947 /* EMCDDeviceManager+Remind.m in Sources */,
 				9A17E1931DC0E89500436947 /* MJRefreshStateHeader.m in Sources */,
-				9A17E1FD1DC0E89500436947 /* FMDatabase.m in Sources */,
 				9A17E21E1DC0E89500436947 /* PublicGroupListViewController.m in Sources */,
 				9A17E1DE1DC0E89500436947 /* EaseBubbleView+Image.m in Sources */,
 				9A17E21D1DC0E89500436947 /* PublicGroupDetailViewController.m in Sources */,
@@ -2832,9 +2831,9 @@
 				9A17E18B1DC0E89500436947 /* MJRefreshAutoGifFooter.m in Sources */,
 				9A17E1C01DC0E89500436947 /* EaseSDKHelper.m in Sources */,
 				9A17E1801DC0E89500436947 /* wav.mm in Sources */,
-				9A17E2001DC0E89500436947 /* FMDatabaseQueue.m in Sources */,
 				9A17E2101DC0E89500436947 /* EMCallOptions+NSCoding.m in Sources */,
 				9A17E1A11DC0E89500436947 /* DACircularProgressView.m in Sources */,
+				9AC94E181DFE948400C62A16 /* FMDatabaseQueue.m in Sources */,
 				9A17E1E41DC0E89500436947 /* EaseChatToolbar.m in Sources */,
 				9A17E1CC1DC0E89500436947 /* EaseEmoji.m in Sources */,
 				9A17E2301DC0E89500436947 /* EMRotbotChatViewCell.m in Sources */,
@@ -2844,7 +2843,6 @@
 				9A17E1871DC0E89500436947 /* MJRefreshBackFooter.m in Sources */,
 				9A17E1E51DC0E89500436947 /* EaseChatToolbarItem.m in Sources */,
 				9A17E2231DC0E89500436947 /* MyChatroomListViewController.m in Sources */,
-				9A17E1FF1DC0E89500436947 /* FMDatabasePool.m in Sources */,
 				9A17E23D1DC0E89500436947 /* EMSearchBar.m in Sources */,
 				9A17E1A61DC0E89500436947 /* EMSDWebImageDownloaderOperation.m in Sources */,
 				9A17E1DB1DC0E89500436947 /* EaseMessageTimeCell.m in Sources */,
@@ -2876,6 +2874,7 @@
 				9A17E2311DC0E89500436947 /* RobotChatViewController.m in Sources */,
 				9A17E1FC1DC0E89500436947 /* EMAlertView.m in Sources */,
 				9A17E2271DC0E89500436947 /* AddFriendCell.m in Sources */,
+				9AC94E161DFE948400C62A16 /* FMDatabaseAdditions.m in Sources */,
 				9A17E1951DC0E89500436947 /* MJRefreshConst.m in Sources */,
 				9A17E1DD1DC0E89500436947 /* EaseBubbleView+Gif.m in Sources */,
 				9A17E1C51DC0E89500436947 /* NSDateFormatter+Category.m in Sources */,
@@ -2894,7 +2893,6 @@
 				9A17E2141DC0E89500436947 /* ChatViewController.m in Sources */,
 				9A17E1B91DC0E89500436947 /* PSTCollectionViewLayout.m in Sources */,
 				9A17E1D41DC0E89500436947 /* EaseRefreshTableViewController.m in Sources */,
-				9A17E2011DC0E89500436947 /* FMResultSet.m in Sources */,
 				9A17E22F1DC0E89500436947 /* EMRobotChatTextBubbleView.m in Sources */,
 				9A17E1961DC0E89500436947 /* UIScrollView+MJExtension.m in Sources */,
 				9A17E18D1DC0E89500436947 /* MJRefreshAutoStateFooter.m in Sources */,
@@ -2904,6 +2902,7 @@
 				9A17E2221DC0E89500436947 /* ChatroomListViewController.m in Sources */,
 				9A17E1EB1DC0E89500436947 /* EaseRecordView.m in Sources */,
 				9A17E23C1DC0E89500436947 /* BaseTableViewCell.m in Sources */,
+				9AC94E191DFE948400C62A16 /* FMResultSet.m in Sources */,
 				9A17E1C71DC0E89500436947 /* UIViewController+DismissKeyboard.m in Sources */,
 				9A17E1771DC0E89500436947 /* EaseUI.m in Sources */,
 				9A17E1AD1DC0E89500436947 /* UIImage+EMMultiFormat.m in Sources */,
@@ -2929,6 +2928,7 @@
 				9A17E19C1DC0E89500436947 /* MWPhoto.m in Sources */,
 				9A17E2291DC0E89500436947 /* ApplyFriendCell.m in Sources */,
 				9A17E1B21DC0E89500436947 /* NSIndexPath+PSTCollectionViewAdditions.m in Sources */,
+				9AC94E171DFE948400C62A16 /* FMDatabasePool.m in Sources */,
 				9A17E1E81DC0E89500436947 /* EaseFaceView.m in Sources */,
 				9A17E1851DC0E89500436947 /* MBProgressHUD.m in Sources */,
 				9A17E2051DC0E89500436947 /* SRSlimeView.m in Sources */,

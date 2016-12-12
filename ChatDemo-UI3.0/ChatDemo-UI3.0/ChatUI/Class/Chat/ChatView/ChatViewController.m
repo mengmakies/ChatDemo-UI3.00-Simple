@@ -316,7 +316,7 @@
 
 - (void)messageViewControllerMarkAllMessagesAsRead:(EaseMessageViewController *)viewController
 {
-    [[NSNotificationCenter defaultCenter] postNotificationName:@"setupUnreadMessageCount" object:nil];
+    NOTIFY_POST(kSetupUnreadMessageCount);
 }
 
 #pragma mark - EaseMob

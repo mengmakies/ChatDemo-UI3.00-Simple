@@ -140,7 +140,7 @@ static FMDatabaseQueue *_queue;
     
     // 过期时间
     NSDate *currDate = [NSDate date];
-    static int timeOut = 24 * 60 * 60;// 缓存一天
+    static int timeOut = 24 * 60 * 60;// 缓存一天，可以根据项目需要更改缓存时间
     long long currMillis = ((long long)([currDate timeIntervalSince1970])) + timeOut;
     NSString *strTime = [NSString stringWithFormat:@"%lld", currMillis];
     

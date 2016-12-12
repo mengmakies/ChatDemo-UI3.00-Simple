@@ -216,9 +216,18 @@
  *userId 用户的环信id
  */
 +(UserWebInfo*)getById:(NSString *)userid{
-    AVQuery *query = [self getQuery];
-    [query whereKey:@"openId" equalTo:userid];
-    UserWebInfo *user = (UserWebInfo*)[query getFirstObject];
+    
+    UserWebInfo *user = nil;
+    @try {
+        AVQuery *query = [self getQuery];
+        [query whereKey:@"openId" equalTo:userid];
+        user = (UserWebInfo*)[query getFirstObject];
+    } @catch (NSException *exception) {
+        
+    } @finally {
+        
+    }
+    
     return user;
 }
 

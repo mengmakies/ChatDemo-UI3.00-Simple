@@ -186,7 +186,6 @@
                 chatController.title = [conversation showName];
             }
             [weakSelf.navigationController pushViewController:chatController animated:YES];
-            [[NSNotificationCenter defaultCenter] postNotificationName:@"setupUnreadMessageCount" object:nil];
             NOTIFY_POST(kSetupUnreadMessageCount);
             [weakSelf.tableView reloadData];
         }];
@@ -218,7 +217,6 @@
                 [self.navigationController pushViewController:chatController animated:YES];
             }
         }
-        [[NSNotificationCenter defaultCenter] postNotificationName:@"setupUnreadMessageCount" object:nil];
         NOTIFY_POST(kSetupUnreadMessageCount);
         [self.tableView reloadData];
     }
