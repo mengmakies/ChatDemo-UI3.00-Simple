@@ -25,55 +25,59 @@
 
 @interface UserCacheManager : NSObject
 
+
++ (instancetype)sharedManager;
+
+
 /*
  *保存用户信息（如果已存在，则更新）
  *userId: 用户环信ID
  *imgUrl：用户头像链接（完整路径）
  *nickName: 用户昵称
  */
-+(void)saveInfo:(NSString *)userId
+-(void)saveInfo:(NSString *)userId
          imgUrl:(NSString*)imgUrl
        nickName:(NSString*)nickName;
 
 /*
  *保存用户信息
  */
-+(void)saveInfo:(NSDictionary *)userinfo;
+-(void)saveInfo:(NSDictionary *)userinfo;
 
 // 更新当前用户的昵称
-+(void)updateCurrNick:(NSString*)nickName;
+-(void)updateCurrNick:(NSString*)nickName;
 
 // 更新当前用户的昵称
-+(void)updateCurrAvatar:(NSString*)avatarUrl;
+-(void)updateCurrAvatar:(NSString*)avatarUrl;
 
 /*
  *根据环信ID获取用户信息
  *userId 用户的环信ID
  */
-+(UserCacheInfo*)getById:(NSString *)userid;
+-(UserCacheInfo*)getById:(NSString *)userid;
 
 /*
  * 根据环信ID获取昵称
  * userId:环信用户id
  */
-+(NSString*)getNickById:(NSString*)userId;
+-(NSString*)getNickById:(NSString*)userId;
 
 /*
  * 获取当前环信用户信息
  */
-+(UserCacheInfo*)currUser;
+-(UserCacheInfo*)currUser;
 
 /*
  * 获取当前环信用户的昵称
  */
-+(NSString*)currNickName;
+-(NSString*)currNickName;
 
 /**
  *  清空表（但不清除表结构）
  *
  *  @return 操作结果
  */
-+(BOOL)clearTableData;
+-(BOOL)clearTableData;
 
 @end
 

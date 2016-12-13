@@ -253,7 +253,7 @@
     id<IMessageModel> model = nil;
     model = [[EaseMessageModel alloc] initWithMessage:message];
     model.avatarImage = [UIImage imageNamed:@"chatListCellHead"];
-    UserCacheInfo * userInfo = [UserCacheManager getById:model.nickname];
+    UserCacheInfo * userInfo = [[UserCacheManager sharedManager] getById:model.nickname];
     if (userInfo) {
         model.avatarURLPath = userInfo.AvatarUrl;
         model.nickname = userInfo.NickName;
@@ -531,7 +531,7 @@
     if ([selectedSources count]) {
         EaseAtTarget *target = [[EaseAtTarget alloc] init];
         target.userId = selectedSources.firstObject;
-        target.nickname = [UserCacheManager getNickById:target.userId];
+        target.nickname = [[UserCacheManager sharedManager] getNickById:target.userId];
         if (_selectedCallback) {
             _selectedCallback(target);
         }

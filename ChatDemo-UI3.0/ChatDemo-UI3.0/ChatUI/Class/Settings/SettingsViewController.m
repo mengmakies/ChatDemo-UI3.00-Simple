@@ -285,7 +285,7 @@
         [self.navigationController pushViewController:resoulutionController animated:YES];
 #endif
     }else if (indexPath.row == 12) {
-        [UserCacheManager clearTableData];
+        [[UserCacheManager sharedManager] clearTableData];
         [UserWebManager clearCache];
         [self showHint:@"已经清除用户本地头像和昵称~"];
     }

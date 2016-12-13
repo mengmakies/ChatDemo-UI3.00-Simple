@@ -108,7 +108,7 @@
         cell.detailTextLabel.text = self.usernameLabel.text;
     } else if (indexPath.row == 2) {
         cell.textLabel.text = NSLocalizedString(@"setting.profileNickname", @"Nickname");
-        cell.detailTextLabel.text = [UserCacheManager currNickName];
+        cell.detailTextLabel.text = [[UserCacheManager sharedManager] currNickName];
         cell.accessoryType = UITableViewCellAccessoryDisclosureIndicator;
     }
     return cell;

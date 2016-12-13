@@ -13,11 +13,77 @@
 #define DBNAME @"user_cache_data.db"
 static FMDatabaseQueue *_queue;
 
+@interface UserCacheManager ()
+
+@property (nonatomic, strong) FMDatabase * fmDataBase;
+
+@end
+
 @implementation UserCacheInfo
 
 @end
 
 @implementation UserCacheManager
+
+#pragma mark - Modified methods
+
++ (instancetype)sharedManager {
+    static dispatch_once_t token;
+    static UserCacheManager * manager;
+    dispatch_once(&token, ^{
+        manager = [UserCacheManager new];
+        
+    });
+    return manager;
+}
+
+- (instancetype)init
+{
+    self = [super init];
+    if (self) {
+        NSString *fileName = [[NSSearchPathForDirectoriesInDomains(NSDocumentDirectory, NSUserDomainMask, YES)lastObject] stringByAppendingPathComponent:DBNAME];
+        _fmDataBase = [FMDatabase databaseWithPath:fileName];
+        [_fmDataBase open];
+        [_fmDataBase executeUpdate:@"create table if not exists userinfo (userid text, username text, userimage text, expired_time text)"];
+        
+    }
+    return self;
+}
+
+- (BOOL)executeUpdate:(NSString *)sql{
+    
+    return [_fmDataBase executeUpdate:sql];
+}
+
+- (void)executeQuery:(NSString *)sql queryResBlock:(void(^)(FMResultSet *set))queryResBlock{
+    if (queryResBlock) {
+        queryResBlock([_fmDataBase executeQuery:sql]);
+    }
+}
+
+- (BOOL)isExistUser:(NSString *)userId{
+    
+    NSString *alias=@"count";
+    
+    NSString *sql = [NSString stringWithFormat:@"SELECT COUNT(*) AS %@ FROM userinfo where userid = '%@'", alias, userId];
+    
+    __block NSInteger count = 0;
+    
+    [self executeQuery:sql queryResBlock:^(FMResultSet *set) {
+        
+        while ([set next]) {
+            
+            count = [[set stringForColumn:alias] integerValue];
+        }
+    }];
+    
+    return count > 0;
+}
+
+
+
+
+#pragma mark - Orignal methods
 
 +(void)initialize{
     NSString *fileName = [[NSSearchPathForDirectoriesInDomains(NSDocumentDirectory, NSUserDomainMask, YES)lastObject] stringByAppendingPathComponent:DBNAME];
@@ -100,7 +166,7 @@ static FMDatabaseQueue *_queue;
 
  @return 是否过期
  */
-+(BOOL)isExpired:(NSString*)userId{
+-(BOOL)isExpired:(NSString*)userId{
     BOOL isExpired = NO;
     
     UserCacheInfo *user = [self getByIdFromCache:userId];
@@ -120,7 +186,7 @@ static FMDatabaseQueue *_queue;
  *
  *  @return 操作结果
  */
-+(BOOL)clearTableData{
+-(BOOL)clearTableData{
     
     BOOL res = [self executeUpdate:@"DELETE FROM userinfo"];
     [self executeUpdate:@"DELETE FROM sqlite_sequence WHERE name='userinfo';"];
@@ -133,7 +199,7 @@ static FMDatabaseQueue *_queue;
  *imgUrl：用户头像链接（完整路径）
  *nickName: 用户昵称
  */
-+(void)saveInfo:(NSString*)userId
+-(void)saveInfo:(NSString*)userId
          imgUrl:(NSString*)imgUrl
        nickName:(NSString*)nickName{
     NSString *sql = @"";
@@ -154,11 +220,11 @@ static FMDatabaseQueue *_queue;
     [self executeUpdate:sql];
     
 #if DEBUG
-    [self queryAll];
+//    [self queryAll];
 #endif
 }
 
-+(void)saveInfo:(NSDictionary *)userinfo{
+-(void)saveInfo:(NSDictionary *)userinfo{
     NSString *userid = [userinfo objectForKey:kChatUserId];
     NSString *username = [userinfo objectForKey:kChatUserNick];
     NSString *userimage = [userinfo objectForKey:kChatUserPic];
@@ -166,7 +232,7 @@ static FMDatabaseQueue *_queue;
     [self saveInfo:userid imgUrl:userimage nickName:username];
 }
 
-+(void)queryAll{
+-(void)queryAll{
     // 列出所有用户信息
     NSString *sql = @"SELECT userid, username, userimage FROM userinfo";
     [self executeQuery:sql queryResBlock:^(FMResultSet *rs) {
@@ -184,7 +250,7 @@ static FMDatabaseQueue *_queue;
 }
 
 // 更新当前用户的昵称
-+(void)updateCurrNick:(NSString*)nickName{
+-(void)updateCurrNick:(NSString*)nickName{
     UserCacheInfo *user = [self currUser];
     if (!user)  return;
     
@@ -192,7 +258,7 @@ static FMDatabaseQueue *_queue;
 }
 
 // 更新当前用户的昵称
-+(void)updateCurrAvatar:(NSString*)avatarUrl{
+-(void)updateCurrAvatar:(NSString*)avatarUrl{
     UserCacheInfo *user = [self currUser];
     if (!user)  return;
     
@@ -203,7 +269,7 @@ static FMDatabaseQueue *_queue;
  *根据环信ID获取用户信息
  *userId 用户的环信ID
  */
-+(UserCacheInfo*)getById:(NSString *)userid{
+-(UserCacheInfo*)getById:(NSString *)userid{
     
     __block UserCacheInfo *userInfo = nil;
     
@@ -220,9 +286,12 @@ static FMDatabaseQueue *_queue;
             NOTIFY_POST(kRefreshChatList);// 如果app没有会话列表，可以删掉这行代码
         }];
     }
+    else {
+        
+        // 从本地缓存中获取用户数据
+        userInfo = [self getByIdFromCache:userid];
+    }
     
-    // 从本地缓存中获取用户数据
-    userInfo = [self getByIdFromCache:userid];
     
     return userInfo;
 }
@@ -231,7 +300,7 @@ static FMDatabaseQueue *_queue;
  *根据环信ID获取用户信息
  *userId 用户的环信ID
  */
-+(UserCacheInfo*)getByIdFromCache:(NSString *)userid{
+-(UserCacheInfo*)getByIdFromCache:(NSString *)userid{
     
     __block UserCacheInfo *userInfo = nil;
     
@@ -256,8 +325,8 @@ static FMDatabaseQueue *_queue;
  * 根据环信ID获取昵称
  * userId:环信用户id
  */
-+(NSString*)getNickById:(NSString*)userId{
-    UserCacheInfo *user = [UserCacheManager getById:userId];
+-(NSString*)getNickById:(NSString*)userId{
+    UserCacheInfo *user = [self getById:userId];
     if(user == nil || [user  isEqual: @""]) return userId;// 没有昵称就返回用户环信ID
     
     return user.NickName;
@@ -266,15 +335,15 @@ static FMDatabaseQueue *_queue;
 /*
  * 获取当前环信用户信息
  */
-+(UserCacheInfo*)currUser{
-    return [UserCacheManager getById:kCurrEaseUserId];
+-(UserCacheInfo*)currUser{
+    return [self getById:kCurrEaseUserId];
 }
 
 /*
  * 获取当前环信用户的昵称
  */
-+(NSString*)currNickName{
-    return [UserCacheManager getNickById:kCurrEaseUserId];
+-(NSString*)currNickName{
+    return [self getNickById:kCurrEaseUserId];
 }
 
 @end

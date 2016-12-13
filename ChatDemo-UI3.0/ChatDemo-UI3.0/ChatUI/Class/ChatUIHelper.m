@@ -919,7 +919,7 @@ static ChatUIHelper *helper = nil;
                 break;
         }
         
-        NSString *title = [UserCacheManager getNickById:message.from];
+        NSString *title = [[UserCacheManager sharedManager] getNickById:message.from];
         if (message.chatType == EMChatTypeGroupChat) {
             NSArray *groupArray = [[EMClient sharedClient].groupManager getAllGroups];
             for (EMGroup *group in groupArray) {

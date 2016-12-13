@@ -126,7 +126,7 @@
 {
     id<IUserModel> model = nil;
     model = [self.dataArray objectAtIndex:indexPath.row];
-    UserCacheInfo * userInfo = [UserCacheManager getById:model.buddy];
+    UserCacheInfo * userInfo = [[UserCacheManager sharedManager] getById:model.buddy];
     if (userInfo) {
         model.nickname= userInfo.NickName;
         model.avatarURLPath = userInfo.AvatarUrl;

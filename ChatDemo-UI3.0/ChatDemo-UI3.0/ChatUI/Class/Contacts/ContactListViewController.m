@@ -29,7 +29,7 @@
 //根据用户昵称进行搜索
 - (NSString*)showName
 {
-    return [UserCacheManager getNickById:self];
+    return [[UserCacheManager sharedManager] getNickById:self];
 }
 
 @end
@@ -150,7 +150,7 @@
 #endif
                                           initWithConversationChatter:buddy
                                                                                 conversationType:EMConversationTypeChat];
-            chatVC.title = [UserCacheManager getNickById:buddy];
+            chatVC.title = [[UserCacheManager sharedManager] getNickById:buddy];
             [weakSelf.navigationController pushViewController:chatVC animated:YES];
         }];
     }
@@ -221,7 +221,7 @@
         
         NSArray *userSection = [self.dataArray objectAtIndex:(indexPath.section - 1)];
         EaseUserModel *model = [userSection objectAtIndex:indexPath.row];
-        UserCacheInfo * userInfo = [UserCacheManager getById:model.buddy];
+        UserCacheInfo * userInfo = [[UserCacheManager sharedManager] getById:model.buddy];
         if (userInfo) {
             model.avatarURLPath = userInfo.AvatarUrl;
             model.nickname = userInfo.NickName;
@@ -449,7 +449,7 @@
         EaseUserModel *model = [[EaseUserModel alloc] initWithBuddy:buddy];
         if (model) {
             model.avatarImage = [UIImage imageNamed:@"chatListCellHead"];
-            model.nickname = [UserCacheManager getNickById:buddy];
+            model.nickname = [[UserCacheManager sharedManager] getNickById:buddy];
             
             NSString *firstLetter = [EaseChineseToPinyin pinyinFromChineseString:model.nickname];
             NSInteger section = [indexCollation sectionForObject:[firstLetter substringToIndex:1] collationStringSelector:@selector(uppercaseString)];
