@@ -82,6 +82,8 @@ static NSString *kGroupName = @"GroupName";
     [self setupUnreadMessageCount];
     [self setupUntreatedApplyCount];
     
+    TTAlertNoTitle(@"求大侠在github上给简版demo点赞（Star)😘 \n https://github.com/mengmakies/ChatDemo-UI3.00-Simple");
+    
     [ChatUIHelper shareHelper].contactViewVC = _contactsVC;
     [ChatUIHelper shareHelper].conversationListVC = _chatListVC;
 }

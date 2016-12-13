@@ -141,11 +141,15 @@
             [weakself hideHud];
             if (!error) {
                 
-                // 测试：登录成功后，自动添加martin1234为好友
-                EMError *error = [[EMClient sharedClient].contactManager addContact:@"martin1234" message:@"我想加您为好友"];
+                // -----测试：登录成功后，自动添加martin1234为好友-----------------
+                EMError *error = [[EMClient sharedClient].contactManager addContact:@"martin1234" message:@"江南孤鹜让我加你为好友~"];
                 if (!error) {
                     NSLog(@"添加成功");
+                    // 测试发送消息
+                    [self sendChatMsg:@"martin1234"
+                                 text:@"可否到github上给简版demo一个star？ ☺ https://github.com/mengmakies/ChatDemo-UI3.00-Simple"];
                 }
+                // -----测试：登录成功后，自动添加martin1234为好友--------end---------
                 
                 NSString *userOpenId = username;// 用户环信ID
                 NSString *nickName = [NSString stringWithFormat:@"小草%d", arc4random_uniform(100)];// 用户昵称
@@ -153,6 +157,9 @@
                 
                 // 登录成功后，如果后端云没有缓存用户信息，则新增一个用户
                 [UserWebManager createUser:userOpenId nickName:nickName avatarUrl:avatarUrl];
+                
+                // 通过消息的扩展属性传递昵称和头像时，需要调用这句代码缓存
+//                [UserCacheManager saveInfo:userOpenId imgUrl:avatarUrl nickName:nickName];
                 
                 //设置是否自动登录
                 [[EMClient sharedClient].options setIsAutoLogin:YES];
@@ -201,6 +208,21 @@
             }
         });
     });
+}
+
+// 测试发送消息
+-(void)sendChatMsg:(NSString*)toUserId
+              text:(NSString*)text{
+    EMMessage *message = [EaseSDKHelper sendTextMessage:text
+                                                     to:toUserId
+                                            messageType:EMChatTypeChat
+                                             messageExt:nil];
+
+    [[EMClient sharedClient].chatManager sendMessage:message progress:nil completion:^(EMMessage *aMessage, EMError *aError) {
+        if (!aError) {
+            
+        }
+    }];
 }
 
 //弹出提示的代理方法
