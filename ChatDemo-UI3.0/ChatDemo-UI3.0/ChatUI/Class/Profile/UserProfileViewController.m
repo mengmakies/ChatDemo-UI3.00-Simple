@@ -17,8 +17,6 @@
 
 @interface UserProfileViewController ()
 
-@property (strong, nonatomic) UserCacheInfo *user;
-
 @property (strong, nonatomic) UIImageView *headImageView;
 @property (strong, nonatomic) UILabel *usernameLabel;
 
@@ -100,8 +98,9 @@
         cell.detailTextLabel.text = self.usernameLabel.text;
     } else if (indexPath.row == 2) {
         cell.textLabel.text = NSLocalizedString(@"setting.profileNickname", @"Nickname");
-        cell.detailTextLabel.text = [UserCacheManager getNickById:_username];
-        //        cell.accessoryType = UITableViewCellAccessoryDisclosureIndicator;
+        UserCacheInfo *user = [UserCacheManager getById:_username];
+        cell.detailTextLabel.text = user.NickName;
+//        cell.accessoryType = UITableViewCellAccessoryDisclosureIndicator;
     }
     return cell;
 }
@@ -133,7 +132,7 @@
 
 - (void)loadUserProfile
 {
-//    [self hideHud];
+    [self hideHud];
 //    [self showHudInView:self.view hint:NSLocalizedString(@"loadData", @"Load data...")];
 //    __weak typeof(self) weakself = self;
 //    [[UserProfileManager sharedInstance] loadUserProfileInBackground:@[_username] saveToLoacal:YES completion:^(BOOL success, NSError *error) {

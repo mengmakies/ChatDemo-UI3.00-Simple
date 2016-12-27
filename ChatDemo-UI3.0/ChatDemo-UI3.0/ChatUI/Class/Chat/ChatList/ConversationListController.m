@@ -13,13 +13,13 @@
 #import "ConversationListController.h"
 
 #import "ChatViewController.h"
-#import "EMSearchBar.h"
-#import "EMSearchDisplayController.h"
 #import "RobotManager.h"
 #import "RobotChatViewController.h"
 #import "RealtimeSearchUtil.h"
 #import "RedPacketChatViewController.h"
 #import "ChatUIHelper.h"
+
+#import "UIViewController+SearchController.h"
 
 @implementation EMConversation (search)
 
@@ -41,12 +41,9 @@
 
 @end
 
-@interface ConversationListController ()<EaseConversationListViewControllerDelegate, EaseConversationListViewControllerDataSource,UISearchDisplayDelegate, UISearchBarDelegate>
+@interface ConversationListController ()<EaseConversationListViewControllerDelegate, EaseConversationListViewControllerDataSource,EMSearchControllerDelegate>
 
 @property (nonatomic, strong) UIView *networkStateView;
-@property (nonatomic, strong) EMSearchBar           *searchBar;
-
-@property (strong, nonatomic) EMSearchDisplayController *searchController;
 
 @end
 
@@ -60,17 +57,12 @@
     self.delegate = self;
     self.dataSource = self;
     
-    [self tableViewDidTriggerHeaderRefresh];
-    
-    [self.view addSubview:self.searchBar];
-    self.tableView.frame = CGRectMake(0, self.searchBar.frame.size.height, self.view.frame.size.width, self.view.frame.size.height - self.searchBar.frame.size.height);
     [self networkStateView];
     
-    [self searchController];
+    [self setupSearchController];
     
+    [self tableViewDidTriggerHeaderRefresh];
     [self removeEmptyConversationsFromDB];
-    
-    NOTIFY_ADD(refresh, kRefreshChatList);
 }
 
 - (void)viewWillAppear:(BOOL)animated
@@ -104,6 +96,7 @@
 }
 
 #pragma mark - getter
+
 - (UIView *)networkStateView
 {
     if (_networkStateView == nil) {
@@ -125,75 +118,6 @@
     return _networkStateView;
 }
 
-- (UISearchBar *)searchBar
-{
-    if (!_searchBar) {
-        _searchBar = [[EMSearchBar alloc] initWithFrame: CGRectMake(0, 0, self.view.frame.size.width, 44)];
-        _searchBar.delegate = self;
-        _searchBar.placeholder = NSLocalizedString(@"search", @"Search");
-        _searchBar.backgroundColor = [UIColor colorWithRed:0.747 green:0.756 blue:0.751 alpha:1.000];
-    }
-    
-    return _searchBar;
-}
-
-- (EMSearchDisplayController *)searchController
-{
-    if (_searchController == nil) {
-        _searchController = [[EMSearchDisplayController alloc] initWithSearchBar:self.searchBar contentsController:self];
-        _searchController.delegate = self;
-        _searchController.searchResultsTableView.separatorStyle = UITableViewCellSeparatorStyleSingleLine;
-        _searchController.searchResultsTableView.tableFooterView = [[UIView alloc] init];
-        
-        __weak ConversationListController *weakSelf = self;
-        [_searchController setCellForRowAtIndexPathCompletion:^UITableViewCell *(UITableView *tableView, NSIndexPath *indexPath) {
-            NSString *CellIdentifier = [EaseConversationCell cellIdentifierWithModel:nil];
-            EaseConversationCell *cell = (EaseConversationCell *)[tableView dequeueReusableCellWithIdentifier:CellIdentifier];
-            
-            // Configure the cell...
-            if (cell == nil) {
-                cell = [[EaseConversationCell alloc] initWithStyle:UITableViewCellStyleDefault reuseIdentifier:CellIdentifier];
-            }
-            
-            id<IConversationModel> model = [weakSelf.searchController.resultsSource objectAtIndex:indexPath.row];
-            cell.model = model;
-            
-            cell.detailLabel.attributedText = [weakSelf conversationListViewController:weakSelf latestMessageTitleForConversationModel:model];
-            cell.timeLabel.text = [weakSelf conversationListViewController:weakSelf latestMessageTimeForConversationModel:model];
-            return cell;
-        }];
-        
-        [_searchController setHeightForRowAtIndexPathCompletion:^CGFloat(UITableView *tableView, NSIndexPath *indexPath) {
-            return [EaseConversationCell cellHeightWithModel:nil];
-        }];
-        
-        [_searchController setDidSelectRowAtIndexPathCompletion:^(UITableView *tableView, NSIndexPath *indexPath) {
-            [tableView deselectRowAtIndexPath:indexPath animated:YES];
-            [weakSelf.searchController.searchBar endEditing:YES];
-            id<IConversationModel> model = [weakSelf.searchController.resultsSource objectAtIndex:indexPath.row];
-            EMConversation *conversation = model.conversation;
-            ChatViewController *chatController;
-            if ([[RobotManager sharedInstance] isRobotWithUsername:conversation.conversationId]) {
-                chatController = [[RobotChatViewController alloc] initWithConversationChatter:conversation.conversationId conversationType:conversation.type];
-                chatController.title = [[RobotManager sharedInstance] getRobotNickWithUsername:conversation.conversationId];
-            }else {
-#ifdef REDPACKET_AVALABLE
-                chatController = [[RedPacketChatViewController alloc]
-#else
-                chatController = [[ChatViewController alloc]
-#endif
-                                  initWithConversationChatter:conversation.conversationId conversationType:conversation.type];
-                chatController.title = [conversation showName];
-            }
-            [weakSelf.navigationController pushViewController:chatController animated:YES];
-            NOTIFY_POST(kSetupUnreadMessageCount);
-            [weakSelf.tableView reloadData];
-        }];
-    }
-    
-    return _searchController;
-}
-
 #pragma mark - EaseConversationListViewControllerDelegate
 
 - (void)conversationListViewController:(EaseConversationListViewController *)conversationListViewController
@@ -207,17 +131,17 @@
                 chatController.title = [[RobotManager sharedInstance] getRobotNickWithUsername:conversation.conversationId];
                 [self.navigationController pushViewController:chatController animated:YES];
             } else {
+                UIViewController *chatController = nil;
 #ifdef REDPACKET_AVALABLE
-                RedPacketChatViewController *chatController = [[RedPacketChatViewController alloc]
+                chatController = [[RedPacketChatViewController alloc] initWithConversationChatter:conversation.conversationId conversationType:conversation.type];
 #else
-                ChatViewController *chatController = [[ChatViewController alloc]
+                chatController = [[ChatViewController alloc] initWithConversationChatter:conversation.conversationId conversationType:conversation.type];
 #endif
-                                                      initWithConversationChatter:conversation.conversationId conversationType:conversation.type];
                 chatController.title = conversationModel.title;
                 [self.navigationController pushViewController:chatController animated:YES];
             }
         }
-        NOTIFY_POST(kSetupUnreadMessageCount);
+        [[NSNotificationCenter defaultCenter] postNotificationName:@"setupUnreadMessageCount" object:nil];
         [self.tableView reloadData];
     }
 }
@@ -232,10 +156,10 @@
         if ([[RobotManager sharedInstance] isRobotWithUsername:conversation.conversationId]) {
             model.title = [[RobotManager sharedInstance] getRobotNickWithUsername:conversation.conversationId];
         } else {
-            UserCacheInfo * userInfo = [UserCacheManager getById:conversation.conversationId];
-            if (userInfo) {
-                model.title = userInfo.NickName;
-                model.avatarURLPath = userInfo.AvatarUrl;
+            UserCacheInfo *user = [UserCacheManager getById:conversation.conversationId];
+            if (user) {
+                model.title= user.NickName;
+                model.avatarURLPath = user.AvatarUrl;
             }
         }
     } else if (model.conversation.type == EMConversationTypeGroupChat) {
@@ -336,45 +260,83 @@
     return latestMessageTime;
 }
 
-#pragma mark - UISearchBarDelegate
+#pragma mark - EMSearchControllerDelegate
 
-- (BOOL)searchBarShouldBeginEditing:(UISearchBar *)searchBar
+- (void)cancelButtonClicked
 {
-    [searchBar setShowsCancelButton:YES animated:YES];
-    
-    return YES;
+    [[RealtimeSearchUtil currentUtil] realtimeSearchStop];
 }
 
-- (void)searchBar:(UISearchBar *)searchBar textDidChange:(NSString *)searchText
+- (void)searchButtonClickedWithString:(NSString *)aString
 {
     __weak typeof(self) weakSelf = self;
-    [[RealtimeSearchUtil currentUtil] realtimeSearchWithSource:self.dataArray searchText:(NSString *)searchText collationStringSelector:@selector(title) resultBlock:^(NSArray *results) {
+    [[RealtimeSearchUtil currentUtil] realtimeSearchWithSource:self.dataArray searchText:aString collationStringSelector:@selector(title) resultBlock:^(NSArray *results) {
         if (results) {
             dispatch_async(dispatch_get_main_queue(), ^{
-                [weakSelf.searchController.resultsSource removeAllObjects];
-                [weakSelf.searchController.resultsSource addObjectsFromArray:results];
-                [weakSelf.searchController.searchResultsTableView reloadData];
+                [weakSelf.resultController.displaySource removeAllObjects];
+                [weakSelf.resultController.displaySource addObjectsFromArray:results];
+                [weakSelf.resultController.tableView reloadData];
             });
         }
     }];
 }
 
-- (BOOL)searchBarShouldEndEditing:(UISearchBar *)searchBar
-{
-    return YES;
-}
+#pragma mark - private 
 
-- (void)searchBarSearchButtonClicked:(UISearchBar *)searchBar
+- (void)setupSearchController
 {
-    [searchBar resignFirstResponder];
-}
+    [self enableSearchController];
+    
+    __weak ConversationListController *weakSelf = self;
+    [self.resultController setCellForRowAtIndexPathCompletion:^UITableViewCell *(UITableView *tableView, NSIndexPath *indexPath) {
+        NSString *CellIdentifier = [EaseConversationCell cellIdentifierWithModel:nil];
+        EaseConversationCell *cell = (EaseConversationCell *)[tableView dequeueReusableCellWithIdentifier:CellIdentifier];
 
-- (void)searchBarCancelButtonClicked:(UISearchBar *)searchBar
-{
-    searchBar.text = @"";
-    [[RealtimeSearchUtil currentUtil] realtimeSearchStop];
-    [searchBar resignFirstResponder];
-    [searchBar setShowsCancelButton:NO animated:YES];
+        // Configure the cell...
+        if (cell == nil) {
+            cell = [[EaseConversationCell alloc] initWithStyle:UITableViewCellStyleDefault reuseIdentifier:CellIdentifier];
+        }
+
+        id<IConversationModel> model = [weakSelf.resultController.displaySource objectAtIndex:indexPath.row];
+        cell.model = model;
+
+        cell.detailLabel.attributedText = [weakSelf conversationListViewController:weakSelf latestMessageTitleForConversationModel:model];
+        cell.timeLabel.text = [weakSelf conversationListViewController:weakSelf latestMessageTimeForConversationModel:model];
+        return cell;
+    }];
+
+    [self.resultController setHeightForRowAtIndexPathCompletion:^CGFloat(UITableView *tableView, NSIndexPath *indexPath) {
+        return [EaseConversationCell cellHeightWithModel:nil];
+    }];
+
+    [self.resultController setDidSelectRowAtIndexPathCompletion:^(UITableView *tableView, NSIndexPath *indexPath) {
+        [tableView deselectRowAtIndexPath:indexPath animated:YES];
+        [weakSelf.searchController.searchBar endEditing:YES];
+        id<IConversationModel> model = [weakSelf.resultController.displaySource objectAtIndex:indexPath.row];
+        EMConversation *conversation = model.conversation;
+        ChatViewController *chatController;
+        if ([[RobotManager sharedInstance] isRobotWithUsername:conversation.conversationId]) {
+            chatController = [[RobotChatViewController alloc] initWithConversationChatter:conversation.conversationId conversationType:conversation.type];
+            chatController.title = [[RobotManager sharedInstance] getRobotNickWithUsername:conversation.conversationId];
+        }else {
+#ifdef REDPACKET_AVALABLE
+            chatController = [[RedPacketChatViewController alloc]  initWithConversationChatter:conversation.conversationId conversationType:conversation.type];
+#else
+            chatController = [[ChatViewController alloc] initWithConversationChatter:conversation.conversationId conversationType:conversation.type];
+#endif
+            chatController.title = [conversation showName];
+        }
+        [weakSelf.navigationController pushViewController:chatController animated:YES];
+        [[NSNotificationCenter defaultCenter] postNotificationName:@"setupUnreadMessageCount" object:nil];
+        [weakSelf.tableView reloadData];
+                              
+        [weakSelf cancelSearch];
+    }];
+    
+    UISearchBar *searchBar = self.searchController.searchBar;
+    [self.view addSubview:searchBar];
+    [searchBar sizeToFit];
+    self.tableView.frame = CGRectMake(0, searchBar.frame.size.height, self.view.frame.size.width,self.view.frame.size.height - searchBar.frame.size.height);
 }
 
 #pragma mark - public

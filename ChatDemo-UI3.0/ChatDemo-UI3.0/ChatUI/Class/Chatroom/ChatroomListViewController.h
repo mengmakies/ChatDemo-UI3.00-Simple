@@ -12,6 +12,6 @@
 
 #import <UIKit/UIKit.h>
 
-@interface ChatroomListViewController : UITableViewController
+@interface ChatroomListViewController : EaseRefreshTableViewController
 
 @end

@@ -58,7 +58,7 @@
     // 环信UIdemo中有用到友盟统计crash，您的项目中不需要添加，可忽略此处。
     [self setupUMeng];
     
-#warning 初始化环信SDK，详细内容在AppDelegate+EaseMob.m 文件中
+#warning Init SDK，detail in AppDelegate+EaseMob.m
 #warning SDK注册 APNS文件的名字, 需要与后台上传证书时的名字一一对应
     NSString *apnsCertName = nil;
 #if DEBUG

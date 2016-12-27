@@ -58,7 +58,7 @@ typedef enum{
 
 /*!
  *  \~chinese
- *  自动登录失败时的回调
+ *  自动登录完成时的回调
  *
  *  @param aError 错误信息
  *
@@ -121,7 +121,7 @@ typedef enum{
 
 /*!
  *  \~chinese
- *  自动登录失败时的回调
+ *  自动登录完成时的回调
  *
  *  @param aError 错误信息
  *

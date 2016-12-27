@@ -1,24 +1,21 @@
 /************************************************************
-  *  * Hyphenate CONFIDENTIAL 
-  * __________________ 
-  * Copyright (C) 2016 Hyphenate Inc. All rights reserved. 
-  *  
-  * NOTICE: All information contained herein is, and remains 
-  * the property of Hyphenate Inc.
-  * Dissemination of this information or reproduction of this material 
-  * is strictly forbidden unless prior written permission is obtained
-  * from Hyphenate Inc.
-  */
+ *  * Hyphenate CONFIDENTIAL
+ * __________________
+ * Copyright (C) 2016 Hyphenate Inc. All rights reserved.
+ *
+ * NOTICE: All information contained herein is, and remains
+ * the property of Hyphenate Inc.
+ * Dissemination of this information or reproduction of this material
+ * is strictly forbidden unless prior written permission is obtained
+ * from Hyphenate Inc.
+ */
 
 #import <UIKit/UIKit.h>
 
-#import "BaseTableViewCell.h"
+@interface EMSearchResultController : UITableViewController
 
-@interface EMSearchDisplayController : UISearchDisplayController<UITableViewDataSource, UITableViewDelegate, UISearchDisplayDelegate>
+@property (nonatomic, strong) NSMutableArray *displaySource;
 
-@property (strong, nonatomic) NSMutableArray *resultsSource;
-
-//编辑cell时显示的风格，默认为UITableViewCellEditingStyleDelete；会将值付给[tableView:editingStyleForRowAtIndexPath:]
 @property (nonatomic) UITableViewCellEditingStyle editingStyle;
 
 @property (copy) UITableViewCell * (^cellForRowAtIndexPathCompletion)(UITableView *tableView, NSIndexPath *indexPath);

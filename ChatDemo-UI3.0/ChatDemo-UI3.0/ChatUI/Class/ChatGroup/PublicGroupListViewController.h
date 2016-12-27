@@ -12,6 +12,6 @@
 
 #import <UIKit/UIKit.h>
 
-@interface PublicGroupListViewController : UITableViewController
+@interface PublicGroupListViewController : EaseRefreshTableViewController
 
 @end

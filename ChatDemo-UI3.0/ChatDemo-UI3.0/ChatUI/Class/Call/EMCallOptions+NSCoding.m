@@ -20,6 +20,9 @@
         self.videoResolution = (EMCallVideoResolution)[aDecoder decodeIntegerForKey:@"emVideoResolution"];
         self.videoKbps = [aDecoder decodeIntForKey:@"emVideoKbps"];
         self.offlineMessageText = @"You have incoming call...";
+        self.isFixedVideoResolution = [aDecoder decodeBoolForKey:@"emEnableFixedVideoResolution"];
+        self.maxVideoFrameRate = [aDecoder decodeIntForKey:@"emMaxVideoFrameRate"];
+        self.minVideoKbps = [aDecoder decodeIntForKey:@"emMinVideoKbps"];
     }
 
     return self;
@@ -30,7 +33,10 @@
 {
     [aCoder encodeBool:self.isSendPushIfOffline forKey:@"emIsSendPushIfOffline"];
     [aCoder encodeInteger:self.videoResolution forKey:@"emVideoResolution"];
-    [aCoder encodeInt:self.videoKbps forKey:@"emVideoKbps"];
+    [aCoder encodeInt:(int)self.videoKbps forKey:@"emVideoKbps"];
+    [aCoder encodeBool:self.isFixedVideoResolution forKey:@"emEnableFixedVideoResolution"];
+    [aCoder encodeInt:(int)self.maxVideoFrameRate forKey:@"emMaxVideoFrameRate"];
+    [aCoder encodeInt:(int)self.minVideoKbps forKey:@"emMinVideoKbps"];
 }
 
 @end

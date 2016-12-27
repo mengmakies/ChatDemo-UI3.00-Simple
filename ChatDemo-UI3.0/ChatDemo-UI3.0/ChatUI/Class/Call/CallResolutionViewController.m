@@ -10,6 +10,10 @@
 
 #import "ChatUIHelper.h"
 
+#if DEMO_CALL == 1
+#import "DemoCallManager.h"
+#endif
+
 @interface CallResolutionViewController ()
 
 @property (nonatomic, strong) NSIndexPath *selectedIndexPath;
@@ -60,7 +64,7 @@
     
     switch (indexPath.row) {
         case 0:
-            cell.textLabel.text = @"默认 (352 * 288)";
+            cell.textLabel.text = @"默认 (640 * 480)";
             break;
         case 1:
             cell.textLabel.text = @"352 * 288";
@@ -97,11 +101,11 @@
         UITableViewCell *newCell = [tableView cellForRowAtIndexPath:indexPath];
         newCell.accessoryType = UITableViewCellAccessoryCheckmark;
         
+#if DEMO_CALL == 1
         EMCallVideoResolution resolution = (EMCallVideoResolution)indexPath.row;
         EMCallOptions *options = [[EMClient sharedClient].callManager getCallOptions];
         options.videoResolution = resolution;
-#if DEMO_CALL == 1
-        [ChatUIHelper updateCallOptions];
+        [[DemoCallManager sharedManager] saveCallOptions];
 #endif
     }
     

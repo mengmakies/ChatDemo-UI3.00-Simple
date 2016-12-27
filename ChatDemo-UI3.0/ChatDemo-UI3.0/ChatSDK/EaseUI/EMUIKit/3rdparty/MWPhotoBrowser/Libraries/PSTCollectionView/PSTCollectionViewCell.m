@@ -40,6 +40,8 @@
 }
 
 - (void)awakeFromNib {
+    [super awakeFromNib];
+    
     self.reuseIdentifier = [self valueForKeyPath:@"reuseIdentifier"];
 }
 

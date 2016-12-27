@@ -115,8 +115,11 @@ EaseMessageViewControllerDataSource, RedpacketViewControlDelegate>
     RedpacketUserInfo *userInfo = [RedpacketUserInfo new];
 
     UserCacheInfo *user = [UserCacheManager getById:userId];
-    userInfo.userNickname = user.NickName;
-    userInfo.userAvatar = user.AvatarUrl;
+    if (user) {
+        userInfo.userNickname = user.NickName;
+        userInfo.userAvatar = user.AvatarUrl;
+    }
+    
     userInfo.userId = userId;
     return userInfo;
 }

@@ -187,8 +187,7 @@
     [_textField resignFirstResponder];
     if(_textField.text.length > 0)
     {
-#warning 由用户体系的用户，需要添加方法在已有的用户体系中查询符合填写内容的用户
-#warning 以下代码为测试代码，默认用户体系中有一个符合要求的同名用户
+#warning Test code, by default, the user system has a user with the same name.
         NSString *loginUsername = [[EMClient sharedClient] currentUsername];
         if ([_textField.text isEqualToString:loginUsername]) {
             UIAlertView *alertView = [[UIAlertView alloc] initWithTitle:NSLocalizedString(@"prompt", @"Prompt") message:NSLocalizedString(@"friend.notAddSelf", @"can't add yourself as a friend") delegate:nil cancelButtonTitle:NSLocalizedString(@"ok", @"OK") otherButtonTitles:nil, nil];

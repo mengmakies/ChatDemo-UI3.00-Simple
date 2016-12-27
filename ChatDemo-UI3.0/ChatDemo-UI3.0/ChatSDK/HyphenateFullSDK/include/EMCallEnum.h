@@ -57,7 +57,7 @@ typedef enum{
     EMCallEndReasonBusy,            /*! \~chinese 对方占线 \~english User is busy */
     EMCallEndReasonFailed,          /*! \~chinese 失败 \~english Establish the call failed */
     EMCallEndReasonUnsupported,     /*! \~chinese 功能不支持 \~english Unsupported */
-//    EMCallEndReasonRemoteOffline,   /*! \~chinese 对方不在线 \~english Remote offline */
+    EMCallEndReasonRemoteOffline,   /*! \~chinese 对方不在线 \~english Remote offline */
 }EMCallEndReason;
 
 /*!

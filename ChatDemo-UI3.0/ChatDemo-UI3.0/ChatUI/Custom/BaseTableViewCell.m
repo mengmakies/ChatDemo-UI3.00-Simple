@@ -27,6 +27,7 @@
         _bottomLineView.backgroundColor = [UIColor colorWithRed:207 / 255.0 green:210 /255.0 blue:213 / 255.0 alpha:0.7];
         [self.contentView addSubview:_bottomLineView];
         
+        self.textLabel.accessibilityIdentifier = @"textLabel";
         self.textLabel.backgroundColor = [UIColor clearColor];
         
         _headerLongPress = [[UILongPressGestureRecognizer alloc] initWithTarget:self action:@selector(headerLongPress:)];
@@ -38,6 +39,7 @@
 - (void)awakeFromNib
 {
     // Initialization code
+    [super awakeFromNib];
 }
 
 -(void)layoutSubviews

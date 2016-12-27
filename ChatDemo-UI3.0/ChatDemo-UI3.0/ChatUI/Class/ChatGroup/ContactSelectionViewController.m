@@ -12,19 +12,15 @@
 
 #import "ContactSelectionViewController.h"
 
-#import "EMSearchBar.h"
 #import "EMRemarkImageView.h"
-#import "EMSearchDisplayController.h"
+#import "BaseTableViewCell.h"
 #import "RealtimeSearchUtil.h"
 
-@interface ContactSelectionViewController ()<UISearchBarDelegate, UISearchDisplayDelegate>
+@interface ContactSelectionViewController ()
 
 @property (strong, nonatomic) NSMutableArray *contactsSource;
 @property (strong, nonatomic) NSMutableArray *selectedContacts;
 @property (strong, nonatomic) NSMutableArray *blockSelectedUsernames;
-
-@property (strong, nonatomic) EMSearchBar *searchBar;
-@property (strong, nonatomic) EMSearchDisplayController *searchController;
 
 @property (strong, nonatomic) UIView *footerView;
 @property (strong, nonatomic) UIScrollView *footerScrollView;
@@ -93,11 +89,8 @@
     UIBarButtonItem *backItem = [[UIBarButtonItem alloc] initWithCustomView:backButton];
     [self.navigationItem setLeftBarButtonItem:backItem];
     
-    [self.view addSubview:self.searchBar];
     [self.view addSubview:self.footerView];
     self.tableView.editing = YES;
-    self.tableView.frame = CGRectMake(0, self.searchBar.frame.size.height, self.view.frame.size.width, self.view.frame.size.height - self.searchBar.frame.size.height - self.footerView.frame.size.height);
-    [self searchController];
     
     if ([_blockSelectedUsernames count] > 0) {
         for (NSString *username in _blockSelectedUsernames) {
@@ -129,95 +122,6 @@
 }
 
 #pragma mark - getter
-
-- (UISearchBar *)searchBar
-{
-    if (_searchBar == nil) {
-        _searchBar = [[EMSearchBar alloc] initWithFrame: CGRectMake(0, 0, self.view.frame.size.width, 44)];
-        _searchBar.delegate = self;
-        _searchBar.placeholder = NSLocalizedString(@"search", @"Search");
-        _searchBar.autoresizingMask = UIViewAutoresizingFlexibleBottomMargin | UIViewAutoresizingFlexibleRightMargin;
-        _searchBar.backgroundColor = [UIColor colorWithRed:0.747 green:0.756 blue:0.751 alpha:1.000];
-    }
-    
-    return _searchBar;
-}
-
-- (EMSearchDisplayController *)searchController
-{
-    if (_searchController == nil) {
-        _searchController = [[EMSearchDisplayController alloc] initWithSearchBar:self.searchBar contentsController:self];
-        _searchController.editingStyle = UITableViewCellEditingStyleInsert | UITableViewCellEditingStyleDelete;
-        _searchController.delegate = self;
-        _searchController.searchResultsTableView.separatorStyle = UITableViewCellSeparatorStyleNone;
-        
-        __weak ContactSelectionViewController *weakSelf = self;
-        [_searchController setCellForRowAtIndexPathCompletion:^UITableViewCell *(UITableView *tableView, NSIndexPath *indexPath) {
-            static NSString *CellIdentifier = @"ContactListCell";
-            BaseTableViewCell *cell = (BaseTableViewCell *)[tableView dequeueReusableCellWithIdentifier:CellIdentifier];
-            
-            // Configure the cell...
-            if (cell == nil) {
-                cell = [[BaseTableViewCell alloc] initWithStyle:UITableViewCellStyleDefault reuseIdentifier:CellIdentifier];
-            }
-            
-            NSString *username = [weakSelf.searchController.resultsSource objectAtIndex:indexPath.row];
-            cell.imageView.image = [UIImage imageNamed:@"chatListCellHead.png"];
-            cell.textLabel.text = username;
-            cell.username = username;
-            
-            return cell;
-        }];
-        
-        [_searchController setCanEditRowAtIndexPath:^BOOL(UITableView *tableView, NSIndexPath *indexPath) {
-            if ([weakSelf.blockSelectedUsernames count] > 0) {
-                NSString *username = [weakSelf.searchController.resultsSource objectAtIndex:indexPath.row];
-                return ![weakSelf isBlockUsername:username];
-            }
-            
-            return YES;
-        }];
-        
-        [_searchController setHeightForRowAtIndexPathCompletion:^CGFloat(UITableView *tableView, NSIndexPath *indexPath) {
-            return 50;
-        }];
-        
-        [_searchController setDidSelectRowAtIndexPathCompletion:^(UITableView *tableView, NSIndexPath *indexPath) {
-            NSString *username = [weakSelf.searchController.resultsSource objectAtIndex:indexPath.row];
-            if (![weakSelf.selectedContacts containsObject:username])
-            {
-                NSInteger section = [weakSelf sectionForString:username];
-                if (section >= 0) {
-                    NSMutableArray *tmpArray = [weakSelf.dataSource objectAtIndex:section];
-                    NSInteger row = [tmpArray indexOfObject:username];
-                    [weakSelf.tableView selectRowAtIndexPath:[NSIndexPath indexPathForRow:row inSection:section] animated:NO scrollPosition:UITableViewScrollPositionNone];
-                }
-                
-                [weakSelf.selectedContacts addObject:username];
-                [weakSelf reloadFooterView];
-            }
-        }];
-        
-        [_searchController setDidDeselectRowAtIndexPathCompletion:^(UITableView *tableView, NSIndexPath *indexPath) {
-            [tableView deselectRowAtIndexPath:indexPath animated:YES];
-            
-            NSString *username = [weakSelf.searchController.resultsSource objectAtIndex:indexPath.row];
-            if ([weakSelf.selectedContacts containsObject:username]) {
-                NSInteger section = [weakSelf sectionForString:username];
-                if (section >= 0) {
-                    NSMutableArray *tmpArray = [weakSelf.dataSource objectAtIndex:section];
-                    NSInteger row = [tmpArray indexOfObject:username];
-                    [weakSelf.tableView deselectRowAtIndexPath:[NSIndexPath indexPathForRow:row inSection:section] animated:NO];
-                }
-                
-                [weakSelf.selectedContacts removeObject:username];
-                [weakSelf reloadFooterView];
-            }
-        }];
-    }
-    
-    return _searchController;
-}
 
 - (UIView *)footerView
 {
@@ -301,63 +205,6 @@
         
         [self reloadFooterView];
     }
-}
-
-#pragma mark - UISearchBarDelegate
-
-- (BOOL)searchBarShouldBeginEditing:(UISearchBar *)searchBar
-{
-    [searchBar setShowsCancelButton:YES animated:YES];
-    [self.searchBar setCancelButtonTitle:NSLocalizedString(@"ok", @"OK")];
-    
-    return YES;
-}
-
-- (void)searchBar:(UISearchBar *)searchBar textDidChange:(NSString *)searchText
-{
-    __weak typeof(self) weakSelf = self;
-    [[RealtimeSearchUtil currentUtil] realtimeSearchWithSource:self.contactsSource searchText:searchText collationStringSelector:@selector(username) resultBlock:^(NSArray *results) {
-        if (results) {
-            dispatch_async(dispatch_get_main_queue(), ^{
-                [weakSelf.searchController.resultsSource removeAllObjects];
-                [weakSelf.searchController.resultsSource addObjectsFromArray:results];
-                [weakSelf.searchController.searchResultsTableView reloadData];
-                
-                for (NSString *username in results) {
-                    if ([weakSelf.selectedContacts containsObject:username])
-                    {
-                        NSInteger row = [results indexOfObject:username];
-                        [weakSelf.searchController.searchResultsTableView selectRowAtIndexPath:[NSIndexPath indexPathForRow:row inSection:0] animated:NO scrollPosition:UITableViewScrollPositionNone];
-                    }
-                }
-            });
-        }
-    }];
-}
-
-- (BOOL)searchBarShouldEndEditing:(UISearchBar *)searchBar
-{
-    return YES;
-}
-
-- (void)searchBarSearchButtonClicked:(UISearchBar *)searchBar
-{
-    [searchBar resignFirstResponder];
-}
-
-- (void)searchBarCancelButtonClicked:(UISearchBar *)searchBar
-{
-    searchBar.text = @"";
-    [[RealtimeSearchUtil currentUtil] realtimeSearchStop];
-    [searchBar resignFirstResponder];
-    [searchBar setShowsCancelButton:NO animated:YES];
-}
-
-#pragma mark - UISearchDisplayDelegate
-
-- (void)searchDisplayController:(UISearchDisplayController *)controller willShowSearchResultsTableView:(UITableView *)tableView
-{
-    tableView.editing = YES;
 }
 
 #pragma mark - private

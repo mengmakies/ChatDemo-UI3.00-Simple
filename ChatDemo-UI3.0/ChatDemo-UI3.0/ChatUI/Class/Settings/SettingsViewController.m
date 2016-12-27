@@ -21,13 +21,7 @@
 #import "RedpacketViewControl.h"
 
 #if DEMO_CALL == 1
-#import "CallViewController.h"
-#endif
-
-#if DEMO_CALL == 1
-#import "CallViewController.h"
-#import "ChatUIHelper.h"
-#import "CallResolutionViewController.h"
+#import "CallSettingViewController.h"
 #endif
 
 @interface SettingsViewController ()
@@ -36,9 +30,7 @@
 
 @property (strong, nonatomic) UISwitch *autoLoginSwitch;
 @property (strong, nonatomic) UISwitch *delConversationSwitch;
-@property (strong, nonatomic) UISwitch *showCallInfoSwitch;
 @property (strong, nonatomic) UISwitch *sortMethodSwitch;
-@property (strong, nonatomic) UISwitch *callPushSwitch;
 
 @end
 
@@ -94,17 +86,6 @@
     return _delConversationSwitch;
 }
 
-- (UISwitch *)showCallInfoSwitch
-{
-    if (!_showCallInfoSwitch)
-    {
-        _showCallInfoSwitch = [[UISwitch alloc] init];
-        _showCallInfoSwitch.on = [[[NSUserDefaults standardUserDefaults] objectForKey:@"showCallInfo"] boolValue];
-        [_showCallInfoSwitch addTarget:self action:@selector(showCallInfoChanged:) forControlEvents:UIControlEventValueChanged];
-    }
-    return _showCallInfoSwitch;
-}
-
 - (UISwitch *)sortMethodSwitch
 {
     if (_sortMethodSwitch == nil) {
@@ -113,19 +94,6 @@
     }
 
     return _sortMethodSwitch;
-}
-
-- (UISwitch *)callPushSwitch
-{
-    if (_callPushSwitch == nil) {
-        _callPushSwitch = [[UISwitch alloc] init];
-        [_callPushSwitch addTarget:self action:@selector(callPushChanged:) forControlEvents:UIControlEventValueChanged];
-        
-        EMCallOptions *options = [[EMClient sharedClient].callManager getCallOptions];
-        [_callPushSwitch setOn:options.isSendPushIfOffline animated:NO];
-    }
-    
-    return _callPushSwitch;
 }
 
 #pragma mark - Table view datasource
@@ -147,7 +115,7 @@
 #endif
     
 #if DEMO_CALL == 1
-    return 13;
+    return 10;
 #endif
 
     return 9;
@@ -202,28 +170,15 @@
             cell.textLabel.text = NSLocalizedString(@"setting.personalInfo", nil);
             cell.accessoryType = UITableViewCellAccessoryDisclosureIndicator;
         } else if (indexPath.row == 7) {
-            cell.textLabel.text = NSLocalizedString(@"setting.showCallInfo", nil);
-            cell.accessoryType = UITableViewCellAccessoryNone;
-            self.showCallInfoSwitch.frame = CGRectMake(self.tableView.frame.size.width - (self.showCallInfoSwitch.frame.size.width + 10), (cell.contentView.frame.size.height - self.showCallInfoSwitch.frame.size.height) / 2, self.showCallInfoSwitch.frame.size.width, self.showCallInfoSwitch.frame.size.height);
-            [cell.contentView addSubview:self.showCallInfoSwitch];
-        } else if (indexPath.row == 8) {
             cell.textLabel.text = NSLocalizedString(@"setting.sortbyservertime", @"Sort message by server time");
             cell.accessoryType = UITableViewCellAccessoryNone;
             self.sortMethodSwitch.frame = CGRectMake(self.tableView.frame.size.width - (self.sortMethodSwitch.frame.size.width + 10), (cell.contentView.frame.size.height - self.sortMethodSwitch.frame.size.height) / 2, self.sortMethodSwitch.frame.size.width, self.sortMethodSwitch.frame.size.height);
             [cell.contentView addSubview:self.sortMethodSwitch];
-        } else if (indexPath.row == 9) {
-            cell.textLabel.text = NSLocalizedString(@"setting.setBitrate", nil);
-            cell.accessoryType = UITableViewCellAccessoryDisclosureIndicator;
-        } else if (indexPath.row == 10) {
-            cell.textLabel.text = NSLocalizedString(@"setting.callPush", nil);
-            cell.accessoryType = UITableViewCellAccessoryNone;
-            self.callPushSwitch.frame = CGRectMake(self.tableView.frame.size.width - (self.callPushSwitch.frame.size.width + 10), (cell.contentView.frame.size.height - self.callPushSwitch.frame.size.height) / 2, self.callPushSwitch.frame.size.width, self.callPushSwitch.frame.size.height);
-            [cell.contentView addSubview:self.callPushSwitch];
-        } else if (indexPath.row == 11) {
-            cell.textLabel.text = NSLocalizedString(@"setting.callResolution", nil);
-            cell.accessoryType = UITableViewCellAccessoryDisclosureIndicator;
-        }else if (indexPath.row == 12) {
+        } else if (indexPath.row == 8) {
             cell.textLabel.text = @"清除缓存（昵称和头像）";
+            cell.accessoryType = UITableViewCellAccessoryDisclosureIndicator;
+        }else if (indexPath.row == 9) {
+            cell.textLabel.text = NSLocalizedString(@"setting.call", nil);
             cell.accessoryType = UITableViewCellAccessoryDisclosureIndicator;
         }
     }
@@ -270,51 +225,17 @@
         UserProfileEditViewController *userProfile = [[UserProfileEditViewController alloc] initWithStyle:UITableViewStylePlain];
         [self.navigationController pushViewController:userProfile animated:YES];
         
-    } else if (indexPath.row == 9) {
-        UIAlertView *alert = [[UIAlertView alloc] initWithTitle:nil message:NSLocalizedString(@"setting.setBitrate", @"Set Bitrate") delegate:self cancelButtonTitle:NSLocalizedString(@"cancel", @"Cancel") otherButtonTitles:NSLocalizedString(@"ok", @"OK"), nil];
-        [alert setAlertViewStyle:UIAlertViewStylePlainTextInput];
-        
-        UITextField *textField = [alert textFieldAtIndex:0];
-        EMCallOptions *options = [[EMClient sharedClient].callManager getCallOptions];
-        textField.text = [NSString stringWithFormat:@"%ld", options.videoKbps];
-        
-        [alert show];
-    } else if (indexPath.row == 11) {
-#if DEMO_CALL == 1
-        CallResolutionViewController *resoulutionController = [[CallResolutionViewController alloc] init];
-        [self.navigationController pushViewController:resoulutionController animated:YES];
-#endif
-    }else if (indexPath.row == 12) {
+    } else if (indexPath.row == 8) {
         [UserCacheManager clearTableData];
         [UserWebManager clearCache];
         [self showHint:@"已经清除用户本地头像和昵称~"];
-    }
-}
-
-//弹出提示的代理方法
-- (void)alertView:(UIAlertView *)alertView clickedButtonAtIndex:(NSInteger)buttonIndex{
+    }else if (indexPath.row == 9) {
 #if DEMO_CALL == 1
-    if ([alertView cancelButtonIndex] != buttonIndex) {
-        //获取文本输入框
-        UITextField *nameTextField = [alertView textFieldAtIndex:0];
-        BOOL flag = YES;
-        if(nameTextField.text.length > 0) {
-            NSScanner* scan = [NSScanner scannerWithString:nameTextField.text];
-            int val;
-            if ([scan scanInt:&val] && [scan isAtEnd]) {
-                if ([nameTextField.text intValue] >= 150 && [nameTextField.text intValue] <= 1000) {
-                    EMCallOptions *options = [[EMClient sharedClient].callManager getCallOptions];
-                    options.videoKbps = [nameTextField.text intValue];
-                    [ChatUIHelper updateCallOptions];
-                    flag = NO;
-                }
-            }
-        }
-        if (flag) {
-            [self showHint:NSLocalizedString(@"setting.setBitrateTips", @"Set Bitrate should be 150-1000")];
-        }
-    }
+        CallSettingViewController *callSettingController = [[CallSettingViewController alloc] initWithStyle:UITableViewStyleGrouped];
+        [self.navigationController pushViewController:callSettingController animated:YES];
 #endif
+        
+    }
 }
 
 #pragma mark - getter
@@ -355,25 +276,9 @@
     [[EMClient sharedClient].options setIsDeleteMessagesWhenExitGroup:control.on];
 }
 
-- (void)showCallInfoChanged:(UISwitch *)control
-{
-    NSUserDefaults *userDefaults = [NSUserDefaults standardUserDefaults];
-    [userDefaults setObject:[NSNumber numberWithBool:control.isOn] forKey:@"showCallInfo"];
-    [userDefaults synchronize];
-}
-
 - (void)sortMethodChanged:(UISwitch *)control
 {
     [[EMClient sharedClient].options setSortMessageByServerTime:control.on];
-}
-    
-- (void)callPushChanged:(UISwitch *)control
-{
-    EMCallOptions *options = [[EMClient sharedClient].callManager getCallOptions];
-    options.isSendPushIfOffline = control.on;
-#if DEMO_CALL == 1
-    [ChatUIHelper updateCallOptions];
-#endif
 }
 
 - (void)refreshConfig

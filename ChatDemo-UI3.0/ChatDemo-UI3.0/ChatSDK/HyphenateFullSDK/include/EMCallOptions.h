@@ -15,6 +15,7 @@
 #import <Foundation/Foundation.h>
 
 #import "EMCallEnum.h"
+#import "EMCommonDefs.h"
 
 @interface EMCallOptions : NSObject
 
@@ -54,7 +55,7 @@
 
 /*!
  *  \~chinese
- *  视频码率
+ *  最大视频码率
  *  范围 50 < videoKbps < 5000, 默认0, 0为自适应
  *  建议设置为0
  *
@@ -63,6 +64,51 @@
  *  range 50 < videoKbps < 5000, default 0 , 0 means adaptive
  *  advice 0
  */
-@property (nonatomic, assign) long videoKbps;
+@property (nonatomic, assign) long maxVideoKbps;
+
+/*!
+ *  \~chinese
+ *  最小视频码率
+ *
+ *  \~english
+ *  Min video kbps
+ *
+ */
+@property (nonatomic, assign) int minVideoKbps;
+
+/*!
+ *  \~chinese
+ *  是否固定视频分辨率，默认为NO
+ *
+ *  \~english
+ *  Enable fixed video resolution，default NO
+ *
+ */
+@property (nonatomic, assign) BOOL isFixedVideoResolution;
+
+/*!
+ *  \~chinese
+ *  最大视频帧率
+ *
+ *  \~english
+ *  Max video frame rate
+ *
+ */
+@property (nonatomic, assign) int maxVideoFrameRate;
+
+#pragma mark - EM_DEPRECATED_IOS 3.2.2
+
+/*
+*  \~chinese
+*  视频码率
+*  范围 50 < videoKbps < 5000, 默认0, 0为自适应
+*  建议设置为0
+*
+*  \~english
+*  Video kbps
+*  range 50 < videoKbps < 5000, default 0 , 0 means adaptive
+*  advice 0
+*/
+@property (nonatomic, assign) long videoKbps EM_DEPRECATED_IOS(3_2_2, 3_2_2, "Use -[EMCallOptions maxVideoKbps]");
 
 @end

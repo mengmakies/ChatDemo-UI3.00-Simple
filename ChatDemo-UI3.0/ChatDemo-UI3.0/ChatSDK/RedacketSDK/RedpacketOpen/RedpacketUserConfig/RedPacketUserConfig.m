@@ -102,12 +102,13 @@ static RedPacketUserConfig *__sharedConfig__ = nil;
 - (RedpacketUserInfo *)redpacketUserInfo
 {
     RedpacketUserInfo *userInfo = [RedpacketUserInfo new];
+    userInfo.userId = [EMClient sharedClient].currentUsername;
     
-    UserCacheInfo *entity = [UserCacheManager currUser];
-    userInfo.userId = entity.Id;
-    NSString *nickname = entity.NickName;
-    userInfo.userNickname = nickname.length > 0 ? nickname : userInfo.userId;
-    userInfo.userAvatar = entity.AvatarUrl;
+    UserCacheInfo *user = [UserCacheManager currUser];
+    if (user) {
+        userInfo.userNickname = user.NickName;
+        userInfo.userAvatar = user.AvatarUrl;
+    }
     
     return userInfo;
 }

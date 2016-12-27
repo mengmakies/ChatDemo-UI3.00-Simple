@@ -128,9 +128,9 @@ static RealtimeSearchUtil *defaultUtil = nil;
  */
 - (void)realtimeSearchWithSource:(id)source searchText:(NSString *)searchText collationStringSelector:(SEL)selector resultBlock:(RealtimeSearchResultsBlock)resultBlock
 {
-    if (!source || !searchText || !resultBlock) {
+    if (!source || [searchText length] == 0 || !resultBlock) {
         if (resultBlock) {
-            _resultBlock(source);
+            resultBlock(nil);
         }
         return;
     }

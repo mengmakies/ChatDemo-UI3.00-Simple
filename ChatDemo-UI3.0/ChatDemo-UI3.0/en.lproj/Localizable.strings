@@ -316,8 +316,6 @@
 "setting.nightOpen" = "On only from 10pm to 7am.";
 "setting.close" = "Off";
 "setting.sureNotDisturb" = "this setting will cause all day in the don't disturb mode, will no longer receive push messages. Whether or not to continue?";
-"setting.callPush" = "If the offline send call push";
-"setting.callResolution" = "Video call resolution";
 
 "setting.uploadLog" = "upload run log";
 "setting.sdkVersion" = "SDK version";
@@ -329,14 +327,11 @@
 "setting.saveName" = "Save Nickname";
 "setting.namenotempty" = "Name cannot be empty";
 "setting.personalInfo" = "Profile";
-"setting.setBitrate" = "Set Bitrate";
-"setting.setBitrateTips" = "Set Bitrate should be 150-1000";
 "setting.personalInfoUpload" = "Profile Image";
 "setting.edittips" = "After setting this nickname, chat with the iOS client demo project, iOS will display this nickname is not a EaseMob ID, if the other party to use the Android client this setting is not effective";
 "setting.iospushname" = "iOS push nickname";
 "setting.useIp" = "Use IP";
 "setting.deleteConWhenLeave" = "Delete conversation when leave a group";
-"setting.showCallInfo" = "Show video call info";
 "setting.microphoneNoAuthority" = "No microphone permissions";
 "setting.microphoneAuthority" = "Please open in \"Setting\"-\"Privacy\"-\"Microphone\".";
 "setting.cameraNoAuthority" = "No camera permissions";
@@ -346,6 +341,17 @@
 "setting.profileNickname" = "NickName";
 "setting.saving" = "saving...";
 "setting.saveFailed" = "save failed";
+
+"setting.call" = "Call setting";
+"setting.call.fixedResolution" = "Fixed Resolution";
+"setting.call.autoResolution" = "Auto Resolution";
+"setting.call.bitrate" = "Set Bitrate";
+"setting.call.bitrateTips" = "Set Bitrate should be 150-1000";
+"setting.call.push" = "If the offline send call push";
+"setting.call.resolution" = "Video call resolution";
+"setting.call.maxFramerate" = "Video max framerate";
+"setting.call.minKbps" = "Video min kbps";
+"setting.call.showInfo" = "Show video call info";
 
 //NSDateCategory
 "NSDateCategory.text1" = "one minute";

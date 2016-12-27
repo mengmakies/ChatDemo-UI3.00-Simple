@@ -149,6 +149,7 @@
  *  同步方法，会阻塞当前线程
  *
  *  @param aUsername 要删除的好友
+ *  @param aIsDeleteConversation 是否删除会话
  *
  *  @return 错误信息
  *
@@ -156,10 +157,12 @@
  *  Delete a contact
  *
  *  @param aUsername The user to delete
+ *  @param aIsDeleteConversation Delete the conversation or not
  *
  *  @return Error
  */
-- (EMError *)deleteContact:(NSString *)aUsername;
+- (EMError *)deleteContact:(NSString *)aUsername
+          isDeleteConversation:(BOOL)aIsDeleteConversation;
 
 #pragma mark - Black List
 
@@ -305,17 +308,20 @@
  *  \~chinese
  *  删除好友
  *
- *  @param aUsername        要删除的好友
- *  @param aCompletionBlock 完成的回调
+ *  @param aUsername            要删除的好友
+ *  @param aDeleteConversation  是否删除会话
+ *  @param aCompletionBlock     完成的回调
  *
  *  \~english
  *  Delete a contact
  *
- *  @param aUsername        The user to be deleted
- *  @param aCompletionBlock The callback block of completion
+ *  @param aUsername                The user to be deleted
+ *  @param aIsDeleteConversation    Delete the conversation or not
+ *  @param aCompletionBlock         The callback block of completion
  *
  */
 - (void)deleteContact:(NSString *)aUsername
+     isDeleteConversation:(BOOL)aIsDeleteConversation
            completion:(void (^)(NSString *aUsername, EMError *aError))aCompletionBlock;
 
 /*!
@@ -472,9 +478,46 @@
  *  \~chinese
  *  删除好友
  *
+ *  同步方法，会阻塞当前线程
+ *
+ *  @param aUsername 要删除的好友
+ *
+ *  @return 错误信息
+ *
+ *  \~english
+ *  Delete a contact
+ *
+ *  @param aUsername The user to delete
+ *
+ *  @return Error
+ */
+- (EMError *)deleteContact:(NSString *)aUsername __deprecated_msg("Use -deleteContact:username:isDeleteConversation:");
+
+
+/*!
+ *  \~chinese
+ *  删除好友
+ *
  *  @param aUsername        要删除的好友
- *  @param aSuccessBlock    成功的回调
- *  @param aFailureBlock    失败的回调
+ *  @param aCompletionBlock 完成的回调
+ *
+ *  \~english
+ *  Delete a contact
+ *
+ *  @param aUsername        The user to be deleted
+ *  @param aCompletionBlock The callback block of completion
+ *
+ */
+- (void)deleteContact:(NSString *)aUsername
+           completion:(void (^)(NSString *aUsername, EMError *aError))aCompletionBlock __deprecated_msg("Use -deleteContact:username:isDeleteConversation:");
+
+/*!
+ *  \~chinese
+ *  删除好友
+ *
+ *  @param aUsername            要删除的好友
+ *  @param aSuccessBlock        成功的回调
+ *  @param aFailureBlock        失败的回调
  *
  *  \~english
  *  Delete friend

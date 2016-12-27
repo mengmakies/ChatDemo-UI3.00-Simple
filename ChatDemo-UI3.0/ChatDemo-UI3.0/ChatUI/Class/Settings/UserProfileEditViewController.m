@@ -61,7 +61,8 @@
     if (!_usernameLabel) {
         _usernameLabel = [[UILabel alloc] init];
         _usernameLabel.frame = CGRectMake(CGRectGetMaxX(_headImageView.frame) + 10.f, 10, 200, 20);
-        _usernameLabel.text = kCurrEaseUserId;
+        UserCacheInfo *user = [UserCacheManager currUser];
+        _usernameLabel.text = user.NickName;
         _usernameLabel.textColor = [UIColor lightGrayColor];
     }
     return _usernameLabel;
@@ -216,17 +217,16 @@
             self.imagePicker.mediaTypes = @[(NSString *)kUTTypeImage];
             [self presentViewController:self.imagePicker animated:YES completion:NULL];
         } else {
-        
+            
         }
 #endif
     } else if (buttonIndex == 1) {
         self.imagePicker.sourceType = UIImagePickerControllerSourceTypePhotoLibrary;
         self.imagePicker.mediaTypes = @[(NSString *)kUTTypeImage];
         [self presentViewController:self.imagePicker animated:YES completion:NULL];
-
+        
     }
 }
-
 
 
 @end

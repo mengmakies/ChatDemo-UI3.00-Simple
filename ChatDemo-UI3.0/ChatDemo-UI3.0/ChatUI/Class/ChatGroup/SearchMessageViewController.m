@@ -12,24 +12,19 @@
 
 #import "SearchMessageViewController.h"
 
-#import "EMSearchBar.h"
-#import "EMSearchDisplayController.h"
 #import "UIImageView+HeadImage.h"
+#import "UIViewController+SearchController.h"
 #import "SearchChatViewController.h"
 
 #define SEARCHMESSAGE_PAGE_SIZE 30
 
-@interface SearchMessageViewController () <UISearchBarDelegate, UISearchDisplayDelegate, UITextFieldDelegate>
+@interface SearchMessageViewController () <UISearchBarDelegate, UITextFieldDelegate, EMSearchControllerDelegate>
 {
     dispatch_queue_t _searchQueue;
     void* _queueTag;
 }
 
 @property (strong, nonatomic) EMConversation *conversation;
-
-@property (strong, nonatomic) EMSearchBar *searchBar;
-
-@property (strong, nonatomic) EMSearchDisplayController *searchController;
 
 @property (strong, nonatomic) UILabel *timeLabel;
 @property (strong, nonatomic) UIDatePicker *datePicker;
@@ -73,22 +68,20 @@
     UIBarButtonItem *backItem = [[UIBarButtonItem alloc] initWithCustomView:backButton];
     [self.navigationItem setLeftBarButtonItem:backItem];
     
+    [self setupSearchController];
+    
 //    UIButton *timeButton = [[UIButton alloc] initWithFrame:CGRectMake(0, 0, 44, 44)];
 //    [timeButton setTitle:@"筛选" forState:UIControlStateNormal];
 //    [timeButton addTarget:self action:@selector(timeAction) forControlEvents:UIControlEventTouchUpInside];
 //    UIBarButtonItem *timeItem = [[UIBarButtonItem alloc] initWithCustomView:timeButton];
 //    [self.navigationItem setRightBarButtonItem:timeItem];
-    
-    [self searchController];
-    self.searchBar.frame = CGRectMake(0, 0, self.view.frame.size.width, 44);
-    [self.view addSubview:self.searchBar];
 }
 
 - (UILabel*)fromLabel
 {
     if (_fromLabel == nil) {
         _fromLabel = [[UILabel alloc] init];
-        _fromLabel.frame = CGRectMake(0, CGRectGetMaxY(self.searchBar.frame) + 5, CGRectGetWidth([UIScreen mainScreen].bounds), 20);
+        _fromLabel.frame = CGRectMake(0, CGRectGetMaxY(self.searchController.searchBar.frame) + 5, CGRectGetWidth([UIScreen mainScreen].bounds), 20);
         _fromLabel.text = @"筛选发送者:";
         _fromLabel.textColor = [UIColor blackColor];
         _fromLabel.textAlignment = NSTextAlignmentLeft;
@@ -140,113 +133,12 @@
     return _textField;
 }
 
-- (EMSearchBar*)searchBar
-{
-    if (_searchBar == nil) {
-        _searchBar = [[EMSearchBar alloc] init];
-        _searchBar.delegate = self;
-        _searchBar.placeholder = NSLocalizedString(@"search", @"Search");
-        _searchBar.backgroundColor = [UIColor colorWithRed:0.747 green:0.756 blue:0.751 alpha:1.000];
-    }
-    return _searchBar;
-}
+#pragma mark - EMSearchControllerDelegate
 
-- (EMSearchDisplayController *)searchController
-{
-    if (_searchController == nil) {
-        _searchController = [[EMSearchDisplayController alloc] initWithSearchBar:self.searchBar contentsController:self];
-        _searchController.delegate = self;
-        _searchController.searchResultsTableView.separatorStyle = UITableViewCellSeparatorStyleSingleLine;
-        _searchController.searchResultsTableView.tableFooterView = [[UIView alloc] init];
-        
-        __weak SearchMessageViewController *weakSelf = self;
-        [_searchController setCellForRowAtIndexPathCompletion:^UITableViewCell *(UITableView *tableView, NSIndexPath *indexPath) {
-            if (indexPath.section == 0) {
-                NSString *CellIdentifier = [EaseConversationCell cellIdentifierWithModel:nil];
-                EaseConversationCell *cell = (EaseConversationCell *)[tableView dequeueReusableCellWithIdentifier:CellIdentifier];
-                
-                // Configure the cell...
-                if (cell == nil) {
-                    cell = [[EaseConversationCell alloc] initWithStyle:UITableViewCellStyleDefault reuseIdentifier:CellIdentifier];
-                }
-                EMMessage *message = [weakSelf.searchController.resultsSource objectAtIndex:indexPath.row];
-                
-                cell.titleLabel.text = message.from;
-                cell.detailLabel.text = [weakSelf getContentFromMessage:message];
-                [cell.avatarView.imageView imageWithUsername:message.from placeholderImage:[UIImage imageNamed:@"chatListCellHead.png"]];
-                return cell;
-            } else {
-                NSString *CellIdentifier = @"loadMoreCell";
-                UITableViewCell *cell = [tableView dequeueReusableCellWithIdentifier:CellIdentifier];
-                if (cell == nil) {
-                    cell = [[UITableViewCell alloc] initWithStyle:UITableViewCellStyleDefault reuseIdentifier:CellIdentifier];
-                }
-                cell.textLabel.text = @"加载更多";
-                return cell;
-            }
-        }];
-        
-        [_searchController setHeightForRowAtIndexPathCompletion:^CGFloat(UITableView *tableView, NSIndexPath *indexPath) {
-            return [EaseConversationCell cellHeightWithModel:nil];
-        }];
-        
-        [_searchController setDidSelectRowAtIndexPathCompletion:^(UITableView *tableView, NSIndexPath *indexPath) {
-            [tableView deselectRowAtIndexPath:indexPath animated:YES];
-            if (indexPath.section == 0) {
-                EMMessage *message = [weakSelf.searchController.resultsSource objectAtIndex:indexPath.row];
-            
-                SearchChatViewController *chatView = [[SearchChatViewController alloc] initWithConversationChatter:weakSelf.conversation.conversationId conversationType:weakSelf.conversation.type fromMessageId:message.messageId];
-                [weakSelf.navigationController pushViewController:chatView animated:YES];
-            } else {
-                EMMessage *message = [weakSelf.searchController.resultsSource objectAtIndex:[weakSelf.searchController.resultsSource count] - 1];
-                [weakSelf.conversation loadMessagesWithKeyword:weakSelf.searchBar.text timestamp:message.timestamp count:SEARCHMESSAGE_PAGE_SIZE fromUser:weakSelf.textField.text searchDirection:EMMessageSearchDirectionUp completion:^(NSArray *aMessages, EMError *aError) {
-                    if (!aError) {
-                        if ([aMessages count] < SEARCHMESSAGE_PAGE_SIZE) {
-                            weakSelf.hasMore = NO;
-                        }
-                        else {
-                            weakSelf.hasMore = YES;
-                        }
-                        [weakSelf.searchController.resultsSource addObjectsFromArray:[[aMessages reverseObjectEnumerator] allObjects]];
-                        [weakSelf.searchController.searchResultsTableView reloadData];
-                    }
-                }];
-            }
-        }];
-        
-        [_searchController setNumberOfSectionsInTableViewCompletion:^NSInteger(UITableView *tableView) {
-            if (weakSelf.hasMore) {
-                return 2;
-            } else {
-                return 1;
-            }
-        }];
-        
-        [_searchController setNumberOfRowsInSectionCompletion:^NSInteger(UITableView *tableView, NSInteger section) {
-            if (section == 0) {
-                return [weakSelf.searchController.resultsSource count];
-            } else {
-                return 1;
-            }
-        }];
-    }
-    
-    return _searchController;
-}
-
-#pragma mark - UISearchBarDelegate
-
-- (BOOL)searchBarShouldBeginEditing:(UISearchBar *)searchBar
-{
-    [searchBar setShowsCancelButton:YES animated:YES];
-    
-    return YES;
-}
-
-- (void)searchBar:(UISearchBar *)searchBar textDidChange:(NSString *)searchText
+- (void)searchButtonClickedWithString:(NSString *)aString
 {
     __weak typeof(self) weakSelf = self;
-    [self.conversation loadMessagesWithKeyword:searchBar.text timestamp:[self.datePicker.date timeIntervalSince1970]*1000 count:SEARCHMESSAGE_PAGE_SIZE fromUser:self.textField.text searchDirection:EMMessageSearchDirectionUp completion:^(NSArray *aMessages, EMError *aError) {
+    [self.conversation loadMessagesWithKeyword:aString timestamp:[self.datePicker.date timeIntervalSince1970]*1000 count:SEARCHMESSAGE_PAGE_SIZE fromUser:self.textField.text searchDirection:EMMessageSearchDirectionUp completion:^(NSArray *aMessages, EMError *aError) {
         SearchMessageViewController *strongSelf = weakSelf;
         if (strongSelf) {
             if([aMessages count]<SEARCHMESSAGE_PAGE_SIZE) {
@@ -254,28 +146,94 @@
             } else {
                 strongSelf.hasMore = YES;
             }
-            [strongSelf.searchController.resultsSource removeAllObjects];
-            [strongSelf.searchController.resultsSource addObjectsFromArray:[[aMessages reverseObjectEnumerator] allObjects]];
-            [strongSelf.searchController.searchResultsTableView reloadData];
+            [strongSelf.resultController.displaySource removeAllObjects];
+            [strongSelf.resultController.displaySource addObjectsFromArray:[[aMessages reverseObjectEnumerator] allObjects]];
+            [strongSelf.resultController.tableView reloadData];
         }
     }];
 }
 
-- (BOOL)searchBarShouldEndEditing:(UISearchBar *)searchBar
-{
-    return YES;
-}
+#pragma mark - private
 
-- (void)searchBarSearchButtonClicked:(UISearchBar *)searchBar
+- (void)setupSearchController
 {
-    [searchBar resignFirstResponder];
-}
+    [self enableSearchController];
+    
+    __weak SearchMessageViewController *weakSelf = self;
+    [self.resultController setCellForRowAtIndexPathCompletion:^UITableViewCell *(UITableView *tableView, NSIndexPath *indexPath) {
+        if (indexPath.section == 0) {
+            NSString *CellIdentifier = [EaseConversationCell cellIdentifierWithModel:nil];
+            EaseConversationCell *cell = (EaseConversationCell *)[tableView dequeueReusableCellWithIdentifier:CellIdentifier];
 
-- (void)searchBarCancelButtonClicked:(UISearchBar *)searchBar
-{
-    searchBar.text = @"";
-    [searchBar resignFirstResponder];
-    [searchBar setShowsCancelButton:NO animated:YES];
+            // Configure the cell...
+            if (cell == nil) {
+                cell = [[EaseConversationCell alloc] initWithStyle:UITableViewCellStyleDefault reuseIdentifier:CellIdentifier];
+            }
+            EMMessage *message = [weakSelf.resultController.displaySource objectAtIndex:indexPath.row];
+
+            cell.titleLabel.text = message.from;
+            cell.detailLabel.text = [weakSelf getContentFromMessage:message];
+            [cell.avatarView.imageView imageWithUsername:message.from placeholderImage:[UIImage imageNamed:@"chatListCellHead.png"]];
+            return cell;
+        } else {
+            NSString *CellIdentifier = @"loadMoreCell";
+            UITableViewCell *cell = [tableView dequeueReusableCellWithIdentifier:CellIdentifier];
+            if (cell == nil) {
+                cell = [[UITableViewCell alloc] initWithStyle:UITableViewCellStyleDefault reuseIdentifier:CellIdentifier];
+            }
+            cell.textLabel.text = @"加载更多";
+            return cell;
+        }
+    }];
+
+    [self.resultController setHeightForRowAtIndexPathCompletion:^CGFloat(UITableView *tableView, NSIndexPath *indexPath) {
+        return [EaseConversationCell cellHeightWithModel:nil];
+    }];
+
+    [self.resultController setDidSelectRowAtIndexPathCompletion:^(UITableView *tableView, NSIndexPath *indexPath) {
+        [tableView deselectRowAtIndexPath:indexPath animated:YES];
+        if (indexPath.section == 0) {
+            EMMessage *message = [weakSelf.resultController.displaySource objectAtIndex:indexPath.row];
+
+            SearchChatViewController *chatView = [[SearchChatViewController alloc] initWithConversationChatter:weakSelf.conversation.conversationId conversationType:weakSelf.conversation.type fromMessageId:message.messageId];
+            [weakSelf.navigationController pushViewController:chatView animated:YES];
+        } else {
+            EMMessage *message = [weakSelf.resultController.displaySource objectAtIndex:[weakSelf.resultController.displaySource count] - 1];
+            [weakSelf.conversation loadMessagesWithKeyword:weakSelf.searchController.searchBar.text timestamp:message.timestamp count:SEARCHMESSAGE_PAGE_SIZE fromUser:weakSelf.textField.text searchDirection:EMMessageSearchDirectionUp completion:^(NSArray *aMessages, EMError *aError) {
+                if (!aError) {
+                    if ([aMessages count] < SEARCHMESSAGE_PAGE_SIZE) {
+                        weakSelf.hasMore = NO;
+                    }
+                    else {
+                        weakSelf.hasMore = YES;
+                    }
+                    [weakSelf.resultController.displaySource addObjectsFromArray:[[aMessages reverseObjectEnumerator] allObjects]];
+                    [weakSelf.resultController.tableView reloadData];
+                }
+            }];
+        }
+        
+        [weakSelf cancelSearch];
+    }];
+
+    [self.resultController setNumberOfSectionsInTableViewCompletion:^NSInteger(UITableView *tableView) {
+        if (weakSelf.hasMore) {
+            return 2;
+        } else {
+            return 1;
+        }
+    }];
+
+    [self.resultController setNumberOfRowsInSectionCompletion:^NSInteger(UITableView *tableView, NSInteger section) {
+        if (section == 0) {
+            return [weakSelf.resultController.displaySource count];
+        } else {
+            return 1;
+        }
+    }];
+    
+    self.searchController.searchBar.frame = CGRectMake(0, 0, self.view.frame.size.width, 44);
+    [self.view addSubview:self.searchController.searchBar];
 }
 
 - (NSString*)getContentFromMessage:(EMMessage*)message
@@ -337,13 +295,13 @@
         [self.view addSubview:self.fromLabel];
         [self.view addSubview:self.datePicker];
         [self.view addSubview:self.textField];
-        self.searchBar.hidden = YES;
+        self.searchController.searchBar.hidden = YES;
     } else {
         [self.timeLabel removeFromSuperview];
         [self.fromLabel removeFromSuperview];
         [self.datePicker removeFromSuperview];
         [self.textField removeFromSuperview];
-        self.searchBar.hidden = NO;
+        self.searchController.searchBar.hidden = NO;
     }
 }
 

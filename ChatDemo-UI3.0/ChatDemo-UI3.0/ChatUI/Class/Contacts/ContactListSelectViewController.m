@@ -49,12 +49,13 @@
             [[EMClient sharedClient].chatManager sendMessage:message progress:nil completion:^(EMMessage *aMessage, EMError *aError) {
                 if (!aError) {
                     NSMutableArray *array = [NSMutableArray arrayWithArray:[self.navigationController viewControllers]];
+                    UIViewController *chatController = nil;
 #ifdef REDPACKET_AVALABLE
-                    RedPacketChatViewController *chatController = [[RedPacketChatViewController alloc]
+                    chatController = [[RedPacketChatViewController alloc] initWithConversationChatter:userModel.buddy conversationType:EMConversationTypeChat];
 #else
-                    ChatViewController *chatController = [[ChatViewController alloc]
-#endif
+                    chatController = [[ChatViewController alloc]
                                                           initWithConversationChatter:userModel.buddy conversationType:EMConversationTypeChat];
+#endif
                     chatController.title = userModel.nickname.length != 0 ? [userModel.nickname copy] : [userModel.buddy copy];
                     if ([array count] >= 3) {
                         [array removeLastObject];
@@ -86,12 +87,12 @@
             [[EMClient sharedClient].chatManager sendMessage:message progress:nil completion:^(EMMessage *message, EMError *error) {
                 if (!error) {
                     NSMutableArray *array = [NSMutableArray arrayWithArray:[self.navigationController viewControllers]];
+                    
 #ifdef REDPACKET_AVALABLE
-                    RedPacketChatViewController *chatController = [[RedPacketChatViewController alloc]
+                    RedPacketChatViewController *chatController = [[RedPacketChatViewController alloc] initWithConversationChatter:userModel.buddy conversationType:EMConversationTypeChat];
 #else
-                    ChatViewController *chatController = [[ChatViewController alloc]
+                    ChatViewController *chatController = [[ChatViewController alloc] initWithConversationChatter:userModel.buddy conversationType:EMConversationTypeChat];
 #endif
-                                                          initWithConversationChatter:userModel.buddy conversationType:EMConversationTypeChat];
                     chatController.title = userModel.nickname.length != 0 ? userModel.nickname : userModel.buddy;
                     if ([array count] >= 3) {
                         [array removeLastObject];
@@ -113,10 +114,10 @@
 {
     id<IUserModel> model = nil;
     model = [[EaseUserModel alloc] initWithBuddy:buddy];
-    UserWebInfo * userInfo = [UserWebManager getById:model.buddy];
-    if (userInfo) {
-        model.nickname= userInfo.nickName;
-        model.avatarURLPath = userInfo.avatarUrl;
+    UserCacheInfo *user = [UserCacheManager getById:buddy];
+    if (user) {
+        model.nickname= user.NickName;
+        model.avatarURLPath = user.AvatarUrl;
     }
     return model;
 }
@@ -126,10 +127,10 @@
 {
     id<IUserModel> model = nil;
     model = [self.dataArray objectAtIndex:indexPath.row];
-    UserCacheInfo * userInfo = [UserCacheManager getById:model.buddy];
-    if (userInfo) {
-        model.nickname= userInfo.NickName;
-        model.avatarURLPath = userInfo.AvatarUrl;
+    UserCacheInfo *user = [UserCacheManager getById:model.buddy];
+    if (user) {
+        model.nickname= user.NickName;
+        model.avatarURLPath = user.AvatarUrl;
     }
     return model;
 }

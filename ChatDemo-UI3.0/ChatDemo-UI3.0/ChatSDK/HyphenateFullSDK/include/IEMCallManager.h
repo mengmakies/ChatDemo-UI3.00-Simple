@@ -94,39 +94,26 @@
 
 /*!
  *  \~chinese
- *  发起语音会话
+ *  发起实时会话
  *
- *  @param aUsername        被呼叫的用户（不能与自己通话）
+ *  @param aType            通话类型
+ *  @param aRemoteName      被呼叫的用户（不能与自己通话）
+ *  @param aExt             通话扩展信息，会传给被呼叫方
  *  @param aCompletionBlock 完成的回调
  *
  *  \~english
- *  Start a voice call
+ *  Start a call
  *
- *  @param aUsername        The callee
+ *  @param aType            Call type
+ *  @param aRemoteName      The callee
+ *  @param aExt             Call extention, to the callee
  *  @param aCompletionBlock The callback of completion
  *
  */
-- (void)startVoiceCall:(NSString *)aUsername
-            completion:(void (^)(EMCallSession *aCallSession, EMError *aError))aCompletionBlock;
-
-/*!
- *  \~chinese
- *  发起视频会话
- *
- *  @param aUsername        被呼叫的用户（不能与自己通话）
- *  @param aCompletionBlock 完成的回调
- *
- *  \~english
- *  Start a video call
- *
- *  @param aUsername        The callee
- *  @param aSuccessBlock    The callback block of completion
- *
- */
-- (void)startVideoCall:(NSString *)aUsername
-            completion:(void (^)(EMCallSession *aCallSession, EMError *aError))aCompletionBlock;
-
-
+- (void)startCall:(EMCallType)aType
+       remoteName:(NSString *)aRemoteName
+              ext:(NSString *)aExt
+       completion:(void (^)(EMCallSession *aCallSession, EMError *aError))aCompletionBlock;
 
 /*!
  *  \~chinese
@@ -165,6 +152,42 @@
  */
 - (EMError *)endCall:(NSString *)aCallId
               reason:(EMCallEndReason)aReason;
+
+#pragma mark - EM_DEPRECATED_IOS 3.2.1
+
+/*!
+ *  \~chinese
+ *  发起语音会话
+ *
+ *  @param aUsername        被呼叫的用户（不能与自己通话）
+ *  @param aCompletionBlock 完成的回调
+ *
+ *  \~english
+ *  Start a voice call
+ *
+ *  @param aUsername        The callee
+ *  @param aCompletionBlock The callback of completion
+ *
+ */
+- (void)startVoiceCall:(NSString *)aUsername
+            completion:(void (^)(EMCallSession *aCallSession, EMError *aError))aCompletionBlock EM_DEPRECATED_IOS(3_1_0, 3_2_0, "Use -[IEMCallManager startCall:remoteName:ext:completion:]");
+
+/*!
+ *  \~chinese
+ *  发起视频会话
+ *
+ *  @param aUsername        被呼叫的用户（不能与自己通话）
+ *  @param aCompletionBlock 完成的回调
+ *
+ *  \~english
+ *  Start a video call
+ *
+ *  @param aUsername        The callee
+ *  @param aSuccessBlock    The callback block of completion
+ *
+ */
+- (void)startVideoCall:(NSString *)aUsername
+            completion:(void (^)(EMCallSession *aCallSession, EMError *aError))aCompletionBlock EM_DEPRECATED_IOS(3_1_0, 3_2_0, "Use -[IEMCallManager startCall:remoteName:ext:completion:]");
 
 #pragma mark - EM_DEPRECATED_IOS 3.2.0
 

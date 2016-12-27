@@ -152,14 +152,14 @@
                 // -----测试：登录成功后，自动添加martin1234为好友--------end---------
                 
                 NSString *userOpenId = username;// 用户环信ID
-                NSString *nickName = [NSString stringWithFormat:@"小草%d", arc4random_uniform(100)];// 用户昵称
-                NSString *avatarUrl = @"http://avatar.csdn.net/E/8/5/2_duruiqi_fx.jpg";// 用户头像（绝对路径）
+                NSString *nickName = [NSString stringWithFormat:@"小草%d", arc4random_uniform(500)];// 用户昵称
+                NSString *avatarUrl = @"http://avatar.csdn.net/A/2/1/1_mengmakies.jpg";// 用户头像（绝对路径）
                 
                 // 登录成功后，如果后端云没有缓存用户信息，则新增一个用户
                 [UserWebManager createUser:userOpenId nickName:nickName avatarUrl:avatarUrl];
                 
                 // 通过消息的扩展属性传递昵称和头像时，需要调用这句代码缓存
-//                [UserCacheManager saveInfo:userOpenId imgUrl:avatarUrl nickName:nickName];
+                // [UserCacheManager saveInfo:userOpenId imgUrl:avatarUrl nickName:nickName];
                 
                 //设置是否自动登录
                 [[EMClient sharedClient].options setIsAutoLogin:YES];
@@ -208,21 +208,6 @@
             }
         });
     });
-}
-
-// 测试发送消息
--(void)sendChatMsg:(NSString*)toUserId
-              text:(NSString*)text{
-    EMMessage *message = [EaseSDKHelper sendTextMessage:text
-                                                     to:toUserId
-                                            messageType:EMChatTypeChat
-                                             messageExt:nil];
-
-    [[EMClient sharedClient].chatManager sendMessage:message progress:nil completion:^(EMMessage *aMessage, EMError *aError) {
-        if (!aError) {
-            
-        }
-    }];
 }
 
 //弹出提示的代理方法
@@ -340,5 +325,19 @@
     return nil;
 }
 
-@end
+// 测试发送消息
+-(void)sendChatMsg:(NSString*)toUserId
+              text:(NSString*)text{
+    EMMessage *message = [EaseSDKHelper sendTextMessage:text
+                                                     to:toUserId
+                                            messageType:EMChatTypeChat
+                                             messageExt:nil];
+    
+    [[EMClient sharedClient].chatManager sendMessage:message progress:nil completion:^(EMMessage *aMessage, EMError *aError) {
+        if (!aError) {
+            
+        }
+    }];
+}
 
+@end

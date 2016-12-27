@@ -15,32 +15,23 @@
 #import "AppDelegate.h"
 #import "ApplyViewController.h"
 #import "MBProgressHUD.h"
-#import <UserNotifications/UserNotifications.h>
+
+#import "EaseSDKHelper.h"
 
 #ifdef REDPACKET_AVALABLE
 #import "RedpacketOpenConst.h"
 #import "RedPacketUserConfig.h"
 #endif
 
-#import "EaseSDKHelper.h"
+#if DEMO_CALL == 1
+#import "DemoCallManager.h"
+#endif
 
 //两次提示的默认间隔
 static const CGFloat kDefaultPlaySoundInterval = 3.0;
 static NSString *kMessageType = @"MessageType";
 static NSString *kConversationChatter = @"ConversationChatter";
 static NSString *kGroupName = @"GroupName";
-
-#if DEMO_CALL == 1
-
-#import "CallViewController.h"
-
-@interface ChatUIHelper()<EMCallManagerDelegate>
-{
-    NSTimer *_callTimer;
-}
-@end
-
-#endif
 
 static ChatUIHelper *helper = nil;
 
@@ -62,10 +53,6 @@ static ChatUIHelper *helper = nil;
     [[EMClient sharedClient].contactManager removeDelegate:self];
     [[EMClient sharedClient].roomManager removeDelegate:self];
     [[EMClient sharedClient].chatManager removeDelegate:self];
-    
-#if DEMO_CALL == 1
-    [[EMClient sharedClient].callManager removeDelegate:self];
-#endif
 }
 
 - (id)init
@@ -77,7 +64,16 @@ static ChatUIHelper *helper = nil;
     return self;
 }
 
-#pragma mark - getter
+#pragma mark - setter
+
+- (void)setMainVC:(MainViewController *)mainVC
+{
+    _mainVC = mainVC;
+    
+#if DEMO_CALL == 1
+    [[DemoCallManager sharedManager] setMainController:mainVC];
+#endif
+}
 
 #pragma mark - init
 
@@ -94,20 +90,7 @@ static ChatUIHelper *helper = nil;
     [[EMClient sharedClient].chatManager addDelegate:self delegateQueue:nil];
     
 #if DEMO_CALL == 1
-    self.callLock = [[NSObject alloc] init];
-    [[EMClient sharedClient].callManager addDelegate:self delegateQueue:nil];
-    
-    NSString *file = [NSSearchPathForDirectoriesInDomains(NSDocumentDirectory, NSUserDomainMask, YES).firstObject stringByAppendingPathComponent:@"calloptions.data"];
-    EMCallOptions *options = nil;
-    if ([[NSFileManager defaultManager] fileExistsAtPath:file]) {
-        options = [NSKeyedUnarchiver unarchiveObjectWithFile:file];
-    } else {
-        options = [[EMClient sharedClient].callManager getCallOptions];
-        options.isSendPushIfOffline = NO;
-    }
-    [[EMClient sharedClient].callManager setCallOptions:options];
-    
-    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(makeCall:) name:KNOTIFICATION_CALL object:nil];
+    [DemoCallManager sharedManager];
 #endif
 }
 
@@ -308,20 +291,6 @@ static ChatUIHelper *helper = nil;
     }
 }
 
-- (void)cmdMessagesDidReceive:(NSArray *)aCmdMessages
-{
-    for (EMMessage *message in aCmdMessages) {
-        EMCmdMessageBody *cmdBody = (EMCmdMessageBody *)message.body;
-        NSString *action = cmdBody.action;
-        if ([action isEqualToString:@"inviteToJoinConference"]) {
-//            NSString *callId = [message.ext objectForKey:@"callId"];
-        } else if ([action isEqualToString:@"__Call_ReqP2P_ConferencePattern"]) {
-            UIAlertView *alertView = [[UIAlertView alloc] initWithTitle:nil message:@"已转为会议模式" delegate:self cancelButtonTitle:NSLocalizedString(@"ok", @"OK") otherButtonTitles:nil, nil];
-            [alertView show];
-        }
-    }
-}
-
 #pragma mark - EMGroupManagerDelegate
 
 - (void)didReceiveLeavedGroup:(EMGroup *)aGroup
@@ -436,6 +405,7 @@ static ChatUIHelper *helper = nil;
 }
 
 #pragma mark - EMContactManagerDelegate
+
 - (void)didReceiveAgreedFromUsername:(NSString *)aUsername
 {
     NSString *msgstr = [NSString stringWithFormat:@"%@同意了加好友申请", aUsername];
@@ -541,283 +511,7 @@ static ChatUIHelper *helper = nil;
     
 }
 
-#pragma mark - EMCallManagerDelegate
-
-#if DEMO_CALL == 1
-
-- (void)callDidReceive:(EMCallSession *)aSession
-{
-    if ([EaseSDKHelper shareHelper].isShowingimagePicker) {
-        [[NSNotificationCenter defaultCenter] postNotificationName:@"hideImagePicker" object:nil];
-    }
-    
-    NSString *callId = @"";
-    if (aSession && aSession.callId) {
-        callId = [aSession callId];
-    }
-    
-    if(self.callSession && self.callSession.status != EMCallSessionStatusDisconnected){
-        [[EMClient sharedClient].callManager endCall:aSession.callId reason:EMCallEndReasonBusy];
-        return;
-    }
-    
-    self.callSession = aSession;
-    if(self.callSession){
-        [self _startCallTimer];
-        
-        @synchronized (_callLock) {
-            self.callController = [[CallViewController alloc] initWithSession:self.callSession isCaller:NO status:NSLocalizedString(@"call.connecting", "Incoimg call")];
-            self.callController.modalPresentationStyle = UIModalPresentationOverFullScreen;
-
-            dispatch_async(dispatch_get_main_queue(), ^{
-                if (self.callController) {
-                    [self.mainVC presentViewController:self.callController animated:NO completion:nil];
-                }
-            });
-        }
-    }
-}
-
-- (void)callDidConnect:(EMCallSession *)aSession
-{
-    if ([aSession.callId isEqualToString:self.callSession.callId]) {
-        NSString *callId = @"";
-        if (aSession && aSession.callId) {
-            callId = [aSession callId];
-        }
-        [self.callController stateToConnected];
-    }
-}
-
-- (void)callDidAccept:(EMCallSession *)aSession
-{
-    if ([aSession.callId isEqualToString:self.callSession.callId]) {
-        NSString *callId = @"";
-        if (aSession && aSession.callId) {
-            callId = [aSession callId];
-        }
-        
-        [self _stopCallTimer];
-        [self.callController stateToAnswered];
-    }
-}
-
-- (void)callDidEnd:(EMCallSession *)aSession
-            reason:(EMCallEndReason)aReason
-             error:(EMError *)aError
-{
-    NSString *callId = @"";
-    if (aSession && aSession.callId) {
-        callId = [aSession callId];
-    }
-    
-    if ([aSession.callId isEqualToString:_callSession.callId]) {
-        
-        [self _stopCallTimer];
-        
-        @synchronized (_callLock) {
-            self.callSession = nil;
-            [self dismissCurrentCallController];
-        }
-        
-        if (aReason != EMCallEndReasonHangup) {
-            NSString *reasonStr = @"";
-            switch (aReason) {
-                case EMCallEndReasonNoResponse:
-                {
-                    reasonStr = NSLocalizedString(@"call.noResponse", @"NO response");
-                }
-                    break;
-                case EMCallEndReasonDecline:
-                {
-                    reasonStr = NSLocalizedString(@"call.rejected", @"Reject the call");
-                }
-                    break;
-                case EMCallEndReasonBusy:
-                {
-                    reasonStr = NSLocalizedString(@"call.in", @"In the call...");
-                }
-                    break;
-                case EMCallEndReasonFailed:
-                {
-                    reasonStr = NSLocalizedString(@"call.connectFailed", @"Connect failed");
-                }
-                    break;
-                case EMCallEndReasonUnsupported:
-                {
-                    reasonStr = NSLocalizedString(@"call.connectUnsupported", @"Unsupported");
-                }
-                    break;
-//                case EMCallEndReasonRemoteOffline:
-//                {
-//                    reasonStr = NSLocalizedString(@"call.offline", @"Remote offline");
-//                }
-//                    break;
-                default:
-                    break;
-            }
-            
-            if (aError) {
-                UIAlertView *alertView = [[UIAlertView alloc] initWithTitle:@"Error" message:aError.errorDescription delegate:nil cancelButtonTitle:NSLocalizedString(@"ok", @"OK") otherButtonTitles:nil, nil];
-                [alertView show];
-            }
-            else{
-                UIAlertView *alertView = [[UIAlertView alloc] initWithTitle:nil message:reasonStr delegate:nil cancelButtonTitle:NSLocalizedString(@"ok", @"OK") otherButtonTitles:nil, nil];
-                [alertView show];
-            }
-        }
-    }
-}
-
-- (void)didReceiveCallNetworkChanged:(EMCallSession *)aSession status:(EMCallNetworkStatus)aStatus
-{
-    if ([aSession.callId isEqualToString:self.callSession.callId]) {
-        [self.callController setNetwork:aStatus];
-    }
-}
-
-#endif
-
-#pragma mark - public 
-
-#if DEMO_CALL == 1
-
-- (void)makeCall:(NSNotification*)notify
-{
-    if (notify.object) {
-        EMCallType type = (EMCallType)[[notify.object objectForKey:@"type"] integerValue];
-        [self makeCallWithUsername:[notify.object valueForKey:@"chatter"] type:type];
-    }
-}
-
-- (void)_startCallTimer
-{
-    _callTimer = [NSTimer scheduledTimerWithTimeInterval:50 target:self selector:@selector(_cancelCall) userInfo:nil repeats:NO];
-}
-
-- (void)_stopCallTimer
-{
-    if (_callTimer == nil) {
-        return;
-    }
-    
-    [_callTimer invalidate];
-    _callTimer = nil;
-}
-
-- (void)_cancelCall
-{
-    [self hangupCallWithReason:EMCallEndReasonNoResponse];
-    
-    UIAlertView *alertView = [[UIAlertView alloc] initWithTitle:nil message:NSLocalizedString(@"call.autoHangup", @"No response and Hang up") delegate:self cancelButtonTitle:NSLocalizedString(@"ok", @"OK") otherButtonTitles:nil, nil];
-    [alertView show];
-}
-
-+ (void)updateCallOptions
-{
-    NSString *file = [NSSearchPathForDirectoriesInDomains(NSDocumentDirectory, NSUserDomainMask, YES).firstObject stringByAppendingPathComponent:@"calloptions.data"];
-    EMCallOptions *options = [[EMClient sharedClient].callManager getCallOptions];
-    [NSKeyedArchiver archiveRootObject:options toFile:file];
-}
-
-- (void)makeCallWithUsername:(NSString *)aUsername
-                        type:(EMCallType)aType
-{
-    if ([aUsername length] == 0) {
-        return;
-    }
-    
-    __weak typeof(self) weakSelf = self;
-    void (^completionBlock)(EMCallSession *, EMError *) = ^(EMCallSession *aCallSession, EMError *aError){
-        ChatUIHelper *strongSelf = weakSelf;
-        if (strongSelf) {
-            if (aError || aCallSession == nil) {
-                UIAlertView *alertView = [[UIAlertView alloc] initWithTitle:nil message:NSLocalizedString(@"call.initFailed", @"Establish call failure") delegate:nil cancelButtonTitle:NSLocalizedString(@"ok", @"OK") otherButtonTitles:nil, nil];
-                [alertView show];
-                return;
-            }
-            
-            @synchronized (self.callLock) {
-                self.callSession = aCallSession;
-                self.callController = [[CallViewController alloc] initWithSession:self.callSession isCaller:YES status:NSLocalizedString(@"call.connecting", @"Connecting...")];
-                dispatch_async(dispatch_get_main_queue(), ^{
-                    if (self.callController) {
-                        [self.mainVC presentViewController:self.callController animated:NO completion:nil];
-                    }
-                });
-            }
-            
-            [self _startCallTimer];
-        }
-        else {
-            [[EMClient sharedClient].callManager endCall:aCallSession.callId reason:EMCallEndReasonNoResponse];
-        }
-    };
-    
-    if (aType == EMCallTypeVideo) {
-        [[EMClient sharedClient].callManager startVideoCall:aUsername completion:^(EMCallSession *aCallSession, EMError *aError) {
-            completionBlock(aCallSession, aError);
-        }];
-    }
-    else {
-        [[EMClient sharedClient].callManager startVoiceCall:aUsername completion:^(EMCallSession *aCallSession, EMError *aError) {
-            completionBlock(aCallSession, aError);
-        }];
-    }
-}
-
-- (void)hangupCallWithReason:(EMCallEndReason)aReason
-{
-    [self _stopCallTimer];
-    
-    EMCallSession *tmpSession = self.callSession;
-    if (tmpSession) {
-        [[EMClient sharedClient].callManager endCall:tmpSession.callId reason:aReason];
-    }
-    
-    @synchronized (_callLock) {
-        self.callSession = nil;
-        
-        [self dismissCurrentCallController];
-    }
-}
-
-- (void)answerCall:(NSString *)aCallId
-{
-    if (_callSession && [_callSession.callId isEqualToString:aCallId]) {
-        dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
-            EMError *error = [[EMClient sharedClient].callManager answerIncomingCall:self.callSession.callId];
-            if (error) {
-                dispatch_async(dispatch_get_main_queue(), ^{
-                    if (error.code == EMErrorNetworkUnavailable) {
-                        UIAlertView *alertView = [[UIAlertView alloc] initWithTitle:nil message:NSLocalizedString(@"network.disconnection", @"Network disconnection") delegate:nil cancelButtonTitle:NSLocalizedString(@"ok", @"OK") otherButtonTitles:nil, nil];
-                        [alertView show];
-                    }
-                    else{
-                        [self hangupCallWithReason:EMCallEndReasonFailed];
-                    }
-                });
-            }
-        });
-    }
-}
-
-- (void)dismissCurrentCallController
-{
-    self.callController.isDismissing = YES;
-    CallViewController *tmpController = self.callController;
-    self.callController = nil;
-    if (tmpController) {
-        dispatch_async(dispatch_get_main_queue(), ^{
-            [tmpController dismissViewControllerAnimated:NO completion:nil];
-        });
-        
-        [tmpController clear];
-        tmpController = nil;
-    }
-}
-
-#endif
+#pragma mark - public
 
 #pragma mark - private
 - (BOOL)_needShowNotification:(NSString *)fromChatter
@@ -856,113 +550,6 @@ static ChatUIHelper *helper = nil;
     self.contactViewVC = nil;
     
     [[EMClient sharedClient] logout:NO];
-    
-#if DEMO_CALL == 1
-    [self hangupCallWithReason:EMCallEndReasonFailed];
-#endif
-}
-
-- (void)playSoundAndVibration{
-    NSTimeInterval timeInterval = [[NSDate date]
-                                   timeIntervalSinceDate:self.lastPlaySoundDate];
-    if (timeInterval < kDefaultPlaySoundInterval) {
-        //如果距离上次响铃和震动时间太短, 则跳过响铃
-        NSLog(@"skip ringing & vibration %@, %@", [NSDate date], self.lastPlaySoundDate);
-        return;
-    }
-    
-    //保存最后一次响铃时间
-    self.lastPlaySoundDate = [NSDate date];
-    
-    // 收到消息时，播放音频
-    [[EMCDDeviceManager sharedInstance] playNewMessageSound];
-    // 收到消息时，震动
-    [[EMCDDeviceManager sharedInstance] playVibration];
-}
-
-- (void)showNotificationWithMessage:(EMMessage *)message
-{
-    EMPushOptions *options = [[EMClient sharedClient] pushOptions];
-    //发送本地推送
-    UILocalNotification *notification = [[UILocalNotification alloc] init];
-    notification.fireDate = [NSDate date]; //触发通知的时间
-    
-    if (options.displayStyle == EMPushDisplayStyleMessageSummary) {
-        EMMessageBody *messageBody = message.body;
-        NSString *messageStr = nil;
-        switch (messageBody.type) {
-            case EMMessageBodyTypeText:
-            {
-                messageStr = ((EMTextMessageBody *)messageBody).text;
-            }
-                break;
-            case EMMessageBodyTypeImage:
-            {
-                messageStr = NSLocalizedString(@"message.image", @"Image");
-            }
-                break;
-            case EMMessageBodyTypeLocation:
-            {
-                messageStr = NSLocalizedString(@"message.location", @"Location");
-            }
-                break;
-            case EMMessageBodyTypeVoice:
-            {
-                messageStr = NSLocalizedString(@"message.voice", @"Voice");
-            }
-                break;
-            case EMMessageBodyTypeVideo:{
-                messageStr = NSLocalizedString(@"message.video", @"Video");
-            }
-                break;
-            default:
-                break;
-        }
-        
-        NSString *title = [UserCacheManager getNickById:message.from];
-        if (message.chatType == EMChatTypeGroupChat) {
-            NSArray *groupArray = [[EMClient sharedClient].groupManager getAllGroups];
-            for (EMGroup *group in groupArray) {
-                if ([group.groupId isEqualToString:message.conversationId]) {
-                    title = [NSString stringWithFormat:@"%@(%@)", message.from, group.subject];
-                    break;
-                }
-            }
-        }
-        else if (message.chatType == EMChatTypeChatRoom)
-        {
-            NSUserDefaults *ud = [NSUserDefaults standardUserDefaults];
-            NSString *key = [NSString stringWithFormat:@"OnceJoinedChatrooms_%@", [[EMClient sharedClient] currentUsername]];
-            NSMutableDictionary *chatrooms = [NSMutableDictionary dictionaryWithDictionary:[ud objectForKey:key]];
-            NSString *chatroomName = [chatrooms objectForKey:message.conversationId];
-            if (chatroomName)
-            {
-                title = [NSString stringWithFormat:@"%@(%@)", message.from, chatroomName];
-            }
-        }
-        
-        notification.alertBody = [NSString stringWithFormat:@"%@:%@", title, messageStr];
-    }
-    else{
-        notification.alertBody = NSLocalizedString(@"receiveMessage", @"you have a new message");
-    }
-    
-#warning 去掉注释会显示[本地]开头, 方便在开发中区分是否为本地推送
-    //notification.alertBody = [[NSString alloc] initWithFormat:@"[本地]%@", notification.alertBody];
-    
-    notification.alertAction = NSLocalizedString(@"open", @"Open");
-    notification.timeZone = [NSTimeZone defaultTimeZone];
-    [[ChatUIHelper shareHelper] playSoundAndVibration];
-    
-    NSMutableDictionary *userInfo = [NSMutableDictionary dictionary];
-    [userInfo setObject:[NSNumber numberWithInt:message.chatType] forKey:kMessageType];
-    [userInfo setObject:message.conversationId forKey:kConversationChatter];
-    notification.userInfo = userInfo;
-    
-    //发送通知
-    [[UIApplication sharedApplication] scheduleLocalNotification:notification];
-    //    UIApplication *application = [UIApplication sharedApplication];
-    //    application.applicationIconBadgeNumber += 1;
 }
 
 - (void)_handleReceivedAtMessage:(EMMessage*)aMessage
@@ -996,5 +583,147 @@ static ChatUIHelper *helper = nil;
         }
     }
 }
+
+
+- (void)playSoundAndVibration{
+    NSTimeInterval timeInterval = [[NSDate date]
+                                   timeIntervalSinceDate:self.lastPlaySoundDate];
+    if (timeInterval < kDefaultPlaySoundInterval) {
+        //如果距离上次响铃和震动时间太短, 则跳过响铃
+        NSLog(@"skip ringing & vibration %@, %@", [NSDate date], self.lastPlaySoundDate);
+        return;
+    }
+    
+    //保存最后一次响铃时间
+    self.lastPlaySoundDate = [NSDate date];
+    
+    // 收到消息时，播放音频
+    [[EMCDDeviceManager sharedInstance] playNewMessageSound];
+    // 收到消息时，震动
+    [[EMCDDeviceManager sharedInstance] playVibration];
+}
+
+- (void)showNotificationWithMessage:(EMMessage *)message
+{
+    EMPushOptions *options = [[EMClient sharedClient] pushOptions];
+    NSString *alertBody = nil;
+    if (options.displayStyle == EMPushDisplayStyleMessageSummary) {
+        EMMessageBody *messageBody = message.body;
+        NSString *messageStr = nil;
+        switch (messageBody.type) {
+            case EMMessageBodyTypeText:
+            {
+                messageStr = ((EMTextMessageBody *)messageBody).text;
+            }
+                break;
+            case EMMessageBodyTypeImage:
+            {
+                messageStr = NSLocalizedString(@"message.image", @"Image");
+            }
+                break;
+            case EMMessageBodyTypeLocation:
+            {
+                messageStr = NSLocalizedString(@"message.location", @"Location");
+            }
+                break;
+            case EMMessageBodyTypeVoice:
+            {
+                messageStr = NSLocalizedString(@"message.voice", @"Voice");
+            }
+                break;
+            case EMMessageBodyTypeVideo:{
+                messageStr = NSLocalizedString(@"message.video", @"Video");
+            }
+                break;
+            default:
+                break;
+        }
+        
+        do {
+            NSString *title = [UserCacheManager getNickById:message.from];
+            if (message.chatType == EMChatTypeGroupChat) {
+                NSDictionary *ext = message.ext;
+                if (ext && ext[kGroupMessageAtList]) {
+                    id target = ext[kGroupMessageAtList];
+                    if ([target isKindOfClass:[NSString class]]) {
+                        if ([kGroupMessageAtAll compare:target options:NSCaseInsensitiveSearch] == NSOrderedSame) {
+                            alertBody = [NSString stringWithFormat:@"%@%@", title, NSLocalizedString(@"group.atPushTitle", @" @ me in the group")];
+                            break;
+                        }
+                    }
+                    else if ([target isKindOfClass:[NSArray class]]) {
+                        NSArray *atTargets = (NSArray*)target;
+                        if ([atTargets containsObject:[EMClient sharedClient].currentUsername]) {
+                            alertBody = [NSString stringWithFormat:@"%@%@", title, NSLocalizedString(@"group.atPushTitle", @" @ me in the group")];
+                            break;
+                        }
+                    }
+                }
+                NSArray *groupArray = [[EMClient sharedClient].groupManager getJoinedGroups];
+                for (EMGroup *group in groupArray) {
+                    if ([group.groupId isEqualToString:message.conversationId]) {
+                        title = [NSString stringWithFormat:@"%@(%@)", message.from, group.subject];
+                        break;
+                    }
+                }
+            }
+            else if (message.chatType == EMChatTypeChatRoom)
+            {
+                NSUserDefaults *ud = [NSUserDefaults standardUserDefaults];
+                NSString *key = [NSString stringWithFormat:@"OnceJoinedChatrooms_%@", [[EMClient sharedClient] currentUsername]];
+                NSMutableDictionary *chatrooms = [NSMutableDictionary dictionaryWithDictionary:[ud objectForKey:key]];
+                NSString *chatroomName = [chatrooms objectForKey:message.conversationId];
+                if (chatroomName)
+                {
+                    title = [NSString stringWithFormat:@"%@(%@)", message.from, chatroomName];
+                }
+            }
+            
+            alertBody = [NSString stringWithFormat:@"%@:%@", title, messageStr];
+        } while (0);
+    }
+    else{
+        alertBody = NSLocalizedString(@"receiveMessage", @"you have a new message");
+    }
+    
+    NSTimeInterval timeInterval = [[NSDate date] timeIntervalSinceDate:self.lastPlaySoundDate];
+    BOOL playSound = NO;
+    if (!self.lastPlaySoundDate || timeInterval >= kDefaultPlaySoundInterval) {
+        self.lastPlaySoundDate = [NSDate date];
+        playSound = YES;
+    }
+    
+    NSMutableDictionary *userInfo = [NSMutableDictionary dictionary];
+    [userInfo setObject:[NSNumber numberWithInt:message.chatType] forKey:kMessageType];
+    [userInfo setObject:message.conversationId forKey:kConversationChatter];
+    
+    //发送本地推送
+    if (NSClassFromString(@"UNUserNotificationCenter")) {
+        UNTimeIntervalNotificationTrigger *trigger = [UNTimeIntervalNotificationTrigger triggerWithTimeInterval:0.01 repeats:NO];
+        UNMutableNotificationContent *content = [[UNMutableNotificationContent alloc] init];
+        if (playSound) {
+            content.sound = [UNNotificationSound defaultSound];
+        }
+        content.body =alertBody;
+        content.userInfo = userInfo;
+        UNNotificationRequest *request = [UNNotificationRequest requestWithIdentifier:message.messageId content:content trigger:trigger];
+        [[UNUserNotificationCenter currentNotificationCenter] addNotificationRequest:request withCompletionHandler:nil];
+    }
+    else {
+        UILocalNotification *notification = [[UILocalNotification alloc] init];
+        notification.fireDate = [NSDate date]; //触发通知的时间
+        notification.alertBody = alertBody;
+        notification.alertAction = NSLocalizedString(@"open", @"Open");
+        notification.timeZone = [NSTimeZone defaultTimeZone];
+        if (playSound) {
+            notification.soundName = UILocalNotificationDefaultSoundName;
+        }
+        notification.userInfo = userInfo;
+        
+        //发送通知
+        [[UIApplication sharedApplication] scheduleLocalNotification:notification];
+    }
+}
+
 
 @end

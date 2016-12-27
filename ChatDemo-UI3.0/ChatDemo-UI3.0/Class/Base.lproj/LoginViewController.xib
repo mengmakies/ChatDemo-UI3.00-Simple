@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
-<document type="com.apple.InterfaceBuilder3.CocoaTouch.XIB" version="3.0" toolsVersion="11542" systemVersion="15G31" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" colorMatched="YES">
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.XIB" version="3.0" toolsVersion="11542" systemVersion="15G31" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" colorMatched="YES">
     <device id="retina4_7" orientation="portrait">
         <adaptation id="fullscreen"/>
     </device>
@@ -22,59 +22,58 @@
             <rect key="frame" x="0.0" y="0.0" width="375" height="667"/>
             <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
             <subviews>
-                <switch hidden="YES" opaque="NO" contentMode="scaleToFill" horizontalHuggingPriority="750" verticalHuggingPriority="750" contentHorizontalAlignment="center" contentVerticalAlignment="center" on="YES" id="fVJ-uB-mAR">
+                <switch hidden="YES" opaque="NO" contentMode="scaleToFill" horizontalHuggingPriority="750" verticalHuggingPriority="750" fixedFrame="YES" contentHorizontalAlignment="center" contentVerticalAlignment="center" on="YES" translatesAutoresizingMaskIntoConstraints="NO" id="fVJ-uB-mAR">
                     <rect key="frame" x="236" y="227" width="51" height="31"/>
                     <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
                     <connections>
                         <action selector="useIpAction:" destination="-1" eventType="valueChanged" id="ETn-L4-jBg"/>
                     </connections>
                 </switch>
-                <label hidden="YES" opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="使用IP" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" id="fNP-mV-Qsn">
+                <label hidden="YES" opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" fixedFrame="YES" text="使用IP" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="fNP-mV-Qsn">
                     <rect key="frame" x="35" y="232" width="50" height="21"/>
                     <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
                     <fontDescription key="fontDescription" type="system" pointSize="17"/>
                     <color key="textColor" red="0.0" green="0.0" blue="0.0" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                     <nil key="highlightedColor"/>
                 </label>
-                <view contentMode="scaleToFill" id="iqB-n0-4iR" userLabel="mainview">
+                <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="iqB-n0-4iR" userLabel="mainview">
                     <rect key="frame" x="0.0" y="0.0" width="375" height="480"/>
-                    <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
                     <subviews>
-                        <imageView opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" image="account.png" id="uNL-2K-qWM">
-                            <rect key="frame" x="54" y="218" width="18" height="18"/>
+                        <imageView opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" fixedFrame="YES" image="account.png" translatesAutoresizingMaskIntoConstraints="NO" id="uNL-2K-qWM">
+                            <rect key="frame" x="49" y="55" width="18" height="18"/>
                             <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
                         </imageView>
-                        <textField opaque="NO" clipsSubviews="YES" contentMode="scaleToFill" contentHorizontalAlignment="left" contentVerticalAlignment="center" placeholder="个人账号/手机" minimumFontSize="17" clearButtonMode="whileEditing" id="AP7-GL-7yZ" userLabel="username - 个人账号/手机">
-                            <rect key="frame" x="87" y="212" width="193" height="30"/>
+                        <textField opaque="NO" clipsSubviews="YES" contentMode="scaleToFill" fixedFrame="YES" contentHorizontalAlignment="left" contentVerticalAlignment="center" placeholder="个人账号/手机" minimumFontSize="17" clearButtonMode="whileEditing" translatesAutoresizingMaskIntoConstraints="NO" id="AP7-GL-7yZ" userLabel="username - 个人账号/手机">
+                            <rect key="frame" x="82" y="49" width="193" height="30"/>
                             <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
                             <accessibility key="accessibilityConfiguration" identifier="username"/>
                             <fontDescription key="fontDescription" type="system" pointSize="15"/>
                             <textInputTraits key="textInputTraits" autocorrectionType="no" keyboardType="alphabet" returnKeyType="next"/>
                         </textField>
-                        <view contentMode="scaleToFill" id="4T7-BX-xc6">
-                            <rect key="frame" x="50" y="241" width="230" height="1"/>
+                        <view contentMode="scaleToFill" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="4T7-BX-xc6">
+                            <rect key="frame" x="45" y="78" width="230" height="1"/>
                             <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
                             <color key="backgroundColor" red="0.84313725490000002" green="0.84705882349999995" blue="0.84705882349999995" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                         </view>
-                        <imageView opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" image="password.png" id="cRY-aM-hEH">
-                            <rect key="frame" x="54" y="258" width="18" height="18"/>
+                        <imageView opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" fixedFrame="YES" image="password.png" translatesAutoresizingMaskIntoConstraints="NO" id="cRY-aM-hEH">
+                            <rect key="frame" x="49" y="95" width="18" height="18"/>
                             <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
                         </imageView>
-                        <textField opaque="NO" clipsSubviews="YES" contentMode="scaleToFill" contentHorizontalAlignment="left" contentVerticalAlignment="center" placeholder="密码" minimumFontSize="17" clearButtonMode="whileEditing" id="PWC-Hd-cWJ" userLabel="password - 密码">
-                            <rect key="frame" x="87" y="252" width="193" height="30"/>
+                        <textField opaque="NO" clipsSubviews="YES" contentMode="scaleToFill" fixedFrame="YES" contentHorizontalAlignment="left" contentVerticalAlignment="center" placeholder="密码" minimumFontSize="17" clearButtonMode="whileEditing" translatesAutoresizingMaskIntoConstraints="NO" id="PWC-Hd-cWJ" userLabel="password - 密码">
+                            <rect key="frame" x="82" y="89" width="193" height="30"/>
                             <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
                             <color key="tintColor" red="0.74977948588709675" green="0.18706713233925057" blue="0.19164996080266938" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                             <accessibility key="accessibilityConfiguration" identifier="password"/>
                             <fontDescription key="fontDescription" type="system" pointSize="15"/>
                             <textInputTraits key="textInputTraits" returnKeyType="go" secureTextEntry="YES"/>
                         </textField>
-                        <view contentMode="scaleToFill" id="NV9-e3-pcC">
-                            <rect key="frame" x="50" y="281" width="230" height="1"/>
+                        <view contentMode="scaleToFill" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="NV9-e3-pcC">
+                            <rect key="frame" x="45" y="118" width="230" height="1"/>
                             <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
                             <color key="backgroundColor" red="0.84313725490000002" green="0.84705882349999995" blue="0.84705882349999995" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                         </view>
-                        <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" id="HP1-ku-0fl">
-                            <rect key="frame" x="40" y="311" width="80" height="44"/>
+                        <button opaque="NO" contentMode="scaleToFill" fixedFrame="YES" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="HP1-ku-0fl">
+                            <rect key="frame" x="35" y="148" width="80" height="44"/>
                             <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
                             <color key="backgroundColor" red="0.3411764705882353" green="0.72941176470588232" blue="0.81568627450980391" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                             <accessibility key="accessibilityConfiguration" identifier="register"/>
@@ -90,8 +89,8 @@
                                 <action selector="doRegister:" destination="-1" eventType="touchUpInside" id="dVL-6w-FBQ"/>
                             </connections>
                         </button>
-                        <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" id="g7n-mh-wjo">
-                            <rect key="frame" x="130" y="311" width="160" height="43"/>
+                        <button opaque="NO" contentMode="scaleToFill" fixedFrame="YES" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="g7n-mh-wjo">
+                            <rect key="frame" x="125" y="148" width="160" height="43"/>
                             <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
                             <color key="backgroundColor" red="0.0" green="0.396078431372549" blue="0.4823529411764706" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                             <accessibility key="accessibilityConfiguration" identifier="login"/>
@@ -107,8 +106,8 @@
                                 <action selector="doLogin:" destination="-1" eventType="touchUpInside" id="7qQ-wk-5XS"/>
                             </connections>
                         </button>
-                        <imageView userInteractionEnabled="NO" contentMode="scaleToFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="logo.png" id="kBS-Up-Vzt">
-                            <rect key="frame" x="122" y="70" width="100" height="100"/>
+                        <imageView userInteractionEnabled="NO" contentMode="scaleToFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" fixedFrame="YES" image="_avatar" translatesAutoresizingMaskIntoConstraints="NO" id="Fw5-fp-Hgb">
+                            <rect key="frame" x="110" y="232" width="100" height="100"/>
                             <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
                         </imageView>
                     </subviews>
@@ -116,12 +115,17 @@
                 </view>
             </subviews>
             <color key="backgroundColor" red="1" green="1" blue="1" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
-            <point key="canvasLocation" x="32.5" y="58.5"/>
+            <constraints>
+                <constraint firstItem="iqB-n0-4iR" firstAttribute="leading" secondItem="i5M-Pr-FkT" secondAttribute="leading" id="fhu-37-5eT"/>
+                <constraint firstAttribute="bottom" secondItem="iqB-n0-4iR" secondAttribute="bottom" constant="187" id="pyH-Ck-HdV"/>
+                <constraint firstItem="iqB-n0-4iR" firstAttribute="top" secondItem="i5M-Pr-FkT" secondAttribute="top" id="uGn-YK-Jim"/>
+                <constraint firstItem="iqB-n0-4iR" firstAttribute="centerX" secondItem="i5M-Pr-FkT" secondAttribute="centerX" id="wmG-qh-kq0"/>
+            </constraints>
         </view>
     </objects>
     <resources>
+        <image name="_avatar" width="91" height="94"/>
         <image name="account.png" width="18" height="18"/>
-        <image name="logo.png" width="91" height="91"/>
         <image name="password.png" width="18" height="18"/>
     </resources>
     <simulatedMetricsContainer key="defaultSimulatedMetrics">

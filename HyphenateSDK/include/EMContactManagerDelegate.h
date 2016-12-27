@@ -58,7 +58,7 @@
 
 /*!
  *  \~chinese
- *  用户B删除与用户A的好友关系后，用户A会收到这个回调
+ *  用户B删除与用户A的好友关系后，用户A，B会收到这个回调
  *
  *  @param aUsername   用户B
  *
@@ -66,7 +66,7 @@
  
  *  Delegate method will be invoked if user is removed as a contact by another user
  *
- *  User A will receive this callback after User B unfriended with user A
+ *  User A，B will receive this callback after User B unfriended with user A
  *
  *  @param aUsername   User who unfriended the cureent user
  */

@@ -253,10 +253,10 @@
     id<IMessageModel> model = nil;
     model = [[EaseMessageModel alloc] initWithMessage:message];
     model.avatarImage = [UIImage imageNamed:@"chatListCellHead"];
-    UserCacheInfo * userInfo = [UserCacheManager getById:model.nickname];
-    if (userInfo) {
-        model.avatarURLPath = userInfo.AvatarUrl;
-        model.nickname = userInfo.NickName;
+    UserCacheInfo *user = [UserCacheManager getById:model.nickname];
+    if (user) {
+        model.avatarURLPath = user.AvatarUrl;
+        model.nickname = user.NickName;
     }
     model.failImageName = @"imageDownloadFail";
     return model;
@@ -316,7 +316,7 @@
 
 - (void)messageViewControllerMarkAllMessagesAsRead:(EaseMessageViewController *)viewController
 {
-    NOTIFY_POST(kSetupUnreadMessageCount);
+    [[NSNotificationCenter defaultCenter] postNotificationName:@"setupUnreadMessageCount" object:nil];
 }
 
 #pragma mark - EaseMob

@@ -29,7 +29,8 @@
  *  \~english 
  *  Display style of push message
  */
-typedef enum{
+typedef enum
+{
     EMPushDisplayStyleSimpleBanner = 0, /*! 
                                          *  \~chinese
                                          *  简单显示"您有一条新消息"

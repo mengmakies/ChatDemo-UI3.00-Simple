@@ -16,6 +16,9 @@
 
 #import "EMChatroomManagerDelegate.h"
 #import "EMChatroom.h"
+#import "EMPageResult.h"
+
+#import "EMCursorResult.h"
 
 @class EMError;
 
@@ -78,7 +81,7 @@
 
 /*!
  *  \~chinese
- *  从服务器获取所有的聊天室
+ *  从服务器获取指定数目的聊天室
  *
  *  同步方法，会阻塞当前线程
  *
@@ -87,7 +90,7 @@
  *  @return 聊天室列表<EMChatroom>
  *
  *  \~english
- *  Get all the chatrooms from server
+ *  Get pagesize number chatroom from server.
  *
  *  Synchronization method will block the current thread
  *
@@ -95,7 +98,9 @@
  *
  *  @return Chat room list<EMChatroom>
  */
-- (NSArray *)getAllChatroomsFromServerWithError:(EMError **)pError;
+- (EMPageResult *)getChatroomsFromServerWithPage:(NSInteger)aPageNum
+                                        pageSize:(NSInteger)aPageSize
+                                           error:(EMError **)pError;
 
 /*!
  *  \~chinese
@@ -186,7 +191,10 @@
  *  @param aCompletionBlock     The callback block of completion
  *
  */
-- (void)getAllChatroomsFromServerWithCompletion:(void (^)(NSArray *aList, EMError *aError))aCompletionBlock;
+
+- (void)getChatroomsFromServerWithPage:(NSInteger)aPageNum
+                              pageSize:(NSInteger)aPageSize
+                            completion:(void (^)(EMPageResult *aResult, EMError *aError))aCompletionBlock;
 
 /*!
  *  \~chinese
@@ -245,6 +253,41 @@
                                     completion:(void (^)(EMChatroom *aChatroom, EMError *aError))aCompletionBlock;
 
 #pragma mark - Deprecated methods
+
+/*!
+ *  \~chinese
+ *  从服务器获取所有的聊天室
+ *
+ *  同步方法，会阻塞当前线程
+ *
+ *  @param pError   出错信息
+ *
+ *  @return 聊天室列表<EMChatroom>
+ *
+ *  \~english
+ *  Get all the chatrooms from server
+ *
+ *  Synchronization method will block the current thread
+ *
+ *  @param pError   Error
+ *
+ *  @return Chat room list<EMChatroom>
+ */
+- (NSArray *)getAllChatroomsFromServerWithError:(EMError **)pError __deprecated_msg("Use -getChatroomsFromServerWithPage");
+
+/*!
+ *  \~chinese
+ *  从服务器获取所有的聊天室
+ *
+ *  @param aCompletionBlock      完成的回调
+ *
+ *  \~english
+ *  Get all the chatrooms from server
+ *
+ *  @param aCompletionBlock     The callback block of completion
+ *
+ */
+- (void)getAllChatroomsFromServerWithCompletion:(void (^)(NSArray *aList, EMError *aError))aCompletionBlock __deprecated_msg("Use -getChatroomsFromServerWithPage");
 
 /*!
  *  \~chinese

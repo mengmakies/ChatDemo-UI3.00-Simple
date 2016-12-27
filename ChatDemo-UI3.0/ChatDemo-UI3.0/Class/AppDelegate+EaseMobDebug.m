@@ -14,7 +14,7 @@
 
 #import "EMOptions+PrivateDeploy.h"
 
-#warning 环信内部测试用，开发者不需要使用此类
+#warning Internal testing, developers do not need to use
 
 @implementation AppDelegate (EaseMobDebug)
 

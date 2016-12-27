@@ -200,6 +200,19 @@
  */
 @property (nonatomic, readonly) CGSize remoteVideoResolution;
 
+/*!
+ *  \~chinese
+ *  消息扩展
+ *
+ *  类型必须是NSString
+ *
+ *  \~english
+ *  Call extention
+ *
+ *  Type must be NSString
+ */
+@property (nonatomic, readonly) NSString *ext;
+
 #pragma mark - Control Stream
 
 /*!

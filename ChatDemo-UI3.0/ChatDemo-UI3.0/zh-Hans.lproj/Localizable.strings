@@ -63,7 +63,7 @@
 "servingIsBanned" = "服务被禁用";
 
 //app
-"AppName" = "环信Demo";
+"AppName" = "环信简版Demo";
 
 //error des
 "error.connectServerFail" = "连接服务器失败!";
@@ -315,8 +315,6 @@
 "setting.nightOpen" = "只在夜间开启 (22:00 - 7:00)";
 "setting.close" = "关闭";
 "setting.sureNotDisturb" = "此设置会导致全天都处于免打扰模式, 不会再收到推送消息. 是否继续?";
-"setting.callPush" = "实时通话是否发送离线推送";
-"setting.callResolution" = "实时视频通话分辨率";
 
 "setting.uploadLog" = "上传运行日志";
 "setting.sdkVersion" = "ONE SDK 版本";
@@ -328,14 +326,11 @@
 "setting.saveName" = "保存更改昵称";
 "setting.namenotempty" = "昵称不能为空";
 "setting.personalInfo" = "个人信息";
-"setting.setBitrate" = "设置视频通话码率";
-"setting.setBitrateTips" = "设置视频通话码率范围在150-1000";
 "setting.personalInfoUpload" = "头像";
 "setting.edittips" = "设置此昵称以后,在与iOS客户端demo聊天工程中,iOS一侧会显示此昵称而不是环信ID,如果对方使用安卓客户端则此设置不生效";
 "setting.iospushname" = "iOS离线推送昵称";
 "setting.useIp" = "使用IP";
 "setting.deleteConWhenLeave" = "退群时删除会话";
-"setting.showCallInfo" = "显示视频通话信息";
 "setting.microphoneNoAuthority" = "未获得授权使用麦克风";
 "setting.microphoneAuthority" = "请在iOS\"设置中\"-\"隐私\"-\"麦克风\"中打开";
 "setting.cameraNoAuthority" = "未获得授权使用相机";
@@ -345,6 +340,17 @@
 "setting.profileNickname" = "昵称";
 "setting.saving" = "修改中...";
 "setting.saveFailed" = "修改失败";
+
+"setting.call" = "音视频设置";
+"setting.call.fixedResolution" = "固定视频分辨率";
+"setting.call.autoResolution" = "自动调配视频分辨率";
+"setting.call.bitrate" = "设置视频码率";
+"setting.call.bitrateTips" = "设置视频码率范围在150-1000";
+"setting.call.push" = "是否发送离线推送";
+"setting.call.resolution" = "视频分辨率";
+"setting.call.maxFramerate" = "视频最大帧率";
+"setting.call.minKbps" = "视频最小码率";
+"setting.call.showInfo" = "显示视频通话信息";
 
 //NSDateCategory
 "NSDateCategory.text1" = "1分钟内";
