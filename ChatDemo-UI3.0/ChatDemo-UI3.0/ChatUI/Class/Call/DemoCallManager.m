@@ -11,8 +11,6 @@
 #if DEMO_CALL == 1
 
 #import "EaseSDKHelper.h"
-
-#import "MainViewController.h"
 #import "EMCallViewController.h"
 
 static DemoCallManager *callManager = nil;

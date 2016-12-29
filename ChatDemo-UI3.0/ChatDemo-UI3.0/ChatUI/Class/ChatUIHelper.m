@@ -12,10 +12,9 @@
 
 #import "ChatUIHelper.h"
 
-#import "AppDelegate.h"
 #import "ApplyViewController.h"
 #import "MBProgressHUD.h"
-
+#import <UserNotifications/UserNotifications.h>
 #import "EaseSDKHelper.h"
 
 #ifdef REDPACKET_AVALABLE
@@ -66,7 +65,7 @@ static ChatUIHelper *helper = nil;
 
 #pragma mark - setter
 
-- (void)setMainVC:(MainViewController *)mainVC
+- (void)setMainVC:(UIViewController *)mainVC
 {
     _mainVC = mainVC;
     
