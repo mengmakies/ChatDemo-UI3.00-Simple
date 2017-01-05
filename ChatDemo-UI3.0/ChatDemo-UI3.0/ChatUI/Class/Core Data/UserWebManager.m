@@ -123,7 +123,7 @@
     AVQuery *query = [self getQuery];
     
     [query findObjectsInBackgroundWithBlock:^(NSArray *objects, NSError *error) {
-        if (!error && objects) {
+        if (!error && objects && objects.count > 0) {
             // 成功找到结果，先找磁盘再访问网络
             UserWebInfo *user = (UserWebInfo*)[objects objectAtIndex:0];
         } else {

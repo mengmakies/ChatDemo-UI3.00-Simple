@@ -133,9 +133,7 @@ static ChatUIHelper *helper = nil;
                 [weakself.conversationListVC refreshDataSource];
             }
             
-            if (weakself.mainVC) {
-                NOTIFY_POST(kSetupUnreadMessageCount);
-            }
+            NOTIFY_POST(kSetupUnreadMessageCount);
         });
     });
 }
@@ -211,9 +209,7 @@ static ChatUIHelper *helper = nil;
 
 - (void)didUpdateConversationList:(NSArray *)aConversationList
 {
-    if (self.mainVC) {
-        NOTIFY_POST(kSetupUnreadMessageCount);
-    }
+    NOTIFY_POST(kSetupUnreadMessageCount);
     
     if (self.conversationListVC) {
         [_conversationListVC refreshDataSource];
@@ -268,9 +264,8 @@ static ChatUIHelper *helper = nil;
                 [_conversationListVC refresh];
             }
             
-            if (self.mainVC) {
-                NOTIFY_POST(kSetupUnreadMessageCount);
-            }
+            NOTIFY_POST(kSetupUnreadMessageCount);
+            
             return;
         }
         
@@ -284,9 +279,7 @@ static ChatUIHelper *helper = nil;
             [_conversationListVC refresh];
         }
         
-        if (self.mainVC) {
-            NOTIFY_POST(kSetupUnreadMessageCount);
-        }
+        NOTIFY_POST(kSetupUnreadMessageCount);
     }
 }
 
@@ -344,12 +337,12 @@ static ChatUIHelper *helper = nil;
     
     NSMutableDictionary *dic = [NSMutableDictionary dictionaryWithDictionary:@{@"title":aGroup.subject, @"groupId":aGroup.groupId, @"username":aApplicant, @"groupname":aGroup.subject, @"applyMessage":aReason, @"applyStyle":[NSNumber numberWithInteger:ApplyStyleJoinGroup]}];
     [[ApplyViewController shareController] addNewApply:dic];
-    if (self.mainVC) {
-        NOTIFY_POST(kSetupUntreatedApplyCount);
+    
+    NOTIFY_POST(kSetupUntreatedApplyCount);
+    
 #if !TARGET_IPHONE_SIMULATOR
-        [self playSoundAndVibration];
+    [self playSoundAndVibration];
 #endif
-    }
     
     if (self.contactViewVC) {
         [self.contactViewVC reloadApplyView];
@@ -391,12 +384,11 @@ static ChatUIHelper *helper = nil;
     
     NSMutableDictionary *dic = [NSMutableDictionary dictionaryWithDictionary:@{@"title":@"", @"groupId":aGroupId, @"username":aInviter, @"groupname":@"", @"applyMessage":aMessage, @"applyStyle":[NSNumber numberWithInteger:ApplyStyleGroupInvitation]}];
     [[ApplyViewController shareController] addNewApply:dic];
-    if (self.mainVC) {
-        NOTIFY_POST(kSetupUntreatedApplyCount);
+    
+    NOTIFY_POST(kSetupUntreatedApplyCount);
 #if !TARGET_IPHONE_SIMULATOR
-        [self playSoundAndVibration];
+    [self playSoundAndVibration];
 #endif
-    }
     
     if (self.contactViewVC) {
         [self.contactViewVC reloadApplyView];
@@ -461,32 +453,30 @@ static ChatUIHelper *helper = nil;
     }
     NSMutableDictionary *dic = [NSMutableDictionary dictionaryWithDictionary:@{@"title":aUsername, @"username":aUsername, @"applyMessage":aMessage, @"applyStyle":[NSNumber numberWithInteger:ApplyStyleFriend]}];
     [[ApplyViewController shareController] addNewApply:dic];
-    if (self.mainVC) {
-        NOTIFY_POST(kSetupUntreatedApplyCount);
+    NOTIFY_POST(kSetupUntreatedApplyCount);
 #if !TARGET_IPHONE_SIMULATOR
-        [self playSoundAndVibration];
-        
-        BOOL isAppActivity = [[UIApplication sharedApplication] applicationState] == UIApplicationStateActive;
-        if (!isAppActivity) {
-            //发送本地推送
-            if (NSClassFromString(@"UNUserNotificationCenter")) {
-                UNTimeIntervalNotificationTrigger *trigger = [UNTimeIntervalNotificationTrigger triggerWithTimeInterval:0.01 repeats:NO];
-                UNMutableNotificationContent *content = [[UNMutableNotificationContent alloc] init];
-                content.sound = [UNNotificationSound defaultSound];
-                content.body =[NSString stringWithFormat:NSLocalizedString(@"friend.somebodyAddWithName", @"%@ add you as a friend"), aUsername];
-                UNNotificationRequest *request = [UNNotificationRequest requestWithIdentifier:[[NSNumber numberWithDouble:[NSDate timeIntervalSinceReferenceDate] * 1000] stringValue] content:content trigger:trigger];
-                [[UNUserNotificationCenter currentNotificationCenter] addNotificationRequest:request withCompletionHandler:nil];
-            }
-            else {
-                UILocalNotification *notification = [[UILocalNotification alloc] init];
-                notification.fireDate = [NSDate date]; //触发通知的时间
-                notification.alertBody = [NSString stringWithFormat:NSLocalizedString(@"friend.somebodyAddWithName", @"%@ add you as a friend"), aUsername];
-                notification.alertAction = NSLocalizedString(@"open", @"Open");
-                notification.timeZone = [NSTimeZone defaultTimeZone];
-            }
+    [self playSoundAndVibration];
+    
+    BOOL isAppActivity = [[UIApplication sharedApplication] applicationState] == UIApplicationStateActive;
+    if (!isAppActivity) {
+        //发送本地推送
+        if (NSClassFromString(@"UNUserNotificationCenter")) {
+            UNTimeIntervalNotificationTrigger *trigger = [UNTimeIntervalNotificationTrigger triggerWithTimeInterval:0.01 repeats:NO];
+            UNMutableNotificationContent *content = [[UNMutableNotificationContent alloc] init];
+            content.sound = [UNNotificationSound defaultSound];
+            content.body =[NSString stringWithFormat:NSLocalizedString(@"friend.somebodyAddWithName", @"%@ add you as a friend"), aUsername];
+            UNNotificationRequest *request = [UNNotificationRequest requestWithIdentifier:[[NSNumber numberWithDouble:[NSDate timeIntervalSinceReferenceDate] * 1000] stringValue] content:content trigger:trigger];
+            [[UNUserNotificationCenter currentNotificationCenter] addNotificationRequest:request withCompletionHandler:nil];
         }
-#endif
+        else {
+            UILocalNotification *notification = [[UILocalNotification alloc] init];
+            notification.fireDate = [NSDate date]; //触发通知的时间
+            notification.alertBody = [NSString stringWithFormat:NSLocalizedString(@"friend.somebodyAddWithName", @"%@ add you as a friend"), aUsername];
+            notification.alertAction = NSLocalizedString(@"open", @"Open");
+            notification.timeZone = [NSTimeZone defaultTimeZone];
+        }
     }
+#endif
     [_contactViewVC reloadApplyView];
 }
 
