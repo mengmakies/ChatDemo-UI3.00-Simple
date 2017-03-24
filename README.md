@@ -1,5 +1,5 @@
 #<font style="color:red;">注意</font>
->由于Git不支持上传大于100MB的文件，所以项目源码中不包含 **libHyphenateFullSDK.a** 文件，下载地址https://pan.baidu.com/s/1jIAxnoi ，然后拷贝到目录【/ChatDemo-UI3.0-Sample/ChatDemo-UI3.0/ChatSDK/HyphenateFullSDK/lib】才能正常运行。
+>由于Git不支持上传大于100MB的文件，所以项目源码中不包含 **HyphenateFullSDK** 和**HyphenateSDK**动态库，下载地址https://pan.baidu.com/s/1c1RsUrA ，解压后后将**HyphenateFullSDK**和**HyphenateSDK**文件夹拷贝到目录【/ChatDemo-UI3.0-Sample/ChatDemo-UI3.0/ChatSDK/】下才能正常运行。
 
 ###希望支持简版Demo的童鞋能够到Github给我们一个star^_^
 https://github.com/mengmakies/ChatDemo-UI3.00-Simple
@@ -62,10 +62,10 @@ http://www.imgeek.org/article/825308536
 >- 如有任何问题，请咨询【环信IM互帮互助群】，群号：340452063
 >- 或者加本人QQ：364223587
 >- 源码详细说明介绍请看http://community.easemob.com/article/825307886
->-【简书】地址：http://www.jianshu.com/p/c0c30707bf0c  欢迎拍砖！！！
+>- **静态库**版本的【简版Demo】完整源码下载地址：https://pan.baidu.com/s/1mhOuPEo
 
 ###更新日志（平均每2个月同步更新环信官方SDK）
 >- 2017.05...  敬请期待...
->- 2017.03.25  同步更新官方V3.3.0 版SDK；使用动态库，增加发送icloud文件功能；
+>- 2017.03.25  同步更新官方V3.3.0 版SDK；使用环信动态库；增加发送icloud文件功能；
 >- 2016.12.27  同步更新官方V3.2.2r2版SDK；优化音视频通话功能，支持https；
 >- 2016.10.25  同步更新官方V3.2.0版SDK；适配IOS10；使用Leancloud后端云存储用户信息；
