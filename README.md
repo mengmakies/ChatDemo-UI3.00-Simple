@@ -6,7 +6,7 @@ https://github.com/mengmakies/ChatDemo-UI3.00-Simple
 
 <img src="http://git.oschina.net/markies/ChatDemo-UI3.00-Simple/raw/master/screenshot1.png" width = "35%" height = "auto" alt="图片名称" align=center /> &nbsp;
 <img src="http://git.oschina.net/markies/ChatDemo-UI3.00-Simple/raw/master/screenshot2.jpg" width = "35%" height = "auto" alt="图片名称" align=center />
-###说明
+>###说明
 本项目是基于官方 **ChatDemo-UI3.0** 项目的简化封装，目的是为了让大家更加方便快速地集成环信IM功能。
 
 ###其他Git仓库
