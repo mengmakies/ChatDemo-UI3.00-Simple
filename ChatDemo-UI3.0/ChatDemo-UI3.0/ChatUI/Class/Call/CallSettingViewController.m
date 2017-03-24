@@ -139,7 +139,7 @@
         
                 UITextField *textField = [alert textFieldAtIndex:0];
                 EMCallOptions *options = [[EMClient sharedClient].callManager getCallOptions];
-                textField.text = [NSString stringWithFormat:@"%ld", options.maxVideoKbps];
+                textField.text = [NSString stringWithFormat:@"%ld", options.videoKbps];
         
                 [alert show];
             } else if (indexPath.row == 2) {
@@ -188,7 +188,7 @@
         if (alertView.tag == FIXED_BITRATE_ALERTVIEW_TAG) {
             if (value >= 150 && value <= 1000) {
                 EMCallOptions *options = [[EMClient sharedClient].callManager getCallOptions];
-                options.maxVideoKbps = value;
+                options.videoKbps = value;
                 [[DemoCallManager sharedManager] saveCallOptions];
             } else {
                 [self showHint:NSLocalizedString(@"setting.call.bitrateTips", @"Set Bitrate should be 150-1000")];

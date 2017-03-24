@@ -36,11 +36,14 @@ didFinishLaunchingWithOptions:(NSDictionary *)launchOptions
                                                  name:KNOTIFICATION_LOGINCHANGE
                                                object:nil];
     
+    NSUserDefaults *ud = [NSUserDefaults standardUserDefaults];
+    BOOL isHttpsOnly = [ud boolForKey:@"identifier_httpsonly"];
+    
     [[EaseSDKHelper shareHelper] hyphenateApplication:application
                     didFinishLaunchingWithOptions:launchOptions
                                            appkey:appkey
                                      apnsCertName:apnsCertName
-                                      otherConfig:@{kSDKConfigEnableConsoleLogger:[NSNumber numberWithBool:YES],@"easeSandBox":[NSNumber numberWithBool:[self isSpecifyServer]]}];
+                                      otherConfig:@{@"httpsOnly":[NSNumber numberWithBool:isHttpsOnly], kSDKConfigEnableConsoleLogger:[NSNumber numberWithBool:YES],@"easeSandBox":[NSNumber numberWithBool:[self isSpecifyServer]]}];
     
     [ChatUIHelper shareHelper];
     

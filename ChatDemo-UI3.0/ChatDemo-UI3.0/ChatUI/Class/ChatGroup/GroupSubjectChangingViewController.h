@@ -12,7 +12,7 @@
 
 #import <UIKit/UIKit.h>
 
-#import "EMGroup.h"
+#import <Hyphenate/EMGroup.h>
 
 @interface GroupSubjectChangingViewController : UIViewController
 

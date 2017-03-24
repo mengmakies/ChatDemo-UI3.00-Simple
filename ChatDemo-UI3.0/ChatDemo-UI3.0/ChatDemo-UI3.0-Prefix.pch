@@ -27,21 +27,24 @@
 // 2.隐藏音视频通话按钮：EaseChatBarMoreView.m  第115-131行代码注释掉。
 #define DEMO_CALL 1 // 1：启用音视频通话；0：禁用音视频通话
 
-// TODO::是否启用web缓存用户信息。注释这个宏，则用本地sqlite缓存
-//#define WEBCACHE_USER
-
 #ifdef __OBJC__
     #import <UIKit/UIKit.h>
     #import <Foundation/Foundation.h>
 
+    #import "ChatUIDefine.h"
     #import "EMAlertView.h"
     #import "TTGlobalUICommon.h"
 
-    #import "EMSDKFull.h"
     #import "EaseUI.h"
-    #import "ChatUIDefine.h"
-    #import "UserCacheManager.h"
 
-    #import "AVOSCloud/AVOSCloud.h"
+#if DEMO_CALL == 1
+    #import <Hyphenate/Hyphenate.h>// 包含音视频通话功能
+#else
+    #import <HyphenateLite/HyphenateLite.h>// 不包含音视频通话功能
+#endif
+
+    #import "AVOSCloud/AVOSCloud.h"// 后端云LeanCloud
+    #import "UserCacheManager.h"
     #import "UserWebManager.h"
+
 #endif

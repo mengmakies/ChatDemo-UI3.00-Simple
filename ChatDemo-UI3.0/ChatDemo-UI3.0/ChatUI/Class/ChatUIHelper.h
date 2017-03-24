@@ -22,7 +22,6 @@
 
 @interface ChatUIHelper : NSObject <EMClientDelegate,EMChatManagerDelegate,EMContactManagerDelegate,EMGroupManagerDelegate,EMChatroomManagerDelegate>
 
-@property (strong, nonatomic) NSDate *lastPlaySoundDate;
 @property (nonatomic, weak) ContactListViewController *contactViewVC;
 
 @property (nonatomic, weak) ConversationListController *conversationListVC;
@@ -32,6 +31,8 @@
 @property (nonatomic, weak) ChatViewController *chatVC;
 
 @property (nonatomic, assign)EMConnectionState connectionState;
+
+@property (strong, nonatomic) NSDate *lastPlaySoundDate;
 
 + (instancetype)shareHelper;
 

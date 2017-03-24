@@ -12,9 +12,10 @@
 
 #import "ChatUIHelper.h"
 
+#import "AppDelegate.h"
 #import "ApplyViewController.h"
 #import "MBProgressHUD.h"
-#import <UserNotifications/UserNotifications.h>
+
 #import "EaseSDKHelper.h"
 
 #ifdef REDPACKET_AVALABLE
@@ -220,7 +221,6 @@ static ChatUIHelper *helper = nil;
 {
     BOOL isRefreshCons = YES;
     for(EMMessage *message in aMessages){
-//        [UserCacheManager saveInfo:message.ext];// 通过消息的扩展属性传递昵称和头像时，需要调用这句代码缓存
         BOOL needShowNotification = (message.chatType != EMChatTypeChat) ? [self _needShowNotification:message.conversationId] : YES;
         
 #ifdef REDPACKET_AVALABLE
@@ -265,7 +265,6 @@ static ChatUIHelper *helper = nil;
             }
             
             NOTIFY_POST(kSetupUnreadMessageCount);
-            
             return;
         }
         
@@ -288,9 +287,9 @@ static ChatUIHelper *helper = nil;
 - (void)didReceiveLeavedGroup:(EMGroup *)aGroup
                        reason:(EMGroupLeaveReason)aReason
 {
-    NSString *str = nil;
+    NSString *str = @"从群组中离开";
     if (aReason == EMGroupLeaveReasonBeRemoved) {
-        str = [NSString stringWithFormat:@"Your are kicked out from group: %@ [%@]", aGroup.subject, aGroup.groupId];
+        str = [NSString stringWithFormat:@"You are kicked out from group: %@ [%@]", aGroup.subject, aGroup.groupId];
     } else if (aReason == EMGroupLeaveReasonDestroyed) {
         str = [NSString stringWithFormat:@"Group: %@ [%@] is destroyed", aGroup.subject, aGroup.groupId];
     }
@@ -337,12 +336,12 @@ static ChatUIHelper *helper = nil;
     
     NSMutableDictionary *dic = [NSMutableDictionary dictionaryWithDictionary:@{@"title":aGroup.subject, @"groupId":aGroup.groupId, @"username":aApplicant, @"groupname":aGroup.subject, @"applyMessage":aReason, @"applyStyle":[NSNumber numberWithInteger:ApplyStyleJoinGroup]}];
     [[ApplyViewController shareController] addNewApply:dic];
-    
-    NOTIFY_POST(kSetupUntreatedApplyCount);
-    
+    if (self.mainVC) {
+        NOTIFY_POST(kSetupUntreatedApplyCount);
 #if !TARGET_IPHONE_SIMULATOR
-    [self playSoundAndVibration];
+        [self playSoundAndVibration];
 #endif
+    }
     
     if (self.contactViewVC) {
         [self.contactViewVC reloadApplyView];
@@ -357,6 +356,23 @@ static ChatUIHelper *helper = nil;
     [alertView show];
 }
 
+- (void)groupInvitationDidDecline:(EMGroup *)aGroup
+                          invitee:(NSString *)aInvitee
+                           reason:(NSString *)aReason
+{
+    NSString *message = [NSString stringWithFormat:@"%@ 拒绝群组\"%@\"的入群邀请", aInvitee, aGroup.subject];
+    UIAlertView *alertView = [[UIAlertView alloc] initWithTitle:NSLocalizedString(@"prompt", @"Prompt") message:message delegate:nil cancelButtonTitle:NSLocalizedString(@"ok", @"OK") otherButtonTitles:nil, nil];
+    [alertView show];
+}
+
+- (void)groupInvitationDidAccept:(EMGroup *)aGroup
+                         invitee:(NSString *)aInvitee
+{
+    NSString *message = [NSString stringWithFormat:@"%@ 已同意群组\"%@\"的入群邀请", aInvitee, aGroup.subject];
+    UIAlertView *alertView = [[UIAlertView alloc] initWithTitle:NSLocalizedString(@"prompt", @"Prompt") message:message delegate:nil cancelButtonTitle:NSLocalizedString(@"ok", @"OK") otherButtonTitles:nil, nil];
+    [alertView show];
+}
+
 - (void)didReceiveDeclinedJoinGroup:(NSString *)aGroupId
                              reason:(NSString *)aReason
 {
@@ -367,7 +383,7 @@ static ChatUIHelper *helper = nil;
     [alertView show];
 }
 
-- (void)didReceiveAcceptedJoinGroup:(EMGroup *)aGroup
+- (void)joinGroupRequestDidApprove:(EMGroup *)aGroup
 {
     NSString *message = [NSString stringWithFormat:NSLocalizedString(@"group.agreedAndJoined", @"agreed to join the group of \'%@\'"), aGroup.subject];
     UIAlertView *alertView = [[UIAlertView alloc] initWithTitle:NSLocalizedString(@"prompt", @"Prompt") message:message delegate:nil cancelButtonTitle:NSLocalizedString(@"ok", @"OK") otherButtonTitles:nil, nil];
@@ -384,15 +400,66 @@ static ChatUIHelper *helper = nil;
     
     NSMutableDictionary *dic = [NSMutableDictionary dictionaryWithDictionary:@{@"title":@"", @"groupId":aGroupId, @"username":aInviter, @"groupname":@"", @"applyMessage":aMessage, @"applyStyle":[NSNumber numberWithInteger:ApplyStyleGroupInvitation]}];
     [[ApplyViewController shareController] addNewApply:dic];
-    
-    NOTIFY_POST(kSetupUntreatedApplyCount);
+    if (self.mainVC) {
+        NOTIFY_POST(kSetupUntreatedApplyCount);
 #if !TARGET_IPHONE_SIMULATOR
-    [self playSoundAndVibration];
+        [self playSoundAndVibration];
 #endif
+    }
     
     if (self.contactViewVC) {
         [self.contactViewVC reloadApplyView];
     }
+}
+
+- (void)groupMuteListDidUpdate:(EMGroup *)aGroup
+             addedMutedMembers:(NSArray *)aMutedMembers
+                    muteExpire:(NSInteger)aMuteExpire
+{
+    [[NSNotificationCenter defaultCenter] postNotificationName:@"UpdateGroupDetail" object:aGroup];
+    
+    UIAlertView *alertView = [[UIAlertView alloc] initWithTitle:@"群组更新" message:@"禁言群成员" delegate:nil cancelButtonTitle:@"确定" otherButtonTitles:nil, nil];
+    [alertView show];
+}
+
+- (void)groupMuteListDidUpdate:(EMGroup *)aGroup
+           removedMutedMembers:(NSArray *)aMutedMembers
+{
+    [[NSNotificationCenter defaultCenter] postNotificationName:@"UpdateGroupDetail" object:aGroup];
+    
+    UIAlertView *alertView = [[UIAlertView alloc] initWithTitle:@"群组更新" message:@"解除禁言" delegate:nil cancelButtonTitle:@"确定" otherButtonTitles:nil, nil];
+    [alertView show];
+}
+
+- (void)groupAdminListDidUpdate:(EMGroup *)aGroup
+                     addedAdmin:(NSString *)aAdmin
+{
+    [[NSNotificationCenter defaultCenter] postNotificationName:@"UpdateGroupDetail" object:aGroup];
+    
+    NSString *msg = [NSString stringWithFormat:@"%@ 变为管理员", aAdmin];
+    UIAlertView *alertView = [[UIAlertView alloc] initWithTitle:@"管理员更新" message:msg delegate:nil cancelButtonTitle:@"确定" otherButtonTitles:nil, nil];
+    [alertView show];
+}
+
+- (void)groupAdminListDidUpdate:(EMGroup *)aGroup
+                   removedAdmin:(NSString *)aAdmin
+{
+    [[NSNotificationCenter defaultCenter] postNotificationName:@"UpdateGroupDetail" object:aGroup];
+    
+    NSString *msg = [NSString stringWithFormat:@"%@ 被移出管理员", aAdmin];
+    UIAlertView *alertView = [[UIAlertView alloc] initWithTitle:@"管理员更新" message:msg delegate:nil cancelButtonTitle:@"确定" otherButtonTitles:nil, nil];
+    [alertView show];
+}
+
+- (void)groupOwnerDidUpdate:(EMGroup *)aGroup
+                   newOwner:(NSString *)aNewOwner
+                   oldOwner:(NSString *)aOldOwner
+{
+    [[NSNotificationCenter defaultCenter] postNotificationName:@"UpdateGroupDetail" object:aGroup];
+    
+    NSString *msg = [NSString stringWithFormat:@"群主由 %@ 变为 %@", aOldOwner, aNewOwner];
+    UIAlertView *alertView = [[UIAlertView alloc] initWithTitle:@"群主更新" message:msg delegate:nil cancelButtonTitle:@"确定" otherButtonTitles:nil, nil];
+    [alertView show];
 }
 
 #pragma mark - EMContactManagerDelegate
@@ -453,30 +520,32 @@ static ChatUIHelper *helper = nil;
     }
     NSMutableDictionary *dic = [NSMutableDictionary dictionaryWithDictionary:@{@"title":aUsername, @"username":aUsername, @"applyMessage":aMessage, @"applyStyle":[NSNumber numberWithInteger:ApplyStyleFriend]}];
     [[ApplyViewController shareController] addNewApply:dic];
-    NOTIFY_POST(kSetupUntreatedApplyCount);
+    if (self.mainVC) {
+        NOTIFY_POST(kSetupUntreatedApplyCount);
 #if !TARGET_IPHONE_SIMULATOR
-    [self playSoundAndVibration];
-    
-    BOOL isAppActivity = [[UIApplication sharedApplication] applicationState] == UIApplicationStateActive;
-    if (!isAppActivity) {
-        //发送本地推送
-        if (NSClassFromString(@"UNUserNotificationCenter")) {
-            UNTimeIntervalNotificationTrigger *trigger = [UNTimeIntervalNotificationTrigger triggerWithTimeInterval:0.01 repeats:NO];
-            UNMutableNotificationContent *content = [[UNMutableNotificationContent alloc] init];
-            content.sound = [UNNotificationSound defaultSound];
-            content.body =[NSString stringWithFormat:NSLocalizedString(@"friend.somebodyAddWithName", @"%@ add you as a friend"), aUsername];
-            UNNotificationRequest *request = [UNNotificationRequest requestWithIdentifier:[[NSNumber numberWithDouble:[NSDate timeIntervalSinceReferenceDate] * 1000] stringValue] content:content trigger:trigger];
-            [[UNUserNotificationCenter currentNotificationCenter] addNotificationRequest:request withCompletionHandler:nil];
+        [self playSoundAndVibration];
+        
+        BOOL isAppActivity = [[UIApplication sharedApplication] applicationState] == UIApplicationStateActive;
+        if (!isAppActivity) {
+            //发送本地推送
+            if (NSClassFromString(@"UNUserNotificationCenter")) {
+                UNTimeIntervalNotificationTrigger *trigger = [UNTimeIntervalNotificationTrigger triggerWithTimeInterval:0.01 repeats:NO];
+                UNMutableNotificationContent *content = [[UNMutableNotificationContent alloc] init];
+                content.sound = [UNNotificationSound defaultSound];
+                content.body =[NSString stringWithFormat:NSLocalizedString(@"friend.somebodyAddWithName", @"%@ add you as a friend"), aUsername];
+                UNNotificationRequest *request = [UNNotificationRequest requestWithIdentifier:[[NSNumber numberWithDouble:[NSDate timeIntervalSinceReferenceDate] * 1000] stringValue] content:content trigger:trigger];
+                [[UNUserNotificationCenter currentNotificationCenter] addNotificationRequest:request withCompletionHandler:nil];
+            }
+            else {
+                UILocalNotification *notification = [[UILocalNotification alloc] init];
+                notification.fireDate = [NSDate date]; //触发通知的时间
+                notification.alertBody = [NSString stringWithFormat:NSLocalizedString(@"friend.somebodyAddWithName", @"%@ add you as a friend"), aUsername];
+                notification.alertAction = NSLocalizedString(@"open", @"Open");
+                notification.timeZone = [NSTimeZone defaultTimeZone];
+            }
         }
-        else {
-            UILocalNotification *notification = [[UILocalNotification alloc] init];
-            notification.fireDate = [NSDate date]; //触发通知的时间
-            notification.alertBody = [NSString stringWithFormat:NSLocalizedString(@"friend.somebodyAddWithName", @"%@ add you as a friend"), aUsername];
-            notification.alertAction = NSLocalizedString(@"open", @"Open");
-            notification.timeZone = [NSTimeZone defaultTimeZone];
-        }
-    }
 #endif
+    }
     [_contactViewVC reloadApplyView];
 }
 
@@ -491,13 +560,67 @@ static ChatUIHelper *helper = nil;
 - (void)didReceiveUserLeavedChatroom:(EMChatroom *)aChatroom
                             username:(NSString *)aUsername
 {
-
+    
 }
 
 - (void)didReceiveKickedFromChatroom:(EMChatroom *)aChatroom
                               reason:(EMChatroomBeKickedReason)aReason
 {
+    NSString *roomId = nil;
+    if (aReason == EMChatroomBeKickedReasonDestroyed) {
+        roomId = aChatroom.chatroomId;
+    }
+    [[NSNotificationCenter defaultCenter] postNotificationName:@"ExitChat" object:roomId];
+}
+
+- (void)chatroomMuteListDidUpdate:(EMChatroom *)aChatroom
+                addedMutedMembers:(NSArray *)aMutes
+                       muteExpire:(NSInteger)aMuteExpire
+{
+    [[NSNotificationCenter defaultCenter] postNotificationName:@"UpdateChatroomDetail" object:aChatroom];
     
+    UIAlertView *alertView = [[UIAlertView alloc] initWithTitle:@"聊天室更新" message:@"禁言成员" delegate:nil cancelButtonTitle:@"确定" otherButtonTitles:nil, nil];
+    [alertView show];
+}
+
+- (void)chatroomMuteListDidUpdate:(EMChatroom *)aChatroom
+              removedMutedMembers:(NSArray *)aMutes
+{
+    [[NSNotificationCenter defaultCenter] postNotificationName:@"UpdateChatroomDetail" object:aChatroom];
+    
+    UIAlertView *alertView = [[UIAlertView alloc] initWithTitle:@"聊天室更新" message:@"解除禁言" delegate:nil cancelButtonTitle:@"确定" otherButtonTitles:nil, nil];
+    [alertView show];
+}
+
+- (void)chatroomAdminListDidUpdate:(EMChatroom *)aChatroom
+                        addedAdmin:(NSString *)aAdmin
+{
+    [[NSNotificationCenter defaultCenter] postNotificationName:@"UpdateChatroomDetail" object:aChatroom];
+    
+    NSString *msg = [NSString stringWithFormat:@"%@ 变为管理员", aAdmin];
+    UIAlertView *alertView = [[UIAlertView alloc] initWithTitle:@"管理员更新" message:msg delegate:nil cancelButtonTitle:@"确定" otherButtonTitles:nil, nil];
+    [alertView show];
+}
+
+- (void)chatroomAdminListDidUpdate:(EMChatroom *)aChatroom
+                      removedAdmin:(NSString *)aAdmin
+{
+    [[NSNotificationCenter defaultCenter] postNotificationName:@"UpdateChatroomDetail" object:aChatroom];
+    
+    NSString *msg = [NSString stringWithFormat:@"%@ 被移出管理员", aAdmin];
+    UIAlertView *alertView = [[UIAlertView alloc] initWithTitle:@"管理员更新" message:msg delegate:nil cancelButtonTitle:@"确定" otherButtonTitles:nil, nil];
+    [alertView show];
+}
+
+- (void)chatroomOwnerDidUpdate:(EMChatroom *)aChatroom
+                      newOwner:(NSString *)aNewOwner
+                      oldOwner:(NSString *)aOldOwner
+{
+    [[NSNotificationCenter defaultCenter] postNotificationName:@"UpdateChatroomDetail" object:aChatroom];
+    
+    NSString *msg = [NSString stringWithFormat:@"聊天室创建者由 %@ 变为 %@", aOldOwner, aNewOwner];
+    UIAlertView *alertView = [[UIAlertView alloc] initWithTitle:@"聊天室创建者更新" message:msg delegate:nil cancelButtonTitle:@"确定" otherButtonTitles:nil, nil];
+    [alertView show];
 }
 
 #pragma mark - public
@@ -572,7 +695,6 @@ static ChatUIHelper *helper = nil;
         }
     }
 }
-
 
 - (void)playSoundAndVibration{
     NSTimeInterval timeInterval = [[NSDate date]
@@ -713,6 +835,5 @@ static ChatUIHelper *helper = nil;
         [[UIApplication sharedApplication] scheduleLocalNotification:notification];
     }
 }
-
 
 @end

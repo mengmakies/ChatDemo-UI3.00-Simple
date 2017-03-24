@@ -84,12 +84,16 @@ static const void *ResultControllerKey = &ResultControllerKey;
     return YES;
 }
 
-- (void)searchBarTextDidEndEditing:(UISearchBar *)searchBar
+- (BOOL)searchBar:(UISearchBar *)searchBar shouldChangeTextInRange:(NSRange)range replacementText:(NSString *)text
 {
-    if ([self conformsToProtocol:@protocol(EMSearchControllerDelegate)] &&
-        [self respondsToSelector:@selector(willSearchFinish)]) {
-        [self performSelector:@selector(willSearchFinish)];
+    if ([text isEqualToString:@"\n"]) {
+        if ([self conformsToProtocol:@protocol(EMSearchControllerDelegate)] &&
+            [self respondsToSelector:@selector(didSearchFinish)]) {
+            [self performSelector:@selector(didSearchFinish)];
+        }
     }
+    
+    return YES;
 }
 
 - (void)searchBarCancelButtonClicked:(UISearchBar *)searchBar
@@ -109,8 +113,9 @@ static const void *ResultControllerKey = &ResultControllerKey;
 
 - (void)updateSearchResultsForSearchController:(UISearchController *)searchController
 {
-    if ([self respondsToSelector:@selector(searchButtonClickedWithString:)]) {
-        [self performSelector:@selector(searchButtonClickedWithString:)
+    if ([self conformsToProtocol:@protocol(EMSearchControllerDelegate)]
+        && [self respondsToSelector:@selector(searchTextChangeWithString:)]) {
+        [self performSelector:@selector(searchTextChangeWithString:)
                    withObject:searchController.searchBar.text];
     }
 }

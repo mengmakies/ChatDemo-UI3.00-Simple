@@ -8,6 +8,8 @@
 
 #import <UIKit/UIKit.h>
 
+#import "DemoCallManager.h"
+
 @interface EMVideoInfoViewController : UIViewController
 
 @property (nonatomic, weak) EMCallSession *callSession;

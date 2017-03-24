@@ -16,7 +16,7 @@
 			<key>AutocorrectionType</key>
 			<string>No</string>
 			<key>DefaultValue</key>
-			<string>easemob-demo#no1</string>
+			<string>easemob-demo#chatdemoui</string>
 			<key>IsSecure</key>
 			<false/>
 			<key>Key</key>
@@ -50,7 +50,7 @@
 			<key>AutocorrectionType</key>
 			<string>No</string>
 			<key>DefaultValue</key>
-			<string>120.26.12.158</string>
+			<string>msync-im1.sandbox.easemob.com</string>
 			<key>IsSecure</key>
 			<false/>
 			<key>Key</key>
@@ -86,7 +86,7 @@
 			<key>AutocorrectionType</key>
 			<string>No</string>
 			<key>DefaultValue</key>
-			<string>42.121.255.137</string>
+			<string>a1.sdb.easemob.com</string>
 			<key>IsSecure</key>
 			<false/>
 			<key>Key</key>
@@ -99,30 +99,20 @@
 			<string>PSTextFieldSpecifier</string>
 		</dict>
 		<dict>
-			<key>Title</key>
-			<string>SETTING</string>
 			<key>Type</key>
 			<string>PSGroupSpecifier</string>
+			<key>Title</key>
+			<string>SETTING</string>
 		</dict>
 		<dict>
 			<key>Type</key>
 			<string>PSToggleSwitchSpecifier</string>
 			<key>Title</key>
-			<string>Show Reconnect Note</string>
+			<string>HttpsOnly</string>
 			<key>Key</key>
-			<string>identifier_showreconnect_enable</string>
+			<string>identifier_httpsonly</string>
 			<key>DefaultValue</key>
 			<false/>
-		</dict>
-		<dict>
-			<key>Type</key>
-			<string>PSToggleSwitchSpecifier</string>
-			<key>Title</key>
-			<string>Use IP</string>
-			<key>Key</key>
-			<string>identifier_userip_enable</string>
-			<key>DefaultValue</key>
-			<true/>
 		</dict>
 	</array>
 	<key>StringsTable</key>

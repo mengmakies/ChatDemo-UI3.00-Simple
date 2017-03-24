@@ -13,6 +13,7 @@
 #import "UserProfileViewController.h"
 
 #import "ChatViewController.h"
+
 #import "UIImageView+HeadImage.h"
 
 @interface UserProfileViewController ()
@@ -98,8 +99,8 @@
         cell.detailTextLabel.text = self.usernameLabel.text;
     } else if (indexPath.row == 2) {
         cell.textLabel.text = NSLocalizedString(@"setting.profileNickname", @"Nickname");
-        UserCacheInfo *user = [UserCacheManager getById:_username];
-        cell.detailTextLabel.text = user.NickName;
+        NSString *nickName = [UserCacheManager getNickById:_username];
+        cell.detailTextLabel.text = nickName;
 //        cell.accessoryType = UITableViewCellAccessoryDisclosureIndicator;
     }
     return cell;

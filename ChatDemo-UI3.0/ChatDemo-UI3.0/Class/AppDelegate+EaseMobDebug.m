@@ -12,13 +12,14 @@
 
 #import "AppDelegate+EaseMobDebug.h"
 
-#import "EMOptions+PrivateDeploy.h"
+#import <Hyphenate/EMOptions+PrivateDeploy.h>
 
 #warning Internal testing, developers do not need to use
 
 @implementation AppDelegate (EaseMobDebug)
 
 -(BOOL)isSpecifyServer{
+    
     NSUserDefaults *ud = [NSUserDefaults standardUserDefaults];
     
     NSNumber *specifyServer = [ud objectForKey:@"identifier_enable"];
@@ -32,13 +33,13 @@
         NSString *appkey = [ud stringForKey:@"identifier_appkey"];
         if (!appkey)
         {
-            appkey = @"easemob-demo#no1";
+            appkey = @"easemob-demo#chatdemoui";
             [ud setObject:appkey forKey:@"identifier_appkey"];
         }
         NSString *imServer = [ud stringForKey:@"identifier_imserver"];
         if (!imServer)
         {
-            imServer = @"120.26.12.158";
+            imServer = @"msync-im1.sandbox.easemob.com";
             [ud setObject:imServer forKey:@"identifier_imserver"];
         }
         NSString *imPort = [ud stringForKey:@"identifier_import"];
@@ -50,9 +51,16 @@
         NSString *restServer = [ud stringForKey:@"identifier_restserver"];
         if (!restServer)
         {
-            restServer = @"42.121.255.137";
+            restServer = @"a1.sdb.easemob.com";
             [ud setObject:restServer forKey:@"identifier_restserver"];
         }
+        
+        BOOL isHttpsOnly = NO;
+        NSNumber *httpsOnly = [ud objectForKey:@"identifier_httpsonly"];
+        if (httpsOnly) {
+            isHttpsOnly = [httpsOnly boolValue];
+        }
+        
         [ud synchronize];
         
         EMOptions *options = [EMOptions optionsWithAppkey:appkey];
@@ -66,6 +74,7 @@
         //    EMOptions *options = [EMOptions optionsWithAppkey:@"easemob-demo#chatdemoui"];
         options.apnsCertName = @"chatdemoui_dev";
         options.enableConsoleLog = YES;
+        options.usingHttpsOnly = isHttpsOnly;
         
         [[EMClient sharedClient] initializeSDKWithOptions:options];
         return YES;

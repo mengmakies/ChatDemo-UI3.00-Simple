@@ -14,18 +14,15 @@
 
 #import "ChatViewController.h"
 #import "RealtimeSearchUtil.h"
-#import "EMCursorResult.h"
+#import <Hyphenate/EMCursorResult.h>
 #import "BaseTableViewCell.h"
 
 #import "UIViewController+SearchController.h"
+#import "EMCreateChatroomController.h"
 
 #define FetchChatroomPageSize   20
 
 @interface ChatroomListViewController ()<EMSearchControllerDelegate, EMChatroomManagerDelegate>
-
-@property (strong, nonatomic) NSMutableArray *dataSource;
-
-@property (nonatomic) NSInteger pageNum;
 
 @end
 
@@ -36,8 +33,6 @@
     self = [super initWithStyle:style];
     if (self) {
         // Custom initialization
-        _dataSource = [NSMutableArray array];
-        _pageNum = 1;
     }
     return self;
 }
@@ -47,7 +42,7 @@
     [super viewDidLoad];
 
     // Uncomment the following line to preserve selection between presentations.
-    self.title = NSLocalizedString(@"title.chatroomlist",@"chatroom list");
+    self.title = NSLocalizedString(@"title.chatroom",@"chatroom");
     
     // Uncomment the following line to display an Edit button in the navigation bar for this view controller.
     UIButton *backButton = [[UIButton alloc] initWithFrame:CGRectMake(0, 0, 44, 44)];
@@ -57,10 +52,18 @@
     UIBarButtonItem *backItem = [[UIBarButtonItem alloc] initWithCustomView:backButton];
     [self.navigationItem setLeftBarButtonItem:backItem];
     
+    UIButton *addButton = [[UIButton alloc] initWithFrame:CGRectMake(0, 0, 44, 44)];
+    [addButton setTitle:@"创建" forState:UIControlStateNormal];
+    [addButton addTarget:self action:@selector(createChatroomAction) forControlEvents:UIControlEventTouchUpInside];
+    UIBarButtonItem *addItem = [[UIBarButtonItem alloc] initWithCustomView:addButton];
+    [self.navigationItem setRightBarButtonItem:addItem];
+
+    self.page = 1;
     self.showRefreshHeader = YES;
     [self setupSearchController];
     
     [[EMClient sharedClient].roomManager addDelegate:self delegateQueue:nil];
+    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(removeChatroom:) name:@"ExitChat" object:nil];
 
     [self tableViewDidTriggerHeaderRefresh];
 }
@@ -74,15 +77,16 @@
 - (void)dealloc
 {
     //由于离开页面时可能有大量聊天室对象需要释放，所以把释放操作放到一个独立线程
-    if ([self.dataSource count])
+    if ([self.dataArray count])
     {
-        NSMutableArray *chatrooms = self.dataSource;
-        self.dataSource = nil;
+        NSMutableArray *chatrooms = self.dataArray;
+        self.dataArray = nil;
         dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
             [chatrooms removeAllObjects];
         });
     }
     [[EMClient sharedClient].roomManager removeDelegate:self];
+    [[NSNotificationCenter defaultCenter] removeObserver:self];
 }
 
 #pragma mark - Table view data source
@@ -96,7 +100,7 @@
 - (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section
 {
     // Return the number of rows in the section.
-    return [self.dataSource count];
+    return [self.dataArray count];
 }
 
 - (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath
@@ -109,7 +113,7 @@
         cell = [[BaseTableViewCell alloc] initWithStyle:UITableViewCellStyleDefault reuseIdentifier:CellIdentifier];
     }
     
-    EMChatroom *chatroom = [self.dataSource objectAtIndex:indexPath.row];
+    EMChatroom *chatroom = [self.dataArray objectAtIndex:indexPath.row];
     cell.imageView.image = [UIImage imageNamed:@"groupPublicHeader"];
     if ([chatroom.subject length]) {
         cell.textLabel.text = chatroom.subject;
@@ -132,7 +136,7 @@
 {
     [tableView deselectRowAtIndexPath:indexPath animated:YES];
     
-    EMChatroom *myChatroom = [self.dataSource objectAtIndex:indexPath.row];
+    EMChatroom *myChatroom = [self.dataArray objectAtIndex:indexPath.row];
     ChatViewController *chatController = [[ChatViewController alloc] initWithConversationChatter:myChatroom.chatroomId conversationType:EMConversationTypeChatRoom];
     chatController.title = myChatroom.subject;
     [self.navigationController pushViewController:chatController animated:YES];
@@ -170,16 +174,15 @@
     [[RealtimeSearchUtil currentUtil] realtimeSearchStop];
 }
 
-- (void)willSearchFinish
+- (void)didSearchFinish
 {
     if ([self.resultController.displaySource count]) {
         return ;
     }
     
-    [self showHudInView:self.view hint:NSLocalizedString(@"searching", @"Searching")];
     UISearchBar *searchBar = self.searchController.searchBar;
     __block EMChatroom *foundChatroom = nil;
-    [self.dataSource enumerateObjectsUsingBlock:^(EMChatroom *chatroom, NSUInteger idx, BOOL *stop){
+    [self.dataArray enumerateObjectsUsingBlock:^(EMChatroom *chatroom, NSUInteger idx, BOOL *stop){
         if ([chatroom.chatroomId isEqualToString:searchBar.text])
         {
             foundChatroom = chatroom;
@@ -192,37 +195,37 @@
         [self.resultController.displaySource removeAllObjects];
         [self.resultController.displaySource addObject:foundChatroom];
         [self.resultController.tableView reloadData];
-        [self hideHud];
     }
     else
     {
         __weak typeof(self) weakSelf = self;
-        dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
+        [self showHudInView:self.view hint:NSLocalizedString(@"searching", @"Searching")];
+        dispatch_async(dispatch_get_main_queue(), ^{
             EMError *error = nil;
             EMChatroom *chatroom = [[EMClient sharedClient].roomManager fetchChatroomInfo:searchBar.text includeMembersList:false error:&error];
-            dispatch_async(dispatch_get_main_queue(), ^{
-                [weakSelf hideHud];
-                if (weakSelf) {
-                    ChatroomListViewController *strongSelf = weakSelf;
-                    if (!error) {
-                        [weakSelf.resultController.displaySource removeAllObjects];
-                        [weakSelf.resultController.displaySource addObject:chatroom];
-                        [strongSelf.resultController.tableView reloadData];
-                    }
-                    else
-                    {
-                        [strongSelf showHint:NSLocalizedString(@"notFound", @"Can't found")];
-                    }
+            [weakSelf hideHud];
+            
+            if (weakSelf)
+            {
+                ChatroomListViewController *strongSelf = weakSelf;
+                if (!error) {
+                    [weakSelf.resultController.displaySource removeAllObjects];
+                    [weakSelf.resultController.displaySource addObject:chatroom];
+                    [strongSelf.resultController.tableView reloadData];
                 }
-            });
+                else
+                {
+                    [strongSelf showHint:NSLocalizedString(@"notFound", @"Can't found")];
+                }
+            }
         });
     }
 }
 
-- (void)searchButtonClickedWithString:(NSString *)aString
+- (void)searchTextChangeWithString:(NSString *)aString
 {
     __weak typeof(self) weakSelf = self;
-    [[RealtimeSearchUtil currentUtil] realtimeSearchWithSource:self.dataSource searchText:aString collationStringSelector:@selector(subject) resultBlock:^(NSArray *results) {
+    [[RealtimeSearchUtil currentUtil] realtimeSearchWithSource:self.dataArray searchText:aString collationStringSelector:@selector(subject) resultBlock:^(NSArray *results) {
         if (results) {
             dispatch_async(dispatch_get_main_queue(), ^{
                 [weakSelf.resultController.displaySource removeAllObjects];
@@ -274,23 +277,48 @@
     }];
     
     UISearchBar *searchBar = self.searchController.searchBar;
-    [self.view addSubview:searchBar];
-    [searchBar sizeToFit];
-    self.tableView.frame = CGRectMake(0, searchBar.frame.size.height, self.view.frame.size.width,self.view.frame.size.height - searchBar.frame.size.height);
+    self.tableView.tableHeaderView = searchBar;
+}
+
+- (void)createChatroomAction
+{
+    EMCreateChatroomController *createRoomController = [[EMCreateChatroomController alloc] init];
+    [self.navigationController pushViewController:createRoomController animated:YES];
+}
+
+#pragma mark - Action
+
+- (void)removeChatroom:(NSNotification *)aNotif
+{
+    id obj = aNotif.object;
+    if (obj && [obj isKindOfClass:[NSString class]]) {
+        NSString *roomId = (NSString *)obj;
+        if ([roomId length] == 0) {
+            return;
+        }
+        
+        for (EMChatroom *room in self.dataArray) {
+            if ([room.chatroomId isEqualToString:roomId]) {
+                [self.dataArray removeObject:room];
+                [self.tableView reloadData];
+                break;
+            }
+        }
+    }
 }
 
 #pragma mark - data
 
 - (void)tableViewDidTriggerHeaderRefresh
 {
-    _pageNum = 1;
-    [self fetchChatRoomsWithPage:_pageNum isHeader:YES];
+    self.page = 1;
+    [self fetchChatRoomsWithPage:self.page isHeader:YES];
 }
 
 - (void)tableViewDidTriggerFooterRefresh
 {
-    _pageNum += 1;
-    [self fetchChatRoomsWithPage:_pageNum isHeader:NO];
+    self.page += 1;
+    [self fetchChatRoomsWithPage:self.page isHeader:NO];
 }
 
 - (void)fetchChatRoomsWithPage:(NSInteger)aPage
@@ -312,14 +340,14 @@
                 if (!error)
                 {
                     if (aIsHeader) {
-                        NSMutableArray *oldChatrooms = [self.dataSource mutableCopy];
-                        [self.dataSource removeAllObjects];
+                        NSMutableArray *oldChatrooms = [self.dataArray mutableCopy];
+                        [self.dataArray removeAllObjects];
                         dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
                             [oldChatrooms removeAllObjects];
                         });
                     }
                     
-                    [strongSelf.dataSource addObjectsFromArray:result.list];
+                    [strongSelf.dataArray addObjectsFromArray:result.list];
                     [strongSelf.tableView reloadData];
                     if (result.count > 0) {
                         strongSelf.showRefreshFooter = YES;

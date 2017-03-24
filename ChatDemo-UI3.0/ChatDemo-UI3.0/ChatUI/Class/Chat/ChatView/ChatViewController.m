@@ -15,6 +15,7 @@
 #import "ChatGroupDetailViewController.h"
 #import "ChatroomDetailViewController.h"
 #import "UserProfileViewController.h"
+
 #import "ContactListSelectViewController.h"
 #import "ChatUIHelper.h"
 #import "EMChooseViewController.h"
@@ -45,7 +46,7 @@
     
     [self _setupBarButtonItem];
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(deleteAllMessages:) name:KNOTIFICATIONNAME_DELETEALLMESSAGE object:nil];
-    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(exitGroup) name:@"ExitGroup" object:nil];
+    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(exitChat) name:@"ExitChat" object:nil];
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(insertCallMessage:) name:@"insertCallMessage" object:nil];
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(handleCallNotification:) name:@"callOutWithChatter" object:nil];
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(handleCallNotification:) name:@"callControllerClose" object:nil];
@@ -252,11 +253,11 @@
 {
     id<IMessageModel> model = nil;
     model = [[EaseMessageModel alloc] initWithMessage:message];
-    model.avatarImage = [UIImage imageNamed:@"chatListCellHead"];
-    UserCacheInfo *user = [UserCacheManager getById:model.nickname];
-    if (user) {
-        model.avatarURLPath = user.AvatarUrl;
-        model.nickname = user.NickName;
+    model.avatarImage = [UIImage imageNamed:@"EaseUIResource.bundle/user"];
+    UserCacheInfo * userInfo = [UserCacheManager getById:model.nickname];
+    if (userInfo) {
+        model.avatarURLPath = userInfo.AvatarUrl;
+        model.nickname = userInfo.NickName;
     }
     model.failImageName = @"imageDownloadFail";
     return model;
@@ -462,7 +463,7 @@
 }
 
 #pragma mark - notification
-- (void)exitGroup
+- (void)exitChat
 {
     [self.navigationController popToViewController:self animated:NO];
     [self.navigationController popViewControllerAnimated:YES];

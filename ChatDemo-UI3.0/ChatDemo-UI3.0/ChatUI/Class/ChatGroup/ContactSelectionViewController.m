@@ -90,6 +90,8 @@
     [self.navigationItem setLeftBarButtonItem:backItem];
     
     [self.view addSubview:self.footerView];
+    
+    self.tableView.tableFooterView = [[UIView alloc] initWithFrame:CGRectMake(0, 0, self.view.frame.size.width, self.footerView.frame.size.height)];
     self.tableView.editing = YES;
     
     if ([_blockSelectedUsernames count] > 0) {

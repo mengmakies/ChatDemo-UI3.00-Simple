@@ -18,10 +18,10 @@
 
 - (void)willSearchBegin;
 
-- (void)willSearchFinish;
+- (void)didSearchFinish;
 
 - (void)cancelButtonClicked;
 
-- (void)searchButtonClickedWithString:(NSString *)aString;
+- (void)searchTextChangeWithString:(NSString *)aString;
 
 @end

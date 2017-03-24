@@ -52,6 +52,10 @@ https://github.com/mengmakies/ChatDemo-UI3.00-Simple
 IOS中如何显示开发者服务器上的昵称和头像
 http://community.easemob.com/article/825307855
 
+###关于发送文件功能
+IOS中环信聊天窗口如何实现文件发送和预览的功能  
+http://www.imgeek.org/question/6260
+
 **【最新解决方案】**草草们的忧伤：环信IM昵称和头像（**使用后端云缓存**）
 http://www.imgeek.org/article/825308536
 
@@ -61,6 +65,7 @@ http://www.imgeek.org/article/825308536
 >-【简书】地址：http://www.jianshu.com/p/c0c30707bf0c  欢迎拍砖！！！
 
 ###更新日志（平均每2个月同步更新环信官方SDK）
->- 2017.02...  敬请期待...
+>- 2017.05...  敬请期待...
+>- 2017.03.25  同步更新官方V3.3.0 版SDK；使用动态库，增加发送icloud文件功能；
 >- 2016.12.27  同步更新官方V3.2.2r2版SDK；优化音视频通话功能，支持https；
 >- 2016.10.25  同步更新官方V3.2.0版SDK；适配IOS10；使用Leancloud后端云存储用户信息；

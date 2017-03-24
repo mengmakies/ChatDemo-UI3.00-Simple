@@ -13,6 +13,7 @@
 #import "UserProfileEditViewController.h"
 #import <MobileCoreServices/MobileCoreServices.h>
 
+
 #import "EditNicknameViewController.h"
 #import "UIImageView+HeadImage.h"
 
@@ -61,8 +62,7 @@
     if (!_usernameLabel) {
         _usernameLabel = [[UILabel alloc] init];
         _usernameLabel.frame = CGRectMake(CGRectGetMaxX(_headImageView.frame) + 10.f, 10, 200, 20);
-        UserCacheInfo *user = [UserCacheManager currUser];
-        _usernameLabel.text = user.NickName;
+        _usernameLabel.text = [UserCacheManager currNickName];
         _usernameLabel.textColor = [UIColor lightGrayColor];
     }
     return _usernameLabel;
@@ -109,7 +109,8 @@
         cell.detailTextLabel.text = self.usernameLabel.text;
     } else if (indexPath.row == 2) {
         cell.textLabel.text = NSLocalizedString(@"setting.profileNickname", @"Nickname");
-        cell.detailTextLabel.text = [UserCacheManager currNickName];
+        UserCacheInfo *user = [UserCacheManager currUser];
+        cell.detailTextLabel.text = user.NickName;
         cell.accessoryType = UITableViewCellAccessoryDisclosureIndicator;
     }
     return cell;
@@ -174,10 +175,9 @@
     [self showHudInView:self.view hint:NSLocalizedString(@"setting.uploading", @"uploading...")];
     
     __weak typeof(self) weakSelf = self;
-    UIImage *orgImage = info[UIImagePickerControllerEditedImage];// 使用裁剪后的图片
+    UIImage *orgImage = info[UIImagePickerControllerOriginalImage];
     [picker dismissViewControllerAnimated:YES completion:nil];
     if (orgImage) {
-        
         // 上传到后端云
         [UserWebManager updateCurrAvatar:orgImage completed:^(UIImage *imageData) {
             [weakSelf hideHud];
@@ -189,7 +189,6 @@
             [weakSelf.headImageView imageWithUsername:kCurrEaseUserId placeholderImage:imageData];
             [self showHint:NSLocalizedString(@"setting.uploadSuccess", @"uploaded successfully")];
         }];
-        
     } else {
         [self hideHud];
         [self showHint:NSLocalizedString(@"setting.uploadFail", @"uploaded failed")];
@@ -217,16 +216,17 @@
             self.imagePicker.mediaTypes = @[(NSString *)kUTTypeImage];
             [self presentViewController:self.imagePicker animated:YES completion:NULL];
         } else {
-            
+        
         }
 #endif
     } else if (buttonIndex == 1) {
         self.imagePicker.sourceType = UIImagePickerControllerSourceTypePhotoLibrary;
         self.imagePicker.mediaTypes = @[(NSString *)kUTTypeImage];
         [self presentViewController:self.imagePicker animated:YES completion:NULL];
-        
+
     }
 }
+
 
 
 @end

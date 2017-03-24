@@ -6,7 +6,7 @@
 //  Copyright © 2016 XieYajie. All rights reserved.
 //
 
-#import "EMCallOptions.h"
+#import <Hyphenate/EMCallOptions.h>
 
 @interface EMCallOptions (NSCoding)<NSCoding>
 

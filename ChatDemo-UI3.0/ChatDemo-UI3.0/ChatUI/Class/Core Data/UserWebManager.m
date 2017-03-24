@@ -90,7 +90,7 @@
     AVQuery *query = [self getQuery];
     [query whereKey:@"openId" equalTo:userId];
     [query getFirstObjectInBackgroundWithBlock:^(AVObject *obj, NSError *error) {
-        UserWebInfo *user = obj;
+        UserWebInfo *user = (UserWebInfo*)obj;
         if(!obj){
             user = [UserWebInfo object];
             user.openId = userId;
@@ -111,7 +111,7 @@
     AVQuery *query = [UserWebInfo query];
     
     // 查询行为先尝试从网络加载，若加载失败，则从缓存加载结果
-    query.cachePolicy = kAVCachePolicyNetworkElseCache;
+//    query.cachePolicy = kAVCachePolicyNetworkElseCache;
 
     //设置缓存有效期：一天
     query.maxCacheAge = 24*3600;

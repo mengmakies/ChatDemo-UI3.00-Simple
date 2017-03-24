@@ -13,6 +13,8 @@
 
 #import "UIImageView+HeadImage.h"
 
+
+
 @implementation UIImageView (HeadImage)
 
 - (void)imageWithUsername:(NSString *)username placeholderImage:(UIImage*)placeholderImage
@@ -20,9 +22,9 @@
     if (placeholderImage == nil) {
         placeholderImage = [UIImage imageNamed:@"chatListCellHead"];
     }
-    UserCacheInfo *user = [UserCacheManager getById:username];
-    if (user) {
-        [self sd_setImageWithURL:[NSURL URLWithString:user.AvatarUrl] placeholderImage:placeholderImage];
+    UserCacheInfo * userInfo = [UserCacheManager getById:username];
+    if (userInfo) {
+        [self sd_setImageWithURL:[NSURL URLWithString:userInfo.AvatarUrl] placeholderImage:placeholderImage];
     } else {
         [self sd_setImageWithURL:nil placeholderImage:placeholderImage];
     }
@@ -34,12 +36,9 @@
 
 - (void)setTextWithUsername:(NSString *)username
 {
-    UserCacheInfo *user = [UserCacheManager getById:username];
-    if (user) {
-        [self setText:user.NickName];
-        [self setNeedsLayout];
-    }
-    
+    NSString *nickName = [UserCacheManager getNickById:username];
+    [self setText:nickName];
+    [self setNeedsLayout];
 }
 
 @end

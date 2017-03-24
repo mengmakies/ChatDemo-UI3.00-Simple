@@ -14,7 +14,7 @@
 
 #import "PublicGroupDetailViewController.h"
 #import "RealtimeSearchUtil.h"
-#import "EMCursorResult.h"
+#import <Hyphenate/EMCursorResult.h>
 #import "BaseTableViewCell.h"
 
 #import "UIViewController+SearchController.h"
@@ -142,13 +142,12 @@
     [[RealtimeSearchUtil currentUtil] realtimeSearchStop];
 }
 
-- (void)willSearchFinish
+- (void)didSearchFinish
 {
     if ([self.resultController.displaySource count]) {
         return;
     }
     
-    [self showHudInView:self.view hint:NSLocalizedString(@"searching", @"Searching")];
     UISearchBar *searchBar = self.searchController.searchBar;
     __block EMGroup *foundGroup= nil;
     [self.dataSource enumerateObjectsUsingBlock:^(EMGroup *group, NSUInteger idx, BOOL *stop){
@@ -168,31 +167,29 @@
     else
     {
         __weak typeof(self) weakSelf = self;
-        dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
+        [self showHudInView:self.view hint:NSLocalizedString(@"searching", @"Searching")];
+        dispatch_async(dispatch_get_main_queue(), ^{
             EMError *error = nil;
             EMGroup *group = [[EMClient sharedClient].groupManager searchPublicGroupWithId:searchBar.text error:&error];
-            dispatch_async(dispatch_get_main_queue(), ^{
-                [weakSelf hideHud];
-                PublicGroupListViewController *strongSelf = weakSelf;
-                if (strongSelf)
-                {
-                    if (!error) {
-                        [strongSelf.resultController.displaySource removeAllObjects];
-                        [strongSelf.resultController.displaySource addObject:group];
-                        [strongSelf.resultController.tableView reloadData];
-                    }
-                    else
-                    {
-                        [strongSelf showHint:NSLocalizedString(@"notFound", @"Can't found")];
-                    }
+            PublicGroupListViewController *strongSelf = weakSelf;
+            [strongSelf hideHud];
+            if (strongSelf)
+            {
+                if (!error) {
+                    [strongSelf.resultController.displaySource removeAllObjects];
+                    [strongSelf.resultController.displaySource addObject:group];
+                    [strongSelf.resultController.tableView reloadData];
                 }
-            });
+                else
+                {
+                    [strongSelf showHint:NSLocalizedString(@"notFound", @"Can't found")];
+                }
+            }
         });
     }
-    [self hideHud];
 }
 
-- (void)searchButtonClickedWithString:(NSString *)aString
+- (void)searchTextChangeWithString:(NSString *)aString
 {
     __weak typeof(self) weakSelf = self;
     [[RealtimeSearchUtil currentUtil] realtimeSearchWithSource:self.dataSource searchText:aString collationStringSelector:@selector(subject) resultBlock:^(NSArray *results) {
@@ -247,9 +244,7 @@
     }];
     
     UISearchBar *searchBar = self.searchController.searchBar;
-    [self.view addSubview:searchBar];
-    [searchBar sizeToFit];
-    self.tableView.frame = CGRectMake(0, searchBar.frame.size.height, self.view.frame.size.width,self.view.frame.size.height - searchBar.frame.size.height);
+    self.tableView.tableHeaderView = searchBar;
 }
 
 #pragma mark - data

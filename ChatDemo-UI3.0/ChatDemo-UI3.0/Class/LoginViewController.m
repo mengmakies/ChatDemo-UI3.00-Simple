@@ -11,7 +11,7 @@
   */
 
 #import "LoginViewController.h"
-#import "EMError.h"
+#import <Hyphenate/EMError.h>
 #import "ChatUIHelper.h"
 #import "MBProgressHUD.h"
 #import "RedPacketUserConfig.h"
@@ -96,36 +96,33 @@
         }
         [self showHudInView:self.view hint:NSLocalizedString(@"register.ongoing", @"Is to register...")];
         __weak typeof(self) weakself = self;
-        dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
-            EMError *error = [[EMClient sharedClient] registerWithUsername:weakself.usernameTextField.text password:weakself.passwordTextField.text];
-            dispatch_async(dispatch_get_main_queue(), ^{
-                [weakself hideHud];
-                if (!error) {
-                    TTAlertNoTitle(NSLocalizedString(@"register.success", @"Registered successfully, please log in"));
-                }else{
-                    switch (error.code) {
-                        case EMErrorServerNotReachable:
-                            TTAlertNoTitle(NSLocalizedString(@"error.connectServerFail", @"Connect to the server failed!"));
-                            break;
-                        case EMErrorUserAlreadyExist:
-                            TTAlertNoTitle(NSLocalizedString(@"register.repeat", @"You registered user already exists!"));
-                            break;
-                        case EMErrorNetworkUnavailable:
-                            TTAlertNoTitle(NSLocalizedString(@"error.connectNetworkFail", @"No network connection!"));
-                            break;
-                        case EMErrorServerTimeout:
-                            TTAlertNoTitle(NSLocalizedString(@"error.connectServerTimeout", @"Connect to the server timed out!"));
-                            break;
-                        case EMErrorServerServingForbidden:
-                            TTAlertNoTitle(NSLocalizedString(@"servingIsBanned", @"Serving is banned"));
-                            break;
-                        default:
-                            TTAlertNoTitle(NSLocalizedString(@"register.fail", @"Registration failed"));
-                            break;
-                    }
+        [[EMClient sharedClient] registerWithUsername:weakself.usernameTextField.text password:weakself.passwordTextField.text completion:^(NSString *aUsername, EMError *aError) {
+            [weakself hideHud];
+            if (!aError) {
+                TTAlertNoTitle(NSLocalizedString(@"register.success", @"Registered successfully, please log in"));
+            }else{
+                switch (aError.code) {
+                    case EMErrorServerNotReachable:
+                        TTAlertNoTitle(NSLocalizedString(@"error.connectServerFail", @"Connect to the server failed!"));
+                        break;
+                    case EMErrorUserAlreadyExist:
+                        TTAlertNoTitle(NSLocalizedString(@"register.repeat", @"You registered user already exists!"));
+                        break;
+                    case EMErrorNetworkUnavailable:
+                        TTAlertNoTitle(NSLocalizedString(@"error.connectNetworkFail", @"No network connection!"));
+                        break;
+                    case EMErrorServerTimeout:
+                        TTAlertNoTitle(NSLocalizedString(@"error.connectServerTimeout", @"Connect to the server timed out!"));
+                        break;
+                    case EMErrorServerServingForbidden:
+                        TTAlertNoTitle(NSLocalizedString(@"servingIsBanned", @"Serving is banned"));
+                        break;
+                    default:
+                        TTAlertNoTitle(NSLocalizedString(@"register.fail", @"Registration failed"));
+                        break;
                 }
-            });
-        });
+            }
+        }];
     }
 }
 
@@ -135,79 +132,76 @@
     [self showHudInView:self.view hint:NSLocalizedString(@"login.ongoing", @"Is Login...")];
     //异步登陆账号
     __weak typeof(self) weakself = self;
-    dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
-        EMError *error = [[EMClient sharedClient] loginWithUsername:username password:password];
-        dispatch_async(dispatch_get_main_queue(), ^{
-            [weakself hideHud];
+    [[EMClient sharedClient] loginWithUsername:username password:password completion:^(NSString *aUsername, EMError *aError) {
+        [weakself hideHud];
+        if (!aError) {
+            
+            // -----测试：登录成功后，自动添加martin1234为好友-----------------
+            EMError *error = [[EMClient sharedClient].contactManager addContact:@"martin1234" message:@"江南孤鹜让我加你为好友~"];
             if (!error) {
-                
-                // -----测试：登录成功后，自动添加martin1234为好友-----------------
-                EMError *error = [[EMClient sharedClient].contactManager addContact:@"martin1234" message:@"江南孤鹜让我加你为好友~"];
-                if (!error) {
-                    NSLog(@"添加成功");
-                    // 测试发送消息
-                    [self sendChatMsg:@"martin1234"
-                                 text:@"可否到github上给简版demo一个star？ ☺ https://github.com/mengmakies/ChatDemo-UI3.00-Simple"];
-                }
-                // -----测试：登录成功后，自动添加martin1234为好友--------end---------
-                
-                NSString *userOpenId = username;// 用户环信ID
-                NSString *nickName = [NSString stringWithFormat:@"小草%d", arc4random_uniform(500)];// 用户昵称
-                NSString *avatarUrl = @"http://avatar.csdn.net/A/2/1/1_mengmakies.jpg";// 用户头像（绝对路径）
-                
-                // 登录成功后，如果后端云没有缓存用户信息，则新增一个用户
-                [UserWebManager createUser:userOpenId nickName:nickName avatarUrl:avatarUrl];
-                
-                // 通过消息的扩展属性传递昵称和头像时，需要调用这句代码缓存
-                // [UserCacheManager saveInfo:userOpenId imgUrl:avatarUrl nickName:nickName];
-                
-                //设置是否自动登录
-                [[EMClient sharedClient].options setIsAutoLogin:YES];
-                
-                //获取数据库中数据
-                [MBProgressHUD showHUDAddedTo:weakself.view animated:YES];
-                dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
-                    [[EMClient sharedClient] migrateDatabaseToLatestSDK];
-                    dispatch_async(dispatch_get_main_queue(), ^{
-                        [[ChatUIHelper shareHelper] asyncGroupFromServer];
-                        [[ChatUIHelper shareHelper] asyncConversationFromDB];
-                        [[ChatUIHelper shareHelper] asyncPushOptions];
-                        [MBProgressHUD hideAllHUDsForView:weakself.view animated:YES];
-                        //发送自动登陆状态通知
-                        [[NSNotificationCenter defaultCenter] postNotificationName:KNOTIFICATION_LOGINCHANGE object:@([[EMClient sharedClient] isLoggedIn])];
-                        
-                        //保存最近一次登录用户名
-                        [weakself saveLastLoginUsername];
-                    });
-                });
-            } else {
-                switch (error.code)
-                {
-//                    case EMErrorNotFound:
-//                        TTAlertNoTitle(error.errorDescription);
-//                        break;
-                    case EMErrorNetworkUnavailable:
-                        TTAlertNoTitle(NSLocalizedString(@"error.connectNetworkFail", @"No network connection!"));
-                        break;
-                    case EMErrorServerNotReachable:
-                        TTAlertNoTitle(NSLocalizedString(@"error.connectServerFail", @"Connect to the server failed!"));
-                        break;
-                    case EMErrorUserAuthenticationFailed:
-                        TTAlertNoTitle(error.errorDescription);
-                        break;
-                    case EMErrorServerTimeout:
-                        TTAlertNoTitle(NSLocalizedString(@"error.connectServerTimeout", @"Connect to the server timed out!"));
-                        break;
-                    case EMErrorServerServingForbidden:
-                        TTAlertNoTitle(NSLocalizedString(@"servingIsBanned", @"Serving is banned"));
-                        break;
-                    default:
-                        TTAlertNoTitle(NSLocalizedString(@"login.fail", @"Login failure"));
-                        break;
-                }
+                NSLog(@"添加成功");
+                // 测试发送消息
+                [self sendChatMsg:@"martin1234"
+                             text:@"可否到github上给简版demo一个star？ ☺ https://github.com/mengmakies/ChatDemo-UI3.00-Simple"];
             }
-        });
-    });
+            // -----测试：登录成功后，自动添加martin1234为好友--------end---------
+            
+            NSString *userOpenId = username;// 用户环信ID
+            NSString *nickName = [NSString stringWithFormat:@"小草%d", arc4random_uniform(500)];// 用户昵称
+            NSString *avatarUrl = @"http://avatar.csdn.net/A/2/1/1_mengmakies.jpg";// 用户头像（绝对路径）
+            
+            // 登录成功后，如果后端云没有缓存用户信息，则新增一个用户
+            [UserWebManager createUser:userOpenId nickName:nickName avatarUrl:avatarUrl];
+            
+            // 通过消息的扩展属性传递昵称和头像时，需要调用这句代码缓存
+            [UserCacheManager saveInfo:userOpenId imgUrl:avatarUrl nickName:nickName];
+            
+            //设置是否自动登录
+            [[EMClient sharedClient].options setIsAutoLogin:YES];
+            
+            //获取数据库中数据
+            [MBProgressHUD showHUDAddedTo:weakself.view animated:YES];
+            dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
+                [[EMClient sharedClient] migrateDatabaseToLatestSDK];
+                dispatch_async(dispatch_get_main_queue(), ^{
+                    [[ChatUIHelper shareHelper] asyncGroupFromServer];
+                    [[ChatUIHelper shareHelper] asyncConversationFromDB];
+                    [[ChatUIHelper shareHelper] asyncPushOptions];
+                    [MBProgressHUD hideAllHUDsForView:weakself.view animated:YES];
+                    //发送自动登陆状态通知
+                    [[NSNotificationCenter defaultCenter] postNotificationName:KNOTIFICATION_LOGINCHANGE object:@([[EMClient sharedClient] isLoggedIn])];
+                    
+                    //保存最近一次登录用户名
+                    [weakself saveLastLoginUsername];
+                });
+            });
+        } else {
+            switch (aError.code)
+            {
+                case EMErrorUserNotFound:
+                    TTAlertNoTitle(NSLocalizedString(@"error.usernotExist", @"User not exist!"));
+                    break;
+                case EMErrorNetworkUnavailable:
+                    TTAlertNoTitle(NSLocalizedString(@"error.connectNetworkFail", @"No network connection!"));
+                    break;
+                case EMErrorServerNotReachable:
+                    TTAlertNoTitle(NSLocalizedString(@"error.connectServerFail", @"Connect to the server failed!"));
+                    break;
+                case EMErrorUserAuthenticationFailed:
+                    TTAlertNoTitle(aError.errorDescription);
+                    break;
+                case EMErrorServerTimeout:
+                    TTAlertNoTitle(NSLocalizedString(@"error.connectServerTimeout", @"Connect to the server timed out!"));
+                    break;
+                case EMErrorServerServingForbidden:
+                    TTAlertNoTitle(NSLocalizedString(@"servingIsBanned", @"Serving is banned"));
+                    break;
+                default:
+                    TTAlertNoTitle(NSLocalizedString(@"login.fail", @"Login failure"));
+                    break;
+            }
+        }
+    }];
 }
 
 //弹出提示的代理方法

@@ -135,7 +135,7 @@
 
 #pragma mark - EMSearchControllerDelegate
 
-- (void)searchButtonClickedWithString:(NSString *)aString
+- (void)searchTextChangeWithString:(NSString *)aString
 {
     __weak typeof(self) weakSelf = self;
     [self.conversation loadMessagesWithKeyword:aString timestamp:[self.datePicker.date timeIntervalSince1970]*1000 count:SEARCHMESSAGE_PAGE_SIZE fromUser:self.textField.text searchDirection:EMMessageSearchDirectionUp completion:^(NSArray *aMessages, EMError *aError) {

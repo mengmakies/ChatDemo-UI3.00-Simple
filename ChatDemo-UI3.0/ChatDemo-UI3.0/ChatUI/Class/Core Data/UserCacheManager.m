@@ -136,6 +136,9 @@ static FMDatabaseQueue *_queue;
 +(void)saveInfo:(NSString*)userId
          imgUrl:(NSString*)imgUrl
        nickName:(NSString*)nickName{
+    
+    if(!userId) return;
+    
     NSString *sql = @"";
     
     // 过期时间

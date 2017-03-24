@@ -8,9 +8,11 @@
 
 #import <UIKit/UIKit.h>
 
+#import "DemoCallManager.h"
+
 @interface EMCallViewController : UIViewController
 
-//#if DEMO_CALL == 1
+#if DEMO_CALL == 1
 
 @property (strong, nonatomic, readonly) EMCallSession *callSession;
 
@@ -24,6 +26,6 @@
 
 - (void)clearData;
 
-//#endif
+#endif
 
 @end

@@ -15,6 +15,7 @@
 #import "ChatViewController.h"
 #import "RobotManager.h"
 #import "RobotChatViewController.h"
+
 #import "RealtimeSearchUtil.h"
 #import "RedPacketChatViewController.h"
 #import "ChatUIHelper.h"
@@ -156,10 +157,10 @@
         if ([[RobotManager sharedInstance] isRobotWithUsername:conversation.conversationId]) {
             model.title = [[RobotManager sharedInstance] getRobotNickWithUsername:conversation.conversationId];
         } else {
-            UserCacheInfo *user = [UserCacheManager getById:conversation.conversationId];
-            if (user) {
-                model.title= user.NickName;
-                model.avatarURLPath = user.AvatarUrl;
+            UserCacheInfo * userInfo = [UserCacheManager getById:conversation.conversationId];
+            if (userInfo) {
+                model.title= userInfo.NickName;
+                model.avatarURLPath = userInfo.AvatarUrl;
             }
         }
     } else if (model.conversation.type == EMConversationTypeGroupChat) {
@@ -223,7 +224,7 @@
         }
         
         if (lastMessage.direction == EMMessageDirectionReceive) {
-            NSString *from = [UserCacheManager getNickById:lastMessage.from];
+            NSString *from =  [UserCacheManager getNickById:lastMessage.from];
             latestMessageTitle = [NSString stringWithFormat:@"%@: %@", from, latestMessageTitle];
         }
         
@@ -267,7 +268,7 @@
     [[RealtimeSearchUtil currentUtil] realtimeSearchStop];
 }
 
-- (void)searchButtonClickedWithString:(NSString *)aString
+- (void)searchTextChangeWithString:(NSString *)aString
 {
     __weak typeof(self) weakSelf = self;
     [[RealtimeSearchUtil currentUtil] realtimeSearchWithSource:self.dataArray searchText:aString collationStringSelector:@selector(title) resultBlock:^(NSArray *results) {
@@ -335,8 +336,9 @@
     
     UISearchBar *searchBar = self.searchController.searchBar;
     [self.view addSubview:searchBar];
-    [searchBar sizeToFit];
     self.tableView.frame = CGRectMake(0, searchBar.frame.size.height, self.view.frame.size.width,self.view.frame.size.height - searchBar.frame.size.height);
+//    self.tableView.tableHeaderView = searchBar;
+//    [searchBar sizeToFit];
 }
 
 #pragma mark - public

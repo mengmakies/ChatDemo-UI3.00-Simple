@@ -14,7 +14,7 @@
 
 #import "BaseTableViewCell.h"
 #import "ChatViewController.h"
-#import "EMCursorResult.h"
+#import <Hyphenate/EMCursorResult.h>
 //#import "EMRobot.h"
 #import "RobotManager.h"
 #import "SRRefreshView.h"

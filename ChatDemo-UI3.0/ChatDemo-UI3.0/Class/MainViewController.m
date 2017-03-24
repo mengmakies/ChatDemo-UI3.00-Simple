@@ -15,18 +15,19 @@
 #import "SettingsViewController.h"
 #import "ApplyViewController.h"
 #import "ChatViewController.h"
+
 #import "ConversationListController.h"
 #import "ContactListViewController.h"
 #import "ChatUIHelper.h"
 #import "RedPacketChatViewController.h"
 #import <UserNotifications/UserNotifications.h>
 
-//两次提示的默认间隔
-static NSString *kMessageType = @"MessageType";
 static NSString *kConversationChatter = @"ConversationChatter";
-static NSString *kGroupName = @"GroupName";
+static NSString *kMessageType = @"MessageType";
 
 #if DEMO_CALL == 1
+#import <Hyphenate/Hyphenate.h>
+
 @interface MainViewController () <UIAlertViewDelegate, EMCallManagerDelegate>
 #else
 @interface MainViewController () <UIAlertViewDelegate>
@@ -35,12 +36,9 @@ static NSString *kGroupName = @"GroupName";
     ConversationListController *_chatListVC;
     ContactListViewController *_contactsVC;
     SettingsViewController *_settingsVC;
-//    __weak CallViewController *_callController;
     
     UIBarButtonItem *_addFriendItem;
 }
-
-@property (strong, nonatomic) NSDate *lastPlaySoundDate;
 
 @end
 
@@ -209,6 +207,8 @@ static NSString *kGroupName = @"GroupName";
     _connectionState = [ChatUIHelper shareHelper].connectionState;
     [_chatListVC networkChanged:_connectionState];
 }
+
+
 
 #pragma mark - 自动登录回调
 

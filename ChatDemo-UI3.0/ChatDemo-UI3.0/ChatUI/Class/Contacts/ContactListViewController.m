@@ -17,7 +17,9 @@
 #import "ChatroomListViewController.h"
 #import "AddFriendViewController.h"
 #import "ApplyViewController.h"
+
 #import "RealtimeSearchUtil.h"
+
 #import "RedPacketChatViewController.h"
 
 #import "BaseTableViewCell.h"
@@ -53,10 +55,6 @@
 - (void)viewDidLoad {
     [super viewDidLoad];
     // Do any additional setup after loading the view.
-    if ([self respondsToSelector:@selector(setEdgesForExtendedLayout:)]) {
-        [self setEdgesForExtendedLayout:UIRectEdgeNone];
-    }
-    
     self.showRefreshHeader = YES;
     
     _contactsSource = [NSMutableArray array];
@@ -140,7 +138,7 @@
         }
         else if (indexPath.row == 2) {
             cell.avatarView.image = [UIImage imageNamed:@"EaseUIResource.bundle/group"];
-            cell.titleLabel.text = NSLocalizedString(@"title.chatroomlist",@"chatroom list");
+            cell.titleLabel.text = NSLocalizedString(@"title.chatroom",@"chatroom");
         }
         else if (indexPath.row == 3) {
             cell.avatarView.image = [UIImage imageNamed:@"EaseUIResource.bundle/group"];
@@ -159,10 +157,10 @@
         
         NSArray *userSection = [self.dataArray objectAtIndex:(indexPath.section - 1)];
         EaseUserModel *model = [userSection objectAtIndex:indexPath.row];
-        UserCacheInfo *user = [UserCacheManager getById:model.buddy];
-        if (user) {
-            model.nickname= user.NickName;
-            model.avatarURLPath = user.AvatarUrl;
+        UserCacheInfo * userInfo = [UserCacheManager getById:model.buddy];
+        if (userInfo) {
+            model.nickname= userInfo.NickName;
+            model.avatarURLPath = userInfo.AvatarUrl;
         }
         cell.indexPath = indexPath;
         cell.delegate = self;
@@ -371,7 +369,7 @@
     [[RealtimeSearchUtil currentUtil] realtimeSearchStop];
 }
                                                
-- (void)searchButtonClickedWithString:(NSString *)aString
+- (void)searchTextChangeWithString:(NSString *)aString
 {
     __weak typeof(self) weakSelf = self;
     [[RealtimeSearchUtil currentUtil] realtimeSearchWithSource:self.contactsSource searchText:aString collationStringSelector:@selector(showName) resultBlock:^(NSArray *results) {
@@ -410,7 +408,7 @@
         }
         
         NSString *buddy = [weakSelf.resultController.displaySource objectAtIndex:indexPath.row];
-        cell.imageView.image = [UIImage imageNamed:@"chatListCellHead"];
+        cell.imageView.image = [UIImage imageNamed:@"chatListCellHead.png"];
         cell.textLabel.text = buddy;
         cell.username = buddy;
         
@@ -440,9 +438,8 @@
     }];
         
     UISearchBar *searchBar = self.searchController.searchBar;
-    [self.view addSubview:searchBar];
+    self.tableView.tableHeaderView = searchBar;
     [searchBar sizeToFit];
-    self.tableView.frame = CGRectMake(0, searchBar.frame.size.height, self.view.frame.size.width,self.view.frame.size.height - searchBar.frame.size.height);
 
 }
 
@@ -475,10 +472,11 @@
     for (NSString *buddy in contactsSource) {
         EaseUserModel *model = [[EaseUserModel alloc] initWithBuddy:buddy];
         if (model) {
-            model.avatarImage = [UIImage imageNamed:@"chatListCellHead"];
-            model.nickname = [UserCacheManager getNickById:buddy];
+            NSString *nickName = [UserCacheManager getNickById:buddy];
+            model.avatarImage = [UIImage imageNamed:@"EaseUIResource.bundle/user"];
+            model.nickname = nickName;
             
-            NSString *firstLetter = [EaseChineseToPinyin pinyinFromChineseString:[UserCacheManager getNickById:buddy]];
+            NSString *firstLetter = [EaseChineseToPinyin pinyinFromChineseString:nickName];
             NSInteger section;
             if (firstLetter.length > 0) {
                 section = [indexCollation sectionForObject:[firstLetter substringToIndex:1] collationStringSelector:@selector(uppercaseString)];
