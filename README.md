@@ -56,7 +56,7 @@ http://community.easemob.com/article/825307855
 IOS中环信聊天窗口如何实现文件发送和预览的功能  
 http://www.imgeek.org/question/6260
 
-**【最新解决方案】**草草们的忧伤：环信IM昵称和头像（**使用后端云缓存**）
+**最新解决方案**草草们的忧伤：环信IM昵称和头像（**使用后端云缓存**）
 http://www.imgeek.org/article/825308536
 
 >- 如有任何问题，请咨询【环信IM互帮互助群】，群号：340452063

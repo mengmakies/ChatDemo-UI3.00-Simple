@@ -221,6 +221,7 @@ static ChatUIHelper *helper = nil;
 {
     BOOL isRefreshCons = YES;
     for(EMMessage *message in aMessages){
+        [UserCacheManager saveInfo:message.ext];// 通过消息的扩展属性传递昵称和头像时，需要调用这句代码缓存
         BOOL needShowNotification = (message.chatType != EMChatTypeChat) ? [self _needShowNotification:message.conversationId] : YES;
         
 #ifdef REDPACKET_AVALABLE
