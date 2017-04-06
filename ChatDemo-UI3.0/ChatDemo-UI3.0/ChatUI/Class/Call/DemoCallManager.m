@@ -326,7 +326,8 @@ static DemoCallManager *callManager = nil;
         }
     };
     
-    [[EMClient sharedClient].callManager startCall:aType remoteName:aUsername ext:@"123" completion:^(EMCallSession *aCallSession, EMError *aError) {
+    NSString *ext = [[EaseSDKHelper reGetMessageExt:@{}] jsonStringEncoded];
+    [[EMClient sharedClient].callManager startCall:aType remoteName:aUsername ext:ext completion:^(EMCallSession *aCallSession, EMError *aError) {
         completionBlock(aCallSession, aError);
     }];
 }

@@ -46,5 +46,6 @@
     #import "AVOSCloud/AVOSCloud.h"// 后端云LeanCloud
     #import "UserCacheManager.h"
     #import "UserWebManager.h"
+    #import "YYCategories.h"
 
 #endif

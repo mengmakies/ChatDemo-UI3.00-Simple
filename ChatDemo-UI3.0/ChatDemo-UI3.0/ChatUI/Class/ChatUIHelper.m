@@ -15,7 +15,7 @@
 #import "AppDelegate.h"
 #import "ApplyViewController.h"
 #import "MBProgressHUD.h"
-
+#import <UserNotifications/UserNotifications.h>
 #import "EaseSDKHelper.h"
 
 #ifdef REDPACKET_AVALABLE

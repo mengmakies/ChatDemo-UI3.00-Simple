@@ -41,8 +41,6 @@
      */
     [[RedPacketUserConfig sharedConfig] configWithAppKey:EaseMobAppKey];
 #endif
-
-    _connectionState = EMConnectionConnected;
     
     self.window = [[UIWindow alloc] initWithFrame:[[UIScreen mainScreen] bounds]];
     self.window.backgroundColor = [UIColor whiteColor];
