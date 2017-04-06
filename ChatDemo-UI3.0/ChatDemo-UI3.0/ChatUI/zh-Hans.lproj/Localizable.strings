@@ -269,6 +269,7 @@
 "message.location1" = "[位置]";
 "message.voice1" = "[音频]";
 "message.video1" = "[视频]";
+"message.file1" = "[文件]";
 "message.beginReceiveOffine" = "开始接收离线消息";
 "message.endReceiveOffine" = "离线消息接收成功";
 "message.toolBar.inputPlaceHolder" = "输入新消息";

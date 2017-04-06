@@ -269,6 +269,7 @@
 "message.location1" = "[location]";
 "message.voice1" = "[audio]";
 "message.video1" = "[video]";
+"message.file1" = "[file]";
 "message.beginReceiveOffine" = "Begin to receive offline messages";
 "message.endReceiveOffine" = "Finish receiving offline messages";
 "message.toolBar.inputPlaceHolder" = "Input a new message...";
