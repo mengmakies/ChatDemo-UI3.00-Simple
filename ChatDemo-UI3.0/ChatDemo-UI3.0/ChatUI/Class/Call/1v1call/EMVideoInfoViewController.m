@@ -112,13 +112,13 @@
     int s = _timeLength - hour * 3600 - m * 60;
     
     if (hour > 0) {
-        _timeLabel.text = [NSString stringWithFormat:@"%i:%i:%i", hour, m, s];
+        _timeLabel.text = [NSString stringWithFormat:@"%02i:%02i:%02i", hour, m, s];
     }
     else if(m > 0){
-        _timeLabel.text = [NSString stringWithFormat:@"%i:%i", m, s];
+        _timeLabel.text = [NSString stringWithFormat:@"%02i:%02i", m, s];
     }
     else{
-        _timeLabel.text = [NSString stringWithFormat:@"00:%i", s];
+        _timeLabel.text = [NSString stringWithFormat:@"00:%02i", s];
     }
 }
 
