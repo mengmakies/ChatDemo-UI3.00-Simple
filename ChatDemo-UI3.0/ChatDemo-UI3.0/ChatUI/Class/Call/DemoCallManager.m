@@ -164,6 +164,9 @@ static DemoCallManager *callManager = nil;
     @synchronized (_callLock) {
         [self _startCallTimer];
         
+        // 接收到语音通话请求时，保存对方传过来的昵称头像
+        [UserCacheManager saveInfoWithStr:aSession.ext];
+        
         self.currentSession = aSession;
         self.currentController = [[EMCallViewController alloc] initWithCallSession:self.currentSession];
         self.currentController.modalPresentationStyle = UIModalPresentationOverFullScreen;
@@ -326,6 +329,7 @@ static DemoCallManager *callManager = nil;
         }
     };
     
+    // 请求语音通话时，将昵称头像通过扩展属性传递过去
     NSString *ext = [[EaseSDKHelper reGetMessageExt:@{}] jsonStringEncoded];
     [[EMClient sharedClient].callManager startCall:aType remoteName:aUsername ext:ext completion:^(EMCallSession *aCallSession, EMError *aError) {
         completionBlock(aCallSession, aError);

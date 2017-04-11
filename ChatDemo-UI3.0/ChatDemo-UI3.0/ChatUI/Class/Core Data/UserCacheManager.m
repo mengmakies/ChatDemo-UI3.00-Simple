@@ -161,6 +161,15 @@ static FMDatabaseQueue *_queue;
 #endif
 }
 
++(void)saveInfoWithStr:(NSString *)jsonStr{
+    if(!jsonStr) return;
+    
+    NSData *extData = [jsonStr dataUsingEncoding:NSUTF8StringEncoding];
+    NSDictionary *extDic = [NSJSONSerialization JSONObjectWithData:extData options:0 error:nil];
+    
+    [self saveInfo:extDic];
+}
+
 +(void)saveInfo:(NSDictionary *)userinfo{
     NSString *userid = [userinfo objectForKey:kChatUserId];
     NSString *username = [userinfo objectForKey:kChatUserNick];

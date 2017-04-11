@@ -39,6 +39,7 @@
  *保存用户信息
  */
 +(void)saveInfo:(NSDictionary *)userinfo;
++(void)saveInfoWithStr:(NSString *)jsonStr;
 
 // 更新当前用户的昵称
 +(void)updateCurrNick:(NSString*)nickName;
