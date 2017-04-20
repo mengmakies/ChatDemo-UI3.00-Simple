@@ -191,8 +191,6 @@ didReceiveRemoteNotification:(NSDictionary *)userInfo;
                           messageType:(EMChatType)messageType
                            messageExt:(NSDictionary *)messageExt;
 
-+(NSMutableDictionary*)reGetMessageExt:(NSDictionary *)messageExt;
-
 #pragma mark - call
 
 @end

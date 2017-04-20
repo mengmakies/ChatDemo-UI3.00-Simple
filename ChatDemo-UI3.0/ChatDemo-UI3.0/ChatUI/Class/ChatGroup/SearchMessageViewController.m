@@ -171,9 +171,10 @@
             }
             EMMessage *message = [weakSelf.resultController.displaySource objectAtIndex:indexPath.row];
 
-            cell.titleLabel.text = message.from;
             cell.detailLabel.text = [weakSelf getContentFromMessage:message];
-            [cell.avatarView.imageView imageWithUsername:message.from placeholderImage:[UIImage imageNamed:@"chatListCellHead.png"]];
+            [UserCacheManager setImageLabelView:message.from
+                                      nameLabel:cell.titleLabel
+                                      imageView:cell.avatarView.imageView];
             return cell;
         } else {
             NSString *CellIdentifier = @"loadMoreCell";

@@ -89,9 +89,9 @@
 {
     RedpacketUserInfo *userInfo = [RedpacketUserInfo new];
 
-    UserCacheInfo * user = [UserCacheManager getById:userId];
-    userInfo.userNickname = user.NickName;
-    userInfo.userAvatar = user.AvatarUrl;
+    UserCacheInfo * user = [UserCacheManager getUserInfo:userId];
+    userInfo.userNickname = user.nickName;
+    userInfo.userAvatar = user.avatarUrl;
     userInfo.userId = userId;
     return userInfo;
 }

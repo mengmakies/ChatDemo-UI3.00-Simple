@@ -114,7 +114,9 @@
 {
     [self.silenceButton setImage:[UIImage imageNamed:@"Button_Mute active"] forState:UIControlStateSelected];
     self.timeLabel.hidden = YES;
-    self.remoteNameLabel.text = self.callSession.remoteName;
+    
+    NSString *nickName = [UserCacheManager getNickName:self.callSession.remoteName];
+    self.remoteNameLabel.text = nickName;
     
     BOOL isCaller = self.callSession.isCaller;
     switch (self.callSession.type) {

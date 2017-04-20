@@ -44,6 +44,8 @@
     self.delegate = self;
     self.dataSource = self;
     
+    self.title = [UserCacheManager getNickName:self.conversation.conversationId];
+    
     [self _setupBarButtonItem];
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(deleteAllMessages:) name:KNOTIFICATIONNAME_DELETEALLMESSAGE object:nil];
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(exitChat) name:@"ExitChat" object:nil];
@@ -254,11 +256,6 @@
     id<IMessageModel> model = nil;
     model = [[EaseMessageModel alloc] initWithMessage:message];
     model.avatarImage = [UIImage imageNamed:@"EaseUIResource.bundle/user"];
-    UserCacheInfo * userInfo = [UserCacheManager getById:model.nickname];
-    if (userInfo) {
-        model.avatarURLPath = userInfo.AvatarUrl;
-        model.nickname = userInfo.NickName;
-    }
     model.failImageName = @"imageDownloadFail";
     return model;
 }
@@ -532,7 +529,7 @@
     if ([selectedSources count]) {
         EaseAtTarget *target = [[EaseAtTarget alloc] init];
         target.userId = selectedSources.firstObject;
-        target.nickname = [UserCacheManager getNickById:target.userId];
+        target.nickname = [UserCacheManager getNickName:target.userId];
         if (_selectedCallback) {
             _selectedCallback(target);
         }

@@ -8,8 +8,6 @@
 
 #import <Foundation/Foundation.h>
 
-#define kCurrEaseUserId [[EMClient sharedClient] currentUsername]// 当前用户的环信ID
-
 @interface UserWebInfo : AVObject <AVSubclassing>
 @property(nonatomic,copy)NSString* openId;
 @property(nonatomic,copy)NSString* nickName;
@@ -51,41 +49,41 @@
        nickName:(NSString*)nickName;
 
 // 更新当前用户的昵称
-+(void)updateCurrNick:(NSString*)nickName
-            completed:(void(^)(BOOL isSucc))completed;
++(void)updateMyNick:(NSString*)nickName
+          completed:(void(^)(BOOL isSucc))completed;
 
 // 更新当前用户的头像
-+(void)updateCurrAvatar:(UIImage*)pickImage
-              completed:(void(^)(UIImage *imageData))completed;
++(void)updateMyAvatar:(UIImage*)pickImage
+            completed:(void(^)(UIImage *imageData))completed;
 
 /*
  *根据环信ID获取用户信息
  *userId 用户的环信id
  */
-+(UserWebInfo*)getById:(NSString *)userid;
++(UserWebInfo*)getUserInfo:(NSString *)userid;
 
 /*
  *根据环信ID获取用户信息
  *userId 用户的环信id
  */
-+(void)getByIdAsync:(NSString *)userid
++(void)getUserInfo:(NSString *)userid
           completed:(void(^)(UserWebInfo *user))completed;
 
 /*
  * 根据环信ID获取昵称
  * userId:环信用户id
  */
-+(NSString*)getNickById:(NSString*)userId;
++(NSString*)getNickName:(NSString*)userId;
 
 /*
  * 获取当前环信用户信息
  */
-+(UserWebInfo*)currUser;
++(UserWebInfo*)myInfo;
 
 /*
  * 获取当前环信用户的昵称
  */
-+(NSString*)currNickName;
++(NSString*)myNickName;
 
 /**
  *  删除查询的所有缓存结果

@@ -135,21 +135,9 @@ CGFloat const EaseUserCellPadding = 10;
 - (void)setModel:(id<IUserModel>)model
 {
     _model = model;
-    
-    if ([_model.nickname length] > 0) {
-        self.titleLabel.text = _model.nickname;
-    }
-    else{
-       self.titleLabel.text = _model.buddy;
-    }
-    
-    if ([_model.avatarURLPath length] > 0){
-        [self.avatarView.imageView sd_setImageWithURL:[NSURL URLWithString:_model.avatarURLPath] placeholderImage:_model.avatarImage];
-    } else {
-        if (_model.avatarImage) {
-            self.avatarView.image = _model.avatarImage;
-        }
-    }
+    [UserCacheManager setImageLabelView:model.buddy
+                              nameLabel:self.titleLabel
+                              imageView:self.avatarView.imageView];
 }
 
 - (void)setTitleLabelFont:(UIFont *)titleLabelFont

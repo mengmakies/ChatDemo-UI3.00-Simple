@@ -137,11 +137,6 @@
 {
     id<IUserModel> model = nil;
     model = [[EaseUserModel alloc] initWithBuddy:buddy];
-    UserCacheInfo * userInfo = [UserCacheManager getById:model.buddy];
-    if (userInfo) {
-        model.nickname= userInfo.NickName;
-        model.avatarURLPath = userInfo.AvatarUrl;
-    }
     return model;
 }
 
@@ -150,11 +145,6 @@
 {
     id<IUserModel> model = nil;
     model = [self.dataArray objectAtIndex:indexPath.row];
-    UserCacheInfo * userInfo = [UserCacheManager getById:model.buddy];
-    if (userInfo) {
-        model.nickname= userInfo.NickName;
-        model.avatarURLPath = userInfo.AvatarUrl;
-    }
     return model;
 }
 

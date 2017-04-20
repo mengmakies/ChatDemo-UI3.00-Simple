@@ -61,7 +61,7 @@
 +(void)createUser:(NSString*)openId
          nickName:(NSString*)nickName
         avatarUrl:(NSString*)avatarUrl{
-    [self getByIdAsync:openId completed:^(UserWebInfo *user) {
+    [self getUserInfo:openId completed:^(UserWebInfo *user) {
         if(user) return;
         
         [UserWebManager saveInfo:openId// 用户环信ID
@@ -133,7 +133,7 @@
 }
 
 // 更新当前用户的昵称
-+(void)updateCurrNick:(NSString*)nickName
++(void)updateMyNick:(NSString*)nickName
             completed:(void(^)(BOOL isSucc))completed{
     AVQuery *query = [self getQuery];
     [query whereKey:@"openId" equalTo:kCurrEaseUserId];
@@ -144,7 +144,7 @@
             [user saveEventually];// 如果用户目前尚未接入网络，saveEventually会缓存设备中的数据，并在网络连接恢复后上传
             
             // 本地重新缓存用户数据
-            [UserCacheManager updateCurrNick:nickName];
+            [UserCacheManager updateMyNick:nickName];
             
             completed(YES);
         } else {
@@ -155,8 +155,8 @@
 }
 
 // 更新当前用户的头像
-+(void)updateCurrAvatar:(UIImage*)pickImage
-              completed:(void(^)(UIImage *imageData))completed{
++(void)updateMyAvatar:(UIImage*)pickImage
+            completed:(void(^)(UIImage *imageData))completed{
     
     pickImage = [self imageWithImageSimple:pickImage scaledToSize:CGSizeMake(250., 250.)];
     
@@ -183,7 +183,7 @@
             }
             
             // 本地重新缓存用户数据
-            [UserCacheManager updateCurrAvatar:avatarUrl];
+            [UserCacheManager updateMyAvatar:avatarUrl];
             
             completed(pickImage);
         }];
@@ -215,7 +215,7 @@
  *根据环信ID获取用户信息
  *userId 用户的环信id
  */
-+(UserWebInfo*)getById:(NSString *)userid{
++(UserWebInfo*)getUserInfo:(NSString *)userid{
     
     UserWebInfo *user = nil;
     @try {
@@ -235,8 +235,14 @@
  *根据环信ID获取用户信息
  *userId 用户的环信id
  */
-+(void)getByIdAsync:(NSString *)userid
++(void)getUserInfo:(NSString *)userid
           completed:(void(^)(UserWebInfo *user))completed{
+    
+    if(!userid){
+        completed(nil);
+        return;
+    }
+    
     AVQuery *query = [self getQuery];
     [query whereKey:@"openId" equalTo:userid];
     [query getFirstObjectInBackgroundWithBlock:^(AVObject * _Nullable object, NSError * _Nullable error) {
@@ -253,8 +259,8 @@
  * 根据环信ID获取昵称
  * userId:环信用户id
  */
-+(NSString*)getNickById:(NSString*)userId{
-    UserWebInfo *user = [self getById:userId];
++(NSString*)getNickName:(NSString*)userId{
+    UserWebInfo *user = [self getUserInfo:userId];
     if(user == nil || [user  isEqual: @""]) return userId;// 没有昵称就返回用户ID
     
     return user.nickName;
@@ -263,15 +269,15 @@
 /*
  * 获取当前环信用户信息
  */
-+(UserWebInfo*)currUser{
-    return [self getById:kCurrEaseUserId];
++(UserWebInfo*)myInfo{
+    return [self getUserInfo:kCurrEaseUserId];
 }
 
 /*
  * 获取当前环信用户的昵称
  */
-+(NSString*)currNickName{
-    return [self getNickById:kCurrEaseUserId];
++(NSString*)myNickName{
+    return [self getNickName:kCurrEaseUserId];
 }
 
 @end

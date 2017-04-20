@@ -76,9 +76,9 @@ static RedPacketUserConfig *__sharedConfig__ = nil;
 {
     RedpacketUserInfo *userInfo = [RedpacketUserInfo new];
     userInfo.userId = [EMClient sharedClient].currentUsername;
-    UserCacheInfo *user = [UserCacheManager currUser];
-    userInfo.userNickname = user.NickName;
-    userInfo.userAvatar = user.AvatarUrl;;
+    UserCacheInfo *user = [UserCacheManager myInfo];
+    userInfo.userNickname = user.nickName;
+    userInfo.userAvatar = user.avatarUrl;;
     return userInfo;
 }
 

@@ -31,7 +31,7 @@
 //根据用户昵称进行搜索
 - (NSString*)showName
 {
-    return [UserCacheManager getNickById:self];
+    return [UserCacheManager getNickName:self];
 }
 
 @end
@@ -157,11 +157,6 @@
         
         NSArray *userSection = [self.dataArray objectAtIndex:(indexPath.section - 1)];
         EaseUserModel *model = [userSection objectAtIndex:indexPath.row];
-        UserCacheInfo * userInfo = [UserCacheManager getById:model.buddy];
-        if (userInfo) {
-            model.nickname= userInfo.NickName;
-            model.avatarURLPath = userInfo.AvatarUrl;
-        }
         cell.indexPath = indexPath;
         cell.delegate = self;
         cell.model = model;
@@ -431,7 +426,7 @@
         ChatViewController *chatVC = [[ChatViewController alloc] initWithConversationChatter:buddy
                                      conversationType:EMConversationTypeChat];
 #endif
-        chatVC.title = [UserCacheManager getNickById:buddy];
+        chatVC.title = [UserCacheManager getNickName:buddy];
         [weakSelf.navigationController pushViewController:chatVC animated:YES];
                                                
         [weakSelf cancelSearch];
@@ -472,7 +467,7 @@
     for (NSString *buddy in contactsSource) {
         EaseUserModel *model = [[EaseUserModel alloc] initWithBuddy:buddy];
         if (model) {
-            NSString *nickName = [UserCacheManager getNickById:buddy];
+            NSString *nickName = [UserCacheManager getNickName:buddy];
             model.avatarImage = [UIImage imageNamed:@"EaseUIResource.bundle/user"];
             model.nickname = nickName;
             

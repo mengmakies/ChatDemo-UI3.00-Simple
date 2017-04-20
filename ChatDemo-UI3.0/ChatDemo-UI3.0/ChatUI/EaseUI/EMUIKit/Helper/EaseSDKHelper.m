@@ -162,16 +162,6 @@ didReceiveRemoteNotification:(NSDictionary *)userInfo
 
 #pragma mark - send message
 
-// 设置消息扩展属性
-+(NSMutableDictionary*)reGetMessageExt:(NSDictionary *)messageExt{
-    UserCacheInfo *user = [UserCacheManager currUser];
-    NSMutableDictionary *extDic = [NSMutableDictionary dictionaryWithDictionary:messageExt];
-    [extDic setValue:user.Id forKey:kChatUserId];
-    [extDic setValue:user.AvatarUrl forKey:kChatUserPic];
-    [extDic setValue:user.NickName forKey:kChatUserNick];
-    return extDic;
-}
-
 + (EMMessage *)sendTextMessage:(NSString *)text
                             to:(NSString *)toUser
                    messageType:(EMChatType)messageType
@@ -184,7 +174,7 @@ didReceiveRemoteNotification:(NSDictionary *)userInfo
     EMMessage *message = [[EMMessage alloc] initWithConversationID:toUser from:from to:toUser body:body ext:messageExt];
     message.chatType = messageType;
     
-    message.ext = [self reGetMessageExt:messageExt];
+    message.ext = [UserCacheManager getMyMsgExt:messageExt];
     return message;
 }
 
@@ -202,7 +192,7 @@ didReceiveRemoteNotification:(NSDictionary *)userInfo
     EMMessage *message = [[EMMessage alloc] initWithConversationID:to from:from to:to body:body ext:messageExt];
     message.chatType = messageType;
     
-    message.ext = [self reGetMessageExt:messageExt];
+    message.ext = [UserCacheManager getMyMsgExt:messageExt];
     return message;
 }
 
@@ -218,7 +208,7 @@ didReceiveRemoteNotification:(NSDictionary *)userInfo
     EMMessage *message = [[EMMessage alloc] initWithConversationID:to from:from to:to body:body ext:messageExt];
     message.chatType = messageType;
     
-    message.ext = [self reGetMessageExt:messageExt];
+    message.ext = [UserCacheManager getMyMsgExt:messageExt];
     return message;
 }
 
@@ -232,7 +222,7 @@ didReceiveRemoteNotification:(NSDictionary *)userInfo
     EMMessage *message = [[EMMessage alloc] initWithConversationID:to from:from to:to body:body ext:messageExt];
     message.chatType = messageType;
     
-    message.ext = [self reGetMessageExt:messageExt];
+    message.ext = [UserCacheManager getMyMsgExt:messageExt];
     return message;
 }
 
@@ -258,7 +248,7 @@ didReceiveRemoteNotification:(NSDictionary *)userInfo
     EMMessage *message = [[EMMessage alloc] initWithConversationID:to from:from to:to body:body ext:messageExt];
     message.chatType = messageType;
     
-    message.ext = [self reGetMessageExt:messageExt];
+    message.ext = [UserCacheManager getMyMsgExt:messageExt];
     return message;
 }
 
@@ -272,7 +262,7 @@ didReceiveRemoteNotification:(NSDictionary *)userInfo
     EMMessage *message = [[EMMessage alloc] initWithConversationID:to from:from to:to body:body ext:messageExt];
     message.chatType = messageType;
     
-    message.ext = [self reGetMessageExt:messageExt];
+    message.ext = [UserCacheManager getMyMsgExt:messageExt];
     return message;
 }
 
@@ -287,6 +277,8 @@ didReceiveRemoteNotification:(NSDictionary *)userInfo
     NSString *from = [[EMClient sharedClient] currentUsername];
     EMMessage *message = [[EMMessage alloc] initWithConversationID:to from:from to:to body:body ext:messageExt];
     message.chatType = messageType;
+    
+    message.ext = [UserCacheManager getMyMsgExt:messageExt];
     
     return message;
 }

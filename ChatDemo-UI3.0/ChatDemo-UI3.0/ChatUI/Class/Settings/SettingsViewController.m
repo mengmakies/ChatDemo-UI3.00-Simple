@@ -243,7 +243,7 @@
         [self.navigationController pushViewController:userProfile animated:YES];
         
     } else if (indexPath.row == 9) {
-        [UserCacheManager clearTableData];
+        [UserCacheManager clearData];
         [UserWebManager clearCache];
         [self showHint:@"已经清除用户本地头像和昵称~"];
     }else if (indexPath.row == 10) {

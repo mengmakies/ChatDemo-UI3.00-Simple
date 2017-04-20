@@ -31,7 +31,7 @@
         if ([[RobotManager sharedInstance] isRobotWithUsername:self.conversationId]) {
             return [[RobotManager sharedInstance] getRobotNickWithUsername:self.conversationId];
         }
-        return [UserCacheManager getNickById:self.conversationId];
+        return [UserCacheManager getNickName:self.conversationId];
     } else if (self.type == EMConversationTypeGroupChat) {
         if ([self.ext objectForKey:@"subject"] || [self.ext objectForKey:@"isPublic"]) {
             return [self.ext objectForKey:@"subject"];
@@ -156,12 +156,6 @@
     if (model.conversation.type == EMConversationTypeChat) {
         if ([[RobotManager sharedInstance] isRobotWithUsername:conversation.conversationId]) {
             model.title = [[RobotManager sharedInstance] getRobotNickWithUsername:conversation.conversationId];
-        } else {
-            UserCacheInfo * userInfo = [UserCacheManager getById:conversation.conversationId];
-            if (userInfo) {
-                model.title= userInfo.NickName;
-                model.avatarURLPath = userInfo.AvatarUrl;
-            }
         }
     } else if (model.conversation.type == EMConversationTypeGroupChat) {
         NSString *imageName = @"groupPublicHeader";
@@ -224,7 +218,7 @@
         }
         
         if (lastMessage.direction == EMMessageDirectionReceive) {
-            NSString *from =  [UserCacheManager getNickById:lastMessage.from];
+            NSString *from =  [UserCacheManager getNickName:lastMessage.from];
             latestMessageTitle = [NSString stringWithFormat:@"%@: %@", from, latestMessageTitle];
         }
         

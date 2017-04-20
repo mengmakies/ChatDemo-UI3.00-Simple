@@ -52,8 +52,7 @@
         _headImageView.frame = CGRectMake(20, 10, 60, 60);
         _headImageView.contentMode = UIViewContentModeScaleToFill;
     }
-    
-    [_headImageView imageWithUsername:kCurrEaseUserId placeholderImage:nil];
+    [UserCacheManager setImageView:kCurrEaseUserId imageView:_headImageView];
     return _headImageView;
 }
 
@@ -62,7 +61,7 @@
     if (!_usernameLabel) {
         _usernameLabel = [[UILabel alloc] init];
         _usernameLabel.frame = CGRectMake(CGRectGetMaxX(_headImageView.frame) + 10.f, 10, 200, 20);
-        _usernameLabel.text = [UserCacheManager currNickName];
+        _usernameLabel.text = [UserCacheManager myNickName];
         _usernameLabel.textColor = [UIColor lightGrayColor];
     }
     return _usernameLabel;
@@ -109,8 +108,8 @@
         cell.detailTextLabel.text = self.usernameLabel.text;
     } else if (indexPath.row == 2) {
         cell.textLabel.text = NSLocalizedString(@"setting.profileNickname", @"Nickname");
-        UserCacheInfo *user = [UserCacheManager currUser];
-        cell.detailTextLabel.text = user.NickName;
+        UserCacheInfo *user = [UserCacheManager myInfo];
+        cell.detailTextLabel.text = user.nickName;
         cell.accessoryType = UITableViewCellAccessoryDisclosureIndicator;
     }
     return cell;
@@ -151,7 +150,7 @@
             [self showHint:NSLocalizedString(@"setting.saving", "saving...")];
             __weak typeof(self) weakSelf = self;
             [[EMClient sharedClient] setApnsNickname:nameTextField.text];
-            [UserWebManager updateCurrNick:nameTextField.text completed:^(BOOL isSucc) {
+            [UserWebManager updateMyNick:nameTextField.text completed:^(BOOL isSucc) {
                 if (weakSelf) {
                     UserProfileEditViewController *strongSelf = weakSelf;
                     [strongSelf hideHud];
@@ -179,14 +178,14 @@
     [picker dismissViewControllerAnimated:YES completion:nil];
     if (orgImage) {
         // 上传到后端云
-        [UserWebManager updateCurrAvatar:orgImage completed:^(UIImage *imageData) {
+        [UserWebManager updateMyAvatar:orgImage completed:^(UIImage *imageData) {
             [weakSelf hideHud];
             if(!imageData){
                 [self showHint:NSLocalizedString(@"setting.uploadFail", @"uploaded failed")];
                 return;
             }
             
-            [weakSelf.headImageView imageWithUsername:kCurrEaseUserId placeholderImage:imageData];
+            weakSelf.headImageView.image = imageData;
             [self showHint:NSLocalizedString(@"setting.uploadSuccess", @"uploaded successfully")];
         }];
     } else {

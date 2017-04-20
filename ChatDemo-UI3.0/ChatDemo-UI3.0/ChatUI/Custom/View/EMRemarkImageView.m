@@ -47,8 +47,9 @@
 - (void)setRemark:(NSString *)remark
 {
     _remark = remark;
-    [_remarkLabel setTextWithUsername:_remark];
-    [_imageView imageWithUsername:remark placeholderImage:nil];
+    [UserCacheManager setImageLabelView:_remark
+                              nameLabel:_remarkLabel
+                              imageView:_imageView];
 }
 
 - (void)setImage:(UIImage *)image

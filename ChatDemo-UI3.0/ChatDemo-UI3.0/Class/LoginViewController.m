@@ -154,7 +154,7 @@
             [UserWebManager createUser:userOpenId nickName:nickName avatarUrl:avatarUrl];
             
             // 通过消息的扩展属性传递昵称和头像时，需要调用这句代码缓存
-            [UserCacheManager saveInfo:userOpenId imgUrl:avatarUrl nickName:nickName];
+            [UserCacheManager save:userOpenId avatarUrl:avatarUrl nickName:nickName];
             
             //设置是否自动登录
             [[EMClient sharedClient].options setIsAutoLogin:YES];

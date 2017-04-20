@@ -256,12 +256,9 @@
 {
     [super setModel:model];
     
-    if (model.avatarURLPath) {
-        [self.avatarView sd_setImageWithURL:[NSURL URLWithString:model.avatarURLPath] placeholderImage:model.avatarImage];
-    } else {
-        self.avatarView.image = model.avatarImage;
-    }
-    _nameLabel.text = model.nickname;
+    [UserCacheManager setImageLabelView:model.nickname
+                              nameLabel:_nameLabel
+                              imageView:self.avatarView];
     
     if (self.model.isSender) {
         _hasRead.hidden = YES;

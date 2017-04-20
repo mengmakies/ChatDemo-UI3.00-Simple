@@ -10,6 +10,15 @@
 #import "FMDB.h"
 #import "UserWebManager.h"
 
+// ---------------线程----------------------------------------------
+#define kBgQueue    dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0)
+#define kMainQueue  dispatch_get_main_queue()
+#define EXE_ON_MAIN_THREAD(function)\
+dispatch_async(kBgQueue, ^{\
+dispatch_sync(kMainQueue, ^{function;});\
+});\
+// ---------------线程---end-------------------------------------------
+
 #define DBNAME @"user_cache_data.db"
 static FMDatabaseQueue *_queue;
 
@@ -95,20 +104,18 @@ static FMDatabaseQueue *_queue;
 
 /**
  判断缓存中的用户是否过期
-
  @param userId 用户环信id
-
  @return 是否过期
  */
 +(BOOL)isExpired:(NSString*)userId{
     BOOL isExpired = NO;
     
-    UserCacheInfo *user = [self getByIdFromCache:userId];
+    UserCacheInfo *user = [self getFromCache:userId];
     if(!user) return YES;
     
     NSDate *currDate = [NSDate date];
     long long currMill = (long long)([currDate timeIntervalSince1970]);
-    if (currMill > user.ExpiredDate) {
+    if (currMill > user.expiredDate) {
         isExpired = YES;
     }
     
@@ -116,26 +123,26 @@ static FMDatabaseQueue *_queue;
 }
 
 /**
- *  清空表（但不清除表结构）
- *
- *  @return 操作结果
+ 清除数据
+ @return 是否成功
  */
-+(BOOL)clearTableData{
++(BOOL)clearData{
     
-    BOOL res = [self executeUpdate:@"DELETE FROM userinfo"];
+    BOOL isSucc = [self executeUpdate:@"DELETE FROM userinfo"];
     [self executeUpdate:@"DELETE FROM sqlite_sequence WHERE name='userinfo';"];
-    return res;
+    return isSucc;
 }
 
-/*
- *保存用户信息（如果已存在，则更新）
- *userId: 用户环信ID
- *imgUrl：用户头像链接（完整路径）
- *nickName: 用户昵称
+
+/**
+ 保存（新增或更新）用户信息
+ @param userId 用户环信ID
+ @param avatarUrl 头像Url
+ @param nickName 昵称
  */
-+(void)saveInfo:(NSString*)userId
-         imgUrl:(NSString*)imgUrl
-       nickName:(NSString*)nickName{
++(void)save:(NSString*)userId
+  avatarUrl:(NSString*)avatarUrl
+   nickName:(NSString*)nickName{
     
     if(!userId) return;
     
@@ -149,37 +156,48 @@ static FMDatabaseQueue *_queue;
     
     BOOL isExistUser = [self isExistUser:userId];
     if (isExistUser) {
-        sql = [NSString stringWithFormat:@"update userinfo set username='%@', userimage='%@', expired_time='%@' where userid='%@'", nickName,imgUrl, strTime,userId];
+        sql = [NSString stringWithFormat:@"update userinfo set username='%@', userimage='%@', expired_time='%@' where userid='%@'", nickName,avatarUrl, strTime,userId];
     }else{
-        sql = [NSString stringWithFormat:@"INSERT INTO userinfo (userid, username, userimage, expired_time) VALUES ('%@', '%@', '%@', '%@')", userId,nickName,imgUrl,strTime];
+        sql = [NSString stringWithFormat:@"INSERT INTO userinfo (userid, username, userimage, expired_time) VALUES ('%@', '%@', '%@', '%@')", userId,nickName,avatarUrl,strTime];
     }
     
     [self executeUpdate:sql];
     
 #if DEBUG
-    [self queryAll];
+//    [self queryAll];
 #endif
 }
 
-+(void)saveInfoWithStr:(NSString *)jsonStr{
+/**
+ 保存（新增或更新）用户信息
+ @param jsonStr 昵称和头像的json字符串
+ */
++(void)saveWithJson:(NSString *)jsonStr{
     if(!jsonStr) return;
     
     NSData *extData = [jsonStr dataUsingEncoding:NSUTF8StringEncoding];
     NSDictionary *extDic = [NSJSONSerialization JSONObjectWithData:extData options:0 error:nil];
     
-    [self saveInfo:extDic];
+    [self save:extDic];
 }
 
-+(void)saveInfo:(NSDictionary *)userinfo{
+/**
+ 保存（新增或更新）用户信息
+ @param userinfo 昵称和头像
+ */
++(void)save:(NSDictionary *)userinfo{
     NSString *userid = [userinfo objectForKey:kChatUserId];
     NSString *username = [userinfo objectForKey:kChatUserNick];
     NSString *userimage = [userinfo objectForKey:kChatUserPic];
     
-    [self saveInfo:userid imgUrl:userimage nickName:username];
+    [self save:userid avatarUrl:userimage nickName:username];
 }
 
+
+/**
+ 列出所有用户信息
+ */
 +(void)queryAll{
-    // 列出所有用户信息
     NSString *sql = @"SELECT userid, username, userimage FROM userinfo";
     [self executeQuery:sql queryResBlock:^(FMResultSet *rs) {
         int i=0;
@@ -195,38 +213,46 @@ static FMDatabaseQueue *_queue;
     }];
 }
 
-// 更新当前用户的昵称
-+(void)updateCurrNick:(NSString*)nickName{
-    UserCacheInfo *user = [self currUser];
-    if (!user)  return;
-    
-    [self saveInfo:user.Id imgUrl:user.AvatarUrl nickName:nickName];
-}
-
-// 更新当前用户的昵称
-+(void)updateCurrAvatar:(NSString*)avatarUrl{
-    UserCacheInfo *user = [self currUser];
-    if (!user)  return;
-    
-    [self saveInfo:user.Id imgUrl:avatarUrl nickName:user.NickName];
-}
-
-/*
- *根据环信ID获取用户信息
- *userId 用户的环信ID
+/**
+ 更新当前用户的昵称
+ @param nickName 昵称
  */
-+(UserCacheInfo*)getById:(NSString *)userid{
++(void)updateMyNick:(NSString*)nickName{
+    UserCacheInfo *user = [self myInfo];
+    if (!user)  return;
+    
+    [self save:user.userId avatarUrl:user.avatarUrl nickName:nickName];
+}
+
+/**
+ 更新当前用户的头像
+ @param avatarUrl 头像Url（完成路径）
+ */
++(void)updateMyAvatar:(NSString*)avatarUrl{
+    UserCacheInfo *user = [self myInfo];
+    if (!user)  return;
+    
+    [self save:user.userId avatarUrl:avatarUrl nickName:user.nickName];
+}
+
+/**
+ 根据环信ID获取用户信息
+ 从缓存里获取，如果缓存中不存在（或者过期），则同时从app服务器中获取用户信息缓存到本地，等下次显示的时候再调用
+ @param userid 用户的环信ID
+ @return 用户信息
+ */
++(UserCacheInfo*)getUserInfo:(NSString *)userid{
     
     __block UserCacheInfo *userInfo = nil;
     
     // 如果本地缓存不存在或者过期，则从存储服务器获取
     BOOL isExistUser = [self isExistUser:userid];
     if (!isExistUser || [self isExpired:userid]) {
-        [UserWebManager getByIdAsync:userid completed:^(UserWebInfo *user) {
+        [UserWebManager getUserInfo:userid completed:^(UserWebInfo *user) {
             if(!user) return;
             
             // 缓存到本地
-            [self saveInfo:userid imgUrl:user.avatarUrl nickName:user.nickName];
+            [self save:userid avatarUrl:user.avatarUrl nickName:user.nickName];
             
             // 通知刷新会话列表
             NOTIFY_POST(kRefreshChatList);// 如果app没有会话列表，可以删掉这行代码
@@ -234,7 +260,7 @@ static FMDatabaseQueue *_queue;
     }
     
     // 从本地缓存中获取用户数据
-    userInfo = [self getByIdFromCache:userid];
+    userInfo = [self getFromCache:userid];
     
     return userInfo;
 }
@@ -243,7 +269,7 @@ static FMDatabaseQueue *_queue;
  *根据环信ID获取用户信息
  *userId 用户的环信ID
  */
-+(UserCacheInfo*)getByIdFromCache:(NSString *)userid{
++(UserCacheInfo*)getFromCache:(NSString *)userid{
     
     __block UserCacheInfo *userInfo = nil;
     
@@ -253,10 +279,10 @@ static FMDatabaseQueue *_queue;
             
             userInfo = [[UserCacheInfo alloc] init];
             
-            userInfo.Id = [rs stringForColumn:@"userid"];
-            userInfo.NickName = [rs stringForColumn:@"username"];
-            userInfo.AvatarUrl = [rs stringForColumn:@"userimage"];
-            userInfo.ExpiredDate = [[rs stringForColumn:@"expired_time"] longLongValue];
+            userInfo.userId = [rs stringForColumn:@"userid"];
+            userInfo.nickName = [rs stringForColumn:@"username"];
+            userInfo.avatarUrl = [rs stringForColumn:@"userimage"];
+            userInfo.expiredDate = [[rs stringForColumn:@"expired_time"] longLongValue];
         }
         [rs close];
     }];
@@ -264,29 +290,131 @@ static FMDatabaseQueue *_queue;
     return userInfo;
 }
 
-/*
- * 根据环信ID获取昵称
- * userId:环信用户id
+/*!
+ 获取用户信息
+ @param userId                  用户环信ID
+ @param completed               获取用户信息完成之后需要执行的Block
+ @param userInfo(in completed) 该用户ID对应的用户信息。
  */
-+(NSString*)getNickById:(NSString*)userId{
-    UserCacheInfo *user = [UserCacheManager getById:userId];
++ (void)getUserInfo:(NSString *)userId
+          completed:(void (^)(UserCacheInfo *userInfo))completed{
+    
+    __block UserCacheInfo *userInfo = nil;
+    
+    BOOL isExistUser = [self isExistUser:userId];
+    BOOL isExpired = [self isExpired:userId];
+    
+    // 如果本地缓存存在，且数据没有过期，则从缓存获取
+    if (isExistUser && !isExpired) {
+        
+        // 从本地缓存中获取用户数据
+        dispatch_async(kBgQueue, ^{
+            userInfo = [self getFromCache:userId];
+            dispatch_async(kMainQueue, ^{
+                completed(userInfo);
+            });
+        });
+        
+    }else{// 否则从APP服务器获取信息
+        
+        [UserWebManager getUserInfo:userId completed:^(UserWebInfo *user) {
+            if(user) {
+                // 将用户信息缓存到本地
+                [self save:userId avatarUrl:user.avatarUrl nickName:user.nickName];
+            }
+            
+            // 从本地缓存中获取用户数据
+            dispatch_async(kBgQueue, ^{
+                userInfo = [self getFromCache:userId];
+                dispatch_async(kMainQueue, ^{
+                    completed(userInfo);
+                });
+            });
+        }];
+    }
+}
+
+/**
+ 根据环信ID获取昵称
+ @param userId 用户的环信ID
+ @return 昵称
+ */
++(NSString*)getNickName:(NSString*)userId{
+    UserCacheInfo *user = [UserCacheManager getUserInfo:userId];
     if(user == nil || [user  isEqual: @""]) return userId;// 没有昵称就返回用户环信ID
     
-    return user.NickName;
+    return user.nickName;
 }
 
-/*
- * 获取当前环信用户信息
+/**
+ 获取当前环信用户信息
+ @return 头像昵称
  */
-+(UserCacheInfo*)currUser{
-    return [UserCacheManager getById:kCurrEaseUserId];
++(UserCacheInfo*)myInfo{
+    return [UserCacheManager getFromCache:kCurrEaseUserId];
 }
 
-/*
- * 获取当前环信用户的昵称
+/**
+ 获取当前环信用户的昵称
+ @return 昵称
  */
-+(NSString*)currNickName{
-    return [UserCacheManager getNickById:kCurrEaseUserId];
++(NSString*)myNickName{
+    return [UserCacheManager getNickName:kCurrEaseUserId];
+}
+
+/**
+获取登录用户的消息扩展属性
+ 
+ @param msgExt 消息原有的扩展属性
+ @return 重新组合的扩展属性
+ */
++(NSMutableDictionary*)getMyMsgExt{
+    return [self getMyMsgExt:@{}];
+}
+
+/**
+重新设置登录用户的消息扩展属性
+
+ @param msgExt 消息原有的扩展属性
+ @return 重新组合的扩展属性
+ */
++(NSMutableDictionary*)getMyMsgExt:(NSDictionary *)msgExt{
+    UserCacheInfo *user = [UserCacheManager myInfo];
+    NSMutableDictionary *extDic = [NSMutableDictionary dictionaryWithDictionary:msgExt];
+    [extDic setValue:user.userId forKey:kChatUserId];
+    [extDic setValue:user.avatarUrl forKey:kChatUserPic];
+    [extDic setValue:user.nickName forKey:kChatUserNick];
+    return extDic;
+}
+
+// 设置头像控件
++(void)setImageView:(NSString*)userId
+          imageView:(UIImageView*)imageView{
+    [self setImageLabelView:userId nameLabel:nil imageView:imageView];
+}
+
+// 设置昵称控件
++(void)setLabelView:(NSString*)userId
+          nameLabel:(UILabel*)nameLabel{
+    [self setImageLabelView:userId nameLabel:nameLabel imageView:nil];
+}
+
+
+// 设置头像昵称控件
++(void)setImageLabelView:(NSString*)userId
+               nameLabel:(UILabel*)nameLabel
+               imageView:(UIImageView*)imageView{
+    
+    [UserCacheManager getUserInfo:userId completed:^(UserCacheInfo *userInfo) {
+        if (userInfo) {
+            [nameLabel setText:userInfo.nickName];
+            [imageView sd_setImageWithURL:[NSURL URLWithString:userInfo.avatarUrl]
+                         placeholderImage:[UIImage imageNamed:@"chatListCellHead"]];
+        } else {
+            [nameLabel setText:userId];
+            imageView.image = [UIImage imageNamed:@"chatListCellHead"];
+        }
+    }];
 }
 
 @end

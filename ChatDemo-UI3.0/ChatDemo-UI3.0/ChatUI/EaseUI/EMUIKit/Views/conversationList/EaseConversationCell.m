@@ -193,22 +193,9 @@ CGFloat const EaseConversationCellPadding = 10;
 {
     _model = model;
     
-    if ([_model.title length] > 0) {
-        self.titleLabel.text = _model.title;
-    }
-    else{
-        self.titleLabel.text = _model.conversation.conversationId;
-    }
-    
-    if (self.showAvatar) {
-        if ([_model.avatarURLPath length] > 0){
-            [self.avatarView.imageView sd_setImageWithURL:[NSURL URLWithString:_model.avatarURLPath] placeholderImage:_model.avatarImage];
-        } else {
-            if (_model.avatarImage) {
-                self.avatarView.image = _model.avatarImage;
-            }
-        }
-    }
+    [UserCacheManager setImageLabelView:model.conversation.conversationId
+                              nameLabel:self.titleLabel
+                              imageView:self.avatarView.imageView];
     
     if (_model.conversation.unreadMessagesCount == 0) {
         _avatarView.showBadge = NO;

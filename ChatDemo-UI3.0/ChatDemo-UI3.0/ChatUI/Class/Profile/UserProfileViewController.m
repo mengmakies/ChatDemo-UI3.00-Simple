@@ -57,7 +57,8 @@
         _headImageView.frame = CGRectMake(20, 10, 60, 60);
         _headImageView.contentMode = UIViewContentModeScaleToFill;
     }
-    [_headImageView imageWithUsername:_username placeholderImage:nil];
+    
+    [UserCacheManager setImageView:_username imageView:_headImageView];
     return _headImageView;
 }
 
@@ -99,8 +100,7 @@
         cell.detailTextLabel.text = self.usernameLabel.text;
     } else if (indexPath.row == 2) {
         cell.textLabel.text = NSLocalizedString(@"setting.profileNickname", @"Nickname");
-        NSString *nickName = [UserCacheManager getNickById:_username];
-        cell.detailTextLabel.text = nickName;
+        [UserCacheManager setLabelView:_username nameLabel:cell.detailTextLabel];
 //        cell.accessoryType = UITableViewCellAccessoryDisclosureIndicator;
     }
     return cell;
