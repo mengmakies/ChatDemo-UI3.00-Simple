@@ -193,9 +193,9 @@ CGFloat const EaseConversationCellPadding = 10;
 {
     _model = model;
     
-    [UserCacheManager setImageLabelView:model.conversation.conversationId
-                              nameLabel:self.titleLabel
-                              imageView:self.avatarView.imageView];
+    [UserCacheManager setUserView:model.conversation.conversationId
+                        nickLabel:self.titleLabel
+                        imageView:self.avatarView.imageView];
     
     if (_model.conversation.unreadMessagesCount == 0) {
         _avatarView.showBadge = NO;

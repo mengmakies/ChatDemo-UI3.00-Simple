@@ -52,7 +52,7 @@
         _headImageView.frame = CGRectMake(20, 10, 60, 60);
         _headImageView.contentMode = UIViewContentModeScaleToFill;
     }
-    [UserCacheManager setImageView:kCurrEaseUserId imageView:_headImageView];
+    [UserCacheManager setUserAvatar:kCurrEaseUserId imageView:_headImageView];
     return _headImageView;
 }
 

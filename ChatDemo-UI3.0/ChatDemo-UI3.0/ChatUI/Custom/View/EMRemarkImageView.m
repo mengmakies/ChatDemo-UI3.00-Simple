@@ -47,9 +47,9 @@
 - (void)setRemark:(NSString *)remark
 {
     _remark = remark;
-    [UserCacheManager setImageLabelView:_remark
-                              nameLabel:_remarkLabel
-                              imageView:_imageView];
+    [UserCacheManager setUserView:_remark
+                        nickLabel:_remarkLabel
+                        imageView:_imageView];
 }
 
 - (void)setImage:(UIImage *)image

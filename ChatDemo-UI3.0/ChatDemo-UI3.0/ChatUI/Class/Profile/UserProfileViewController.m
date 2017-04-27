@@ -58,7 +58,7 @@
         _headImageView.contentMode = UIViewContentModeScaleToFill;
     }
     
-    [UserCacheManager setImageView:_username imageView:_headImageView];
+    [UserCacheManager setUserAvatar:_username imageView:_headImageView];
     return _headImageView;
 }
 
@@ -100,7 +100,7 @@
         cell.detailTextLabel.text = self.usernameLabel.text;
     } else if (indexPath.row == 2) {
         cell.textLabel.text = NSLocalizedString(@"setting.profileNickname", @"Nickname");
-        [UserCacheManager setLabelView:_username nameLabel:cell.detailTextLabel];
+        [UserCacheManager setUserNick:_username nickLabel:cell.detailTextLabel];
 //        cell.accessoryType = UITableViewCellAccessoryDisclosureIndicator;
     }
     return cell;

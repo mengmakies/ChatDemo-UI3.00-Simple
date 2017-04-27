@@ -64,9 +64,11 @@
     [self getUserInfo:openId completed:^(UserWebInfo *user) {
         if(user) return;
         
-        [UserWebManager saveInfo:openId// 用户环信ID
-                          imgUrl:avatarUrl// 用户头像（绝对路径）
-                        nickName:nickName];// 用户昵称
+        UserWebInfo *info = [UserWebInfo object];
+        info.openId = openId;
+        info.nickName = nickName;
+        info.avatarUrl = avatarUrl;
+        [info saveEventually];// 如果用户目前尚未接入网络，saveEventually会缓存设备中的数据，并在网络连接恢复后上传
     }];
 }
 
@@ -87,11 +89,8 @@
          imgUrl:(NSString*)imgUrl
        nickName:(NSString*)nickName{
     
-    AVQuery *query = [self getQuery];
-    [query whereKey:@"openId" equalTo:userId];
-    [query getFirstObjectInBackgroundWithBlock:^(AVObject *obj, NSError *error) {
-        UserWebInfo *user = (UserWebInfo*)obj;
-        if(!obj){
+    [self getUserInfo:userId completed:^(UserWebInfo *user) {
+        if(!user){
             user = [UserWebInfo object];
             user.openId = userId;
         }
@@ -135,22 +134,23 @@
 // 更新当前用户的昵称
 +(void)updateMyNick:(NSString*)nickName
             completed:(void(^)(BOOL isSucc))completed{
-    AVQuery *query = [self getQuery];
-    [query whereKey:@"openId" equalTo:kCurrEaseUserId];
-    [query getFirstObjectInBackgroundWithBlock:^(AVObject *object, NSError *error) {
-        if (!error && object) {// 成功找到结果，先找磁盘再访问网络
-            UserWebInfo *user = (UserWebInfo*)object;
-            user.nickName = nickName;
-            [user saveEventually];// 如果用户目前尚未接入网络，saveEventually会缓存设备中的数据，并在网络连接恢复后上传
-            
-            // 本地重新缓存用户数据
-            [UserCacheManager updateMyNick:nickName];
-            
-            completed(YES);
-        } else {
+    
+    [self getUserInfo:kCurrEaseUserId completed:^(UserWebInfo *user) {
+        
+        if (!user) {
             // 无法访问网络，本次查询结果未做缓存
             completed(NO);
+            return ;
         }
+        
+        // 成功找到结果，先找磁盘再访问网络
+        user.nickName = nickName;
+        [user saveEventually];// 如果用户目前尚未接入网络，saveEventually会缓存设备中的数据，并在网络连接恢复后上传
+        
+        // 本地重新缓存用户数据
+        [UserCacheManager updateMyNick:nickName];
+        
+        completed(YES);
     }];
 }
 

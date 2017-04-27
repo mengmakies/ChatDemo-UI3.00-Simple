@@ -44,7 +44,6 @@
 		9A29A3901E856F6B00BCFDB0 /* 环信红包3.x接入文档(iOS).md in Sources */ = {isa = PBXBuildFile; fileRef = 9A29A0F81E856F6A00BCFDB0 /* 环信红包3.x接入文档(iOS).md */; };
 		9A29A3911E856F6B00BCFDB0 /* UIImageView+HeadImage.m in Sources */ = {isa = PBXBuildFile; fileRef = 9A29A0FC1E856F6A00BCFDB0 /* UIImageView+HeadImage.m */; };
 		9A29A3921E856F6B00BCFDB0 /* UIResponder+Router.m in Sources */ = {isa = PBXBuildFile; fileRef = 9A29A0FE1E856F6A00BCFDB0 /* UIResponder+Router.m */; };
-		9A29A3931E856F6B00BCFDB0 /* UIViewController+HUD.m in Sources */ = {isa = PBXBuildFile; fileRef = 9A29A1001E856F6A00BCFDB0 /* UIViewController+HUD.m */; };
 		9A29A3941E856F6B00BCFDB0 /* EMCallViewController.mm in Sources */ = {isa = PBXBuildFile; fileRef = 9A29A1061E856F6A00BCFDB0 /* EMCallViewController.mm */; };
 		9A29A3951E856F6B00BCFDB0 /* EMCallViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = 9A29A1071E856F6A00BCFDB0 /* EMCallViewController.xib */; };
 		9A29A3961E856F6B00BCFDB0 /* EMVideoInfoViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 9A29A1091E856F6A00BCFDB0 /* EMVideoInfoViewController.m */; };
@@ -548,8 +547,6 @@
 		9A29A0FC1E856F6A00BCFDB0 /* UIImageView+HeadImage.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "UIImageView+HeadImage.m"; sourceTree = "<group>"; };
 		9A29A0FD1E856F6A00BCFDB0 /* UIResponder+Router.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "UIResponder+Router.h"; sourceTree = "<group>"; };
 		9A29A0FE1E856F6A00BCFDB0 /* UIResponder+Router.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "UIResponder+Router.m"; sourceTree = "<group>"; };
-		9A29A0FF1E856F6A00BCFDB0 /* UIViewController+HUD.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "UIViewController+HUD.h"; sourceTree = "<group>"; };
-		9A29A1001E856F6A00BCFDB0 /* UIViewController+HUD.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "UIViewController+HUD.m"; sourceTree = "<group>"; };
 		9A29A1011E856F6A00BCFDB0 /* ChatUIDefine.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ChatUIDefine.h; sourceTree = "<group>"; };
 		9A29A1051E856F6A00BCFDB0 /* EMCallViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = EMCallViewController.h; sourceTree = "<group>"; };
 		9A29A1061E856F6A00BCFDB0 /* EMCallViewController.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = EMCallViewController.mm; sourceTree = "<group>"; };
@@ -1515,8 +1512,6 @@
 				9A29A0FC1E856F6A00BCFDB0 /* UIImageView+HeadImage.m */,
 				9A29A0FD1E856F6A00BCFDB0 /* UIResponder+Router.h */,
 				9A29A0FE1E856F6A00BCFDB0 /* UIResponder+Router.m */,
-				9A29A0FF1E856F6A00BCFDB0 /* UIViewController+HUD.h */,
-				9A29A1001E856F6A00BCFDB0 /* UIViewController+HUD.m */,
 			);
 			path = Category;
 			sourceTree = "<group>";
@@ -3317,7 +3312,6 @@
 				9A29A3E01E856F6B00BCFDB0 /* PublicGroupListViewController.m in Sources */,
 				9A29A3E51E856F6B00BCFDB0 /* ChatroomDetailViewController.m in Sources */,
 				9A29A3D51E856F6B00BCFDB0 /* ContactView.m in Sources */,
-				9A29A3931E856F6B00BCFDB0 /* UIViewController+HUD.m in Sources */,
 				9A92F0011E964920007E77B8 /* NSData+YYAdd.m in Sources */,
 				9A92F0121E964920007E77B8 /* UIDevice+YYAdd.m in Sources */,
 				9A29A3E31E856F6B00BCFDB0 /* ChatroomListViewController.m in Sources */,

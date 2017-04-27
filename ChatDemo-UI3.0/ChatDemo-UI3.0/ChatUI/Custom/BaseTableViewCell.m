@@ -75,9 +75,9 @@
 - (void)setUsername:(NSString *)username
 {
     _username = username;
-    [UserCacheManager setImageLabelView:username
-                              nameLabel:self.textLabel
-                              imageView:self.imageView];
+    [UserCacheManager setUserView:username
+                        nickLabel:self.textLabel
+                        imageView:self.imageView];
 }
 
 

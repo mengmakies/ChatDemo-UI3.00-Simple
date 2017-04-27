@@ -82,7 +82,7 @@ static FMDatabaseQueue *_queue;
  *
  *  @return 是否存在
  */
-+(BOOL)isExistUser:(NSString *)userId{
++(BOOL)isExisted:(NSString *)userId{
     
     NSString *alias=@"count";
     
@@ -122,6 +122,17 @@ static FMDatabaseQueue *_queue;
     return  isExpired;
 }
 
+
+/**
+ 用户不存在或已过期
+
+ @param userId 环信ID
+ @return 是否存在
+ */
++(BOOL)notExistedOrExpired:(NSString*)userId{
+    return (![self isExisted:userId] || [self isExpired:userId]);
+}
+
 /**
  清除数据
  @return 是否成功
@@ -150,12 +161,12 @@ static FMDatabaseQueue *_queue;
     
     // 过期时间
     NSDate *currDate = [NSDate date];
-    static int timeOut = 24 * 60 * 60;// 缓存一天，可以根据项目需要更改缓存时间
+    static int timeOut = 24 * 60 * 60;// 缓存一天，可以根据项目需要更改缓存时间。单位：秒
     long long currMillis = ((long long)([currDate timeIntervalSince1970])) + timeOut;
     NSString *strTime = [NSString stringWithFormat:@"%lld", currMillis];
     
-    BOOL isExistUser = [self isExistUser:userId];
-    if (isExistUser) {
+    BOOL isExisted = [self isExisted:userId];
+    if (isExisted) {
         sql = [NSString stringWithFormat:@"update userinfo set username='%@', userimage='%@', expired_time='%@' where userid='%@'", nickName,avatarUrl, strTime,userId];
     }else{
         sql = [NSString stringWithFormat:@"INSERT INTO userinfo (userid, username, userimage, expired_time) VALUES ('%@', '%@', '%@', '%@')", userId,nickName,avatarUrl,strTime];
@@ -246,8 +257,7 @@ static FMDatabaseQueue *_queue;
     __block UserCacheInfo *userInfo = nil;
     
     // 如果本地缓存不存在或者过期，则从存储服务器获取
-    BOOL isExistUser = [self isExistUser:userid];
-    if (!isExistUser || [self isExpired:userid]) {
+    if ([self notExistedOrExpired:userid]) {
         [UserWebManager getUserInfo:userid completed:^(UserWebInfo *user) {
             if(!user) return;
             
@@ -301,11 +311,8 @@ static FMDatabaseQueue *_queue;
     
     __block UserCacheInfo *userInfo = nil;
     
-    BOOL isExistUser = [self isExistUser:userId];
-    BOOL isExpired = [self isExpired:userId];
-    
     // 如果本地缓存存在，且数据没有过期，则从缓存获取
-    if (isExistUser && !isExpired) {
+    if (![self notExistedOrExpired:userId]) {
         
         // 从本地缓存中获取用户数据
         dispatch_async(kBgQueue, ^{
@@ -388,21 +395,21 @@ static FMDatabaseQueue *_queue;
 }
 
 // 设置头像控件
-+(void)setImageView:(NSString*)userId
-          imageView:(UIImageView*)imageView{
-    [self setImageLabelView:userId nameLabel:nil imageView:imageView];
++(void)setUserAvatar:(NSString*)userId
+           imageView:(UIImageView*)imageView{
+    [self setUserView:userId nickLabel:nil imageView:imageView];
 }
 
 // 设置昵称控件
-+(void)setLabelView:(NSString*)userId
-          nameLabel:(UILabel*)nameLabel{
-    [self setImageLabelView:userId nameLabel:nameLabel imageView:nil];
++(void)setUserNick:(NSString*)userId
+          nickLabel:(UILabel*)nameLabel{
+    [self setUserView:userId nickLabel:nameLabel imageView:nil];
 }
 
 
 // 设置头像昵称控件
-+(void)setImageLabelView:(NSString*)userId
-               nameLabel:(UILabel*)nameLabel
++(void)setUserView:(NSString*)userId
+               nickLabel:(UILabel*)nameLabel
                imageView:(UIImageView*)imageView{
     
     [UserCacheManager getUserInfo:userId completed:^(UserCacheInfo *userInfo) {

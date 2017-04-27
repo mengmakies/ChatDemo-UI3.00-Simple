@@ -12,6 +12,9 @@
 
 #import "AppDelegate.h"
 
+// easemob-demo#chatdemoui
+#define EaseMobAppKey @"xmxx#xmxx"
+
 @interface AppDelegate (EaseMob)
 
 - (void)easemobApplication:(UIApplication *)application

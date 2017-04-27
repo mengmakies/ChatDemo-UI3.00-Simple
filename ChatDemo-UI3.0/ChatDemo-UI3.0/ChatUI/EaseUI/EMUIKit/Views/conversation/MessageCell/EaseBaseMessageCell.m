@@ -256,9 +256,9 @@
 {
     [super setModel:model];
     
-    [UserCacheManager setImageLabelView:model.nickname
-                              nameLabel:_nameLabel
-                              imageView:self.avatarView];
+    [UserCacheManager setUserView:model.nickname
+                        nickLabel:_nameLabel
+                        imageView:self.avatarView];
     
     if (self.model.isSender) {
         _hasRead.hidden = YES;

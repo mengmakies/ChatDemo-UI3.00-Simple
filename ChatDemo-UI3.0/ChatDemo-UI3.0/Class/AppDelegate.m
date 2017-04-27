@@ -23,8 +23,6 @@
 
 @end
 
-#define EaseMobAppKey @"easemob-demo#chatdemoui"
-
 
 @implementation AppDelegate
 

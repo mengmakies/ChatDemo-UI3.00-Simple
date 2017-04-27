@@ -136,15 +136,15 @@
         [weakself hideHud];
         if (!aError) {
             
-            // -----测试：登录成功后，自动添加martin1234为好友-----------------
-            EMError *error = [[EMClient sharedClient].contactManager addContact:@"martin1234" message:@"江南孤鹜让我加你为好友~"];
+            // -----测试：登录成功后，自动添加martin为好友-----------------
+            EMError *error = [[EMClient sharedClient].contactManager addContact:@"martin" message:@"江南孤鹜让我加你为好友~"];
             if (!error) {
                 NSLog(@"添加成功");
                 // 测试发送消息
-                [self sendChatMsg:@"martin1234"
+                [self sendChatMsg:@"martin"
                              text:@"可否到github上给简版demo一个star？ ☺ https://github.com/mengmakies/ChatDemo-UI3.00-Simple"];
             }
-            // -----测试：登录成功后，自动添加martin1234为好友--------end---------
+            // -----测试：登录成功后，自动添加martin为好友--------end---------
             
             NSString *userOpenId = username;// 用户环信ID
             NSString *nickName = [NSString stringWithFormat:@"小草%d", arc4random_uniform(500)];// 用户昵称

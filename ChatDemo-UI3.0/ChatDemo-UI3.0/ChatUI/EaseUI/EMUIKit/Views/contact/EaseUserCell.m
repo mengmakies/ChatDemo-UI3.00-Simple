@@ -135,9 +135,9 @@ CGFloat const EaseUserCellPadding = 10;
 - (void)setModel:(id<IUserModel>)model
 {
     _model = model;
-    [UserCacheManager setImageLabelView:model.buddy
-                              nameLabel:self.titleLabel
-                              imageView:self.avatarView.imageView];
+    [UserCacheManager setUserView:model.buddy
+                        nickLabel:self.titleLabel
+                        imageView:self.avatarView.imageView];
 }
 
 - (void)setTitleLabelFont:(UIFont *)titleLabelFont

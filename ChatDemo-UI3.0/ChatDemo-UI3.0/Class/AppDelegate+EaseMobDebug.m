@@ -11,7 +11,7 @@
  */
 
 #import "AppDelegate+EaseMobDebug.h"
-
+#import "AppDelegate+EaseMob.h"
 #import <Hyphenate/EMOptions+PrivateDeploy.h>
 
 #warning Internal testing, developers do not need to use
@@ -33,7 +33,7 @@
         NSString *appkey = [ud stringForKey:@"identifier_appkey"];
         if (!appkey)
         {
-            appkey = @"easemob-demo#chatdemoui";
+            appkey = EaseMobAppKey;
             [ud setObject:appkey forKey:@"identifier_appkey"];
         }
         NSString *imServer = [ud stringForKey:@"identifier_imserver"];
@@ -71,7 +71,7 @@
             options.chatServer = [ud stringForKey:@"identifier_imserver"];
             options.restServer = [ud stringForKey:@"identifier_restserver"];
         }
-        //    EMOptions *options = [EMOptions optionsWithAppkey:@"easemob-demo#chatdemoui"];
+        //    EMOptions *options = [EMOptions optionsWithAppkey:EaseMobAppKey];
         options.apnsCertName = @"chatdemoui_dev";
         options.enableConsoleLog = YES;
         options.usingHttpsOnly = isHttpsOnly;

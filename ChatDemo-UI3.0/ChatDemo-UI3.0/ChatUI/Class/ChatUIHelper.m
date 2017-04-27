@@ -798,6 +798,13 @@ static ChatUIHelper *helper = nil;
         alertBody = NSLocalizedString(@"receiveMessage", @"you have a new message");
     }
     
+    // 获取APNS推送昵称
+//    NSString *name =[EMClient sharedClient].pushOptions.displayName;
+//    [[EMClient sharedClient] updatePushNotificationOptionsToServerWithCompletion:^(EMError *aError) {
+//        NSString *nick = [EMClient sharedClient].pushOptions.displayName;
+//        NSLog(@"%@", nick);
+//    }];
+    
     NSTimeInterval timeInterval = [[NSDate date] timeIntervalSinceDate:self.lastPlaySoundDate];
     BOOL playSound = NO;
     if (!self.lastPlaySoundDate || timeInterval >= kDefaultPlaySoundInterval) {

@@ -58,8 +58,8 @@ didFinishLaunchingWithOptions:(NSDictionary *)launchOptions
     
     // 注册web缓存
     [UserWebManager config:launchOptions
-                     appId:@"utUG5ot9Y64dqJIFG9Ir2rqu-gzGzoHsz"
-                    appKey:@"IbHhNkPo4gfrFFc3epCw3eG2"];
+                     appId:@"VBYeQuiVPD9CWS2aINWrwBv0-gzGzoHsz"
+                    appKey:@"1LItewi0x6hlkgYHxi8DERNN"];
 }
 
 - (void)easemobApplication:(UIApplication *)application

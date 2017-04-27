@@ -172,9 +172,9 @@
             EMMessage *message = [weakSelf.resultController.displaySource objectAtIndex:indexPath.row];
 
             cell.detailLabel.text = [weakSelf getContentFromMessage:message];
-            [UserCacheManager setImageLabelView:message.from
-                                      nameLabel:cell.titleLabel
-                                      imageView:cell.avatarView.imageView];
+            [UserCacheManager setUserView:message.from
+                                nickLabel:cell.titleLabel
+                                imageView:cell.avatarView.imageView];
             return cell;
         } else {
             NSString *CellIdentifier = @"loadMoreCell";

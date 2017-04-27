@@ -124,17 +124,17 @@
 +(NSMutableDictionary*)getMyMsgExt:(NSDictionary *)msgExt;
 
 // 设置头像控件
-+(void)setImageView:(NSString*)userId
-          imageView:(UIImageView*)imageView;
++(void)setUserAvatar:(NSString*)userId
+           imageView:(UIImageView*)imageView;
 
 // 设置昵称控件
-+(void)setLabelView:(NSString*)userId
-          nameLabel:(UILabel*)nameLabel;
++(void)setUserNick:(NSString*)userId
+         nickLabel:(UILabel*)nameLabel;
 
 // 设置头像昵称
-+(void)setImageLabelView:(NSString*)userId
-              nameLabel:(UILabel*)nameLabel
-              imageView:(UIImageView*)imageView;
++(void)setUserView:(NSString*)userId
+         nickLabel:(UILabel*)nameLabel
+         imageView:(UIImageView*)imageView;
 
 @end
 
