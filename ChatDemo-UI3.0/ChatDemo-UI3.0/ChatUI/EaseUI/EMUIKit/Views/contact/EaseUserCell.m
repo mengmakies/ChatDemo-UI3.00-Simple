@@ -135,6 +135,7 @@ CGFloat const EaseUserCellPadding = 10;
 - (void)setModel:(id<IUserModel>)model
 {
     _model = model;
+    self.avatarView.imageView.layer.cornerRadius = self.avatarView.imageView.size.width/2;
     [UserCacheManager setUserView:model.buddy
                         nickLabel:self.titleLabel
                         imageView:self.avatarView.imageView];

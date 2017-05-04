@@ -193,6 +193,7 @@ CGFloat const EaseConversationCellPadding = 10;
 {
     _model = model;
     
+//    self.avatarView.imageView.layer.cornerRadius = self.avatarView.imageView.size.width/2;
     [UserCacheManager setUserView:model.conversation.conversationId
                         nickLabel:self.titleLabel
                         imageView:self.avatarView.imageView];

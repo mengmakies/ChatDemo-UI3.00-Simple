@@ -148,7 +148,7 @@
             
             NSString *userOpenId = username;// 用户环信ID
             NSString *nickName = [NSString stringWithFormat:@"小草%d", arc4random_uniform(500)];// 用户昵称
-            NSString *avatarUrl = @"http://avatar.csdn.net/A/2/1/1_mengmakies.jpg";// 用户头像（绝对路径）
+            NSString *avatarUrl = [NSString stringWithFormat:@"http://duoroux.com/chat/avatar/%d.jpg",arc4random()%10];// 用户头像（绝对路径）
             
             // 登录成功后，如果后端云没有缓存用户信息，则新增一个用户
             [UserWebManager createUser:userOpenId nickName:nickName avatarUrl:avatarUrl];
