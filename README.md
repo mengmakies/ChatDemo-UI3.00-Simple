@@ -4,6 +4,10 @@
 ### 希望支持简版Demo的童鞋能够到Github给我们一个star^_^
 https://github.com/mengmakies/ChatDemo-UI3.00-Simple
 
+### 源码使用文档
+>《IOS快速集成环信IM - 基于官方的Demo优化，5分钟集成环信IM功能》  
+http://www.imgeek.org/article/825307886
+
 <img src="http://git.oschina.net/markies/ChatDemo-UI3.00-Simple/raw/master/screenshot1.png" width = "35%" height = "auto" alt="图片名称" align=center /> &nbsp;
 <img src="http://git.oschina.net/markies/ChatDemo-UI3.00-Simple/raw/master/screenshot2.jpg" width = "35%" height = "auto" alt="图片名称" align=center />
 > ### 说明
