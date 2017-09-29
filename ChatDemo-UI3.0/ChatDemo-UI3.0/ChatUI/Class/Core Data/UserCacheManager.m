@@ -412,7 +412,7 @@ static FMDatabaseQueue *_queue;
                nickLabel:(UILabel*)nameLabel
                imageView:(UIImageView*)imageView{
     
-    [UserCacheManager getUserInfo:userId completed:^(UserCacheInfo *userInfo) {
+    [self getUserInfo:userId completed:^(UserCacheInfo *userInfo) {
         if (userInfo) {
             [nameLabel setText:userInfo.nickName];
             [imageView sd_setImageWithURL:[NSURL URLWithString:userInfo.avatarUrl]
